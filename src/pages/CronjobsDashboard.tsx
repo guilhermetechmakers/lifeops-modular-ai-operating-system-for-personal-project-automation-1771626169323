@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Plus, ChevronRight, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
@@ -66,6 +67,7 @@ export default function CronjobsDashboard() {
   const [cronjobs, setCronjobs] = useState<Cronjob[]>([])
   const [selectedCronjob, setSelectedCronjob] = useState<Cronjob | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
   const [showWizard, setShowWizard] = useState(false)
   const [wizardEditData, setWizardEditData] = useState<Cronjob | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -73,6 +75,7 @@ export default function CronjobsDashboard() {
 
   const loadCronjobs = useCallback(async () => {
     setIsLoading(true)
+    setHasError(false)
     try {
       const data = await fetchCronjobs()
       setCronjobs(data)
@@ -81,6 +84,7 @@ export default function CronjobsDashboard() {
       }
     } catch {
       setCronjobs(MOCK_CRONJOBS)
+      setHasError(true)
     } finally {
       setIsLoading(false)
     }
@@ -188,7 +192,14 @@ export default function CronjobsDashboard() {
 
   if (showWizard) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 animate-fade-in">
+        <nav className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+          <ChevronRight className="h-4 w-4" />
+          <Link to="/dashboard/cronjobs-dashboard" className="hover:text-foreground transition-colors">Cronjobs</Link>
+          <ChevronRight className="h-4 w-4" />
+          <span className="text-foreground">{wizardEditData ? 'Edit' : 'Create'}</span>
+        </nav>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -212,7 +223,12 @@ export default function CronjobsDashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+        <ChevronRight className="h-4 w-4" />
+        <span className="text-foreground">Cronjobs</span>
+      </nav>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -222,17 +238,33 @@ export default function CronjobsDashboard() {
             Manage scheduled jobs and workflows: create, edit, enable/disable, view run history
           </p>
         </div>
-        <Button onClick={handleCreate}>
+        <Button
+          onClick={handleCreate}
+          className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Create Cronjob
         </Button>
       </div>
+
+      {hasError && (
+        <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <p className="text-sm text-foreground">Using demo data. Connect to API for live data.</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={loadCronjobs}>
+            Retry
+          </Button>
+        </div>
+      )}
 
       <CronjobList
         cronjobs={cronjobs}
         isLoading={isLoading}
         onSelect={setSelectedCronjob}
         selectedId={selectedCronjob?.id}
+        onCreateClick={handleCreate}
       />
 
       {selectedCronjob && (
@@ -250,7 +282,10 @@ export default function CronjobsDashboard() {
                 />
               </TabsContent>
               <TabsContent value="history" className="mt-4">
-                <RunHistoryTab cronjobId={selectedCronjob.id} />
+                <RunHistoryTab
+                  cronjobId={selectedCronjob.id}
+                  onRunNow={() => handleRunNow(selectedCronjob.id)}
+                />
               </TabsContent>
             </Tabs>
           </div>

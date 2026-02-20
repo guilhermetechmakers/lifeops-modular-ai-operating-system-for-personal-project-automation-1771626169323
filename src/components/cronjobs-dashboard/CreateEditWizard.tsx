@@ -98,7 +98,7 @@ export function CreateEditWizard({
   }
 
   return (
-    <Card>
+    <Card className="transition-shadow duration-300 hover:shadow-card">
       <CardHeader>
         <div className="flex items-center gap-2 mb-4">
           {STEPS.map((s, i) => (

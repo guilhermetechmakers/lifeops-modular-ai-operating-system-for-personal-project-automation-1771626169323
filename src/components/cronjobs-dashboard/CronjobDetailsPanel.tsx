@@ -106,7 +106,7 @@ export function CronjobDetailsPanel({
   const c = cronjob!
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="transition-shadow duration-300 hover:shadow-card">
         <CardHeader>
           <CardTitle>Schedule Builder</CardTitle>
           <CardDescription>Cron expression and timezone</CardDescription>
@@ -160,7 +160,7 @@ export function CronjobDetailsPanel({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="transition-shadow duration-300 hover:shadow-card">
         <CardHeader>
           <CardTitle>Trigger & Target</CardTitle>
           <CardDescription>Trigger type and target agent/workflow</CardDescription>
@@ -196,7 +196,7 @@ export function CronjobDetailsPanel({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="transition-shadow duration-300 hover:shadow-card">
         <CardHeader>
           <CardTitle>Payload Editor</CardTitle>
           <CardDescription>JSON payload for the cronjob</CardDescription>
@@ -210,7 +210,7 @@ export function CronjobDetailsPanel({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="transition-shadow duration-300 hover:shadow-card">
         <CardHeader>
           <CardTitle>Constraints & Safety Rails</CardTitle>
           <CardDescription>Constraints and safety rails for execution</CardDescription>
@@ -220,12 +220,44 @@ export function CronjobDetailsPanel({
             <Label>Constraints</Label>
             <div className="mt-2 flex flex-wrap gap-2">
               {(c.constraints ?? []).map((constraint, i) => (
-                <Badge key={i} variant="outline">
+                <Badge key={i} variant="outline" className="gap-1">
                   {constraint}
+                  {!readOnly && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onUpdate?.({
+                          constraints: (c.constraints ?? []).filter((_, j) => j !== i),
+                        })
+                      }
+                      className="ml-1 rounded hover:bg-secondary"
+                      aria-label={`Remove ${constraint}`}
+                    >
+                      ×
+                    </button>
+                  )}
                 </Badge>
               ))}
               {(!c.constraints || c.constraints.length === 0) && (
                 <span className="text-sm text-muted-foreground">None</span>
+              )}
+              {!readOnly && (
+                <Input
+                  placeholder="Add constraint..."
+                  className="h-8 w-36 text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.currentTarget
+                      const val = input.value.trim()
+                      if (val) {
+                        onUpdate?.({
+                          constraints: [...(c.constraints ?? []), val],
+                        })
+                        input.value = ''
+                      }
+                    }
+                  }}
+                />
               )}
             </div>
           </div>
@@ -233,19 +265,51 @@ export function CronjobDetailsPanel({
             <Label>Safety Rails</Label>
             <div className="mt-2 flex flex-wrap gap-2">
               {(c.safety_rails ?? []).map((s, i) => (
-                <Badge key={i} variant="secondary">
+                <Badge key={i} variant="secondary" className="gap-1">
                   {s}
+                  {!readOnly && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onUpdate?.({
+                          safety_rails: (c.safety_rails ?? []).filter((_, j) => j !== i),
+                        })
+                      }
+                      className="ml-1 rounded hover:bg-secondary"
+                      aria-label={`Remove ${s}`}
+                    >
+                      ×
+                    </button>
+                  )}
                 </Badge>
               ))}
               {(!c.safety_rails || c.safety_rails.length === 0) && (
                 <span className="text-sm text-muted-foreground">None</span>
+              )}
+              {!readOnly && (
+                <Input
+                  placeholder="Add safety rail..."
+                  className="h-8 w-36 text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.currentTarget
+                      const val = input.value.trim()
+                      if (val) {
+                        onUpdate?.({
+                          safety_rails: [...(c.safety_rails ?? []), val],
+                        })
+                        input.value = ''
+                      }
+                    }
+                  }}
+                />
               )}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="transition-shadow duration-300 hover:shadow-card">
         <CardHeader>
           <CardTitle>Retry Policy</CardTitle>
           <CardDescription>Max retries and backoff</CardDescription>

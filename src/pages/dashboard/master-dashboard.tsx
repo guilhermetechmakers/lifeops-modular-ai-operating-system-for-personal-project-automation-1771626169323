@@ -170,7 +170,7 @@ export function MasterDashboard() {
             <CardTitle>Recent Runs</CardTitle>
             <CardDescription>Latest cronjob executions</CardDescription>
           </div>
-          <Link to="/dashboard/cronjobs">
+          <Link to="/dashboard/cronjobs-dashboard">
             <Button variant="ghost" size="sm">
               View all
               <ArrowUpRight className="ml-1 h-4 w-4" />

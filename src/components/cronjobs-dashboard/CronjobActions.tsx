@@ -1,4 +1,4 @@
-import { Play, Pause, Copy, Download, Trash2, Pencil } from 'lucide-react'
+import { Play, Pause, Copy, Download, Trash2, Pencil, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -55,7 +55,7 @@ export function CronjobActions({
   }
 
   return (
-    <Card>
+    <Card className="transition-shadow duration-300 hover:shadow-card">
       <CardHeader>
         <CardTitle>Actions</CardTitle>
         <CardDescription>Run now, pause, clone, export, delete</CardDescription>
@@ -66,9 +66,19 @@ export function CronjobActions({
             size="sm"
             onClick={() => onRunNow?.(cronjob.id)}
             disabled={isRunning || cronjob.status === 'paused'}
+            className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
           >
-            <Play className="mr-2 h-4 w-4" />
-            Run Now
+            {isRunning ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Running...
+              </>
+            ) : (
+              <>
+                <Play className="mr-2 h-4 w-4" />
+                Run Now
+              </>
+            )}
           </Button>
           <Button
             variant="outline"

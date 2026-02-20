@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FileText, AlertCircle, CheckCircle, Clock, Loader2 } from 'lucide-react'
+import { FileText, AlertCircle, CheckCircle, Clock, Loader2, Play, MessageSquare, GitCompare, AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
 interface RunHistoryTabProps {
   cronjobId: string | null
   onRunDetail?: (run: CronjobRun) => void
+  onRunNow?: () => void
 }
 
 function formatDate(iso: string) {
@@ -24,38 +25,45 @@ function formatDate(iso: string) {
   return d.toLocaleDateString()
 }
 
-export function RunHistoryTab({ cronjobId, onRunDetail }: RunHistoryTabProps) {
+export function RunHistoryTab({ cronjobId, onRunDetail, onRunNow }: RunHistoryTabProps) {
   const [runs, setRuns] = useState<CronjobRun[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [hasError, setHasError] = useState(false)
   const [activeTab, setActiveTab] = useState('logs')
+
+  const loadRuns = () => {
+    if (!cronjobId) return
+    setHasError(false)
+    setIsLoading(true)
+    fetchCronjobRuns(cronjobId)
+      .then((data) => {
+        setRuns(data)
+      })
+      .catch(() => {
+        setRuns([])
+        setHasError(true)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
 
   useEffect(() => {
     if (!cronjobId) {
       setRuns([])
+      setHasError(false)
       return
     }
-    let cancelled = false
-    setIsLoading(true)
-    fetchCronjobRuns(cronjobId)
-      .then((data) => {
-        if (!cancelled) setRuns(data)
-      })
-      .catch(() => {
-        if (!cancelled) setRuns([])
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
+    loadRuns()
   }, [cronjobId])
 
   if (!cronjobId) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-16">
-          <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+          <div className="rounded-full bg-secondary/50 p-4 mb-4">
+            <FileText className="h-12 w-12 text-muted-foreground" />
+          </div>
           <p className="text-muted-foreground text-center">Select a cronjob to view run history</p>
         </CardContent>
       </Card>
@@ -79,13 +87,13 @@ export function RunHistoryTab({ cronjobId, onRunDetail }: RunHistoryTabProps) {
     return (
       <Card>
         <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="h-4 w-64 mt-2" />
+          <Skeleton className="h-6 w-48 animate-pulse" />
+          <Skeleton className="mt-2 h-4 w-64 animate-pulse" />
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="h-16 w-full" />
+              <Skeleton key={i} className="h-16 w-full animate-pulse" style={{ animationDelay: `${i * 50}ms` }} />
             ))}
           </div>
         </CardContent>
@@ -93,37 +101,85 @@ export function RunHistoryTab({ cronjobId, onRunDetail }: RunHistoryTabProps) {
     )
   }
 
+  if (hasError) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="rounded-full bg-red-500/10 p-4 mb-4">
+            <AlertTriangle className="h-12 w-12 text-red-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">Failed to load run history</h3>
+          <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+            There was a problem loading the run history. Please try again.
+          </p>
+          <Button variant="outline" onClick={loadRuns} className="mt-6">
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const failedRuns = runs.filter((r) => r.status === 'failed' && r.error)
+
   return (
-    <Card>
+    <Card className="transition-shadow duration-300 hover:shadow-card">
       <CardHeader>
         <CardTitle>Run History</CardTitle>
-        <CardDescription>Per-run logs, inter-agent message trace, diffs, artifacts, errors</CardDescription>
+        <CardDescription>
+          Per-run logs, inter-agent message trace, diffs, artifacts, errors
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {runs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="font-medium text-foreground">No runs yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Run this cronjob to see execution history
+            <div className="rounded-full bg-secondary/50 p-4 mb-4">
+              <FileText className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground">No runs yet</h3>
+            <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+              Run this cronjob to see execution history, logs, and artifacts.
             </p>
+            {onRunNow && (
+              <Button onClick={onRunNow} className="mt-6 bg-gradient-to-r from-accent to-primary hover:opacity-90">
+                <Play className="mr-2 h-4 w-4" />
+                Run Now
+              </Button>
+            )}
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-4">
               <TabsTrigger value="logs">Logs</TabsTrigger>
+              <TabsTrigger value="trace">
+                <MessageSquare className="mr-1.5 h-4 w-4" />
+                Message Trace
+              </TabsTrigger>
               <TabsTrigger value="artifacts">Artifacts</TabsTrigger>
+              <TabsTrigger value="diffs">
+                <GitCompare className="mr-1.5 h-4 w-4" />
+                Diffs
+              </TabsTrigger>
+              {failedRuns.length > 0 && (
+                <TabsTrigger value="errors">
+                  <AlertTriangle className="mr-1.5 h-4 w-4" />
+                  Errors ({failedRuns.length})
+                </TabsTrigger>
+              )}
             </TabsList>
-            <TabsContent value="logs">
+            <TabsContent value="logs" className="mt-0">
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
                 {runs.map((run) => (
                   <div
                     key={run.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onRunDetail?.(run)}
+                    onKeyDown={(e) => e.key === 'Enter' && onRunDetail?.(run)}
                     className={cn(
-                      'flex items-center justify-between rounded-lg border border-border p-4 transition-all duration-200',
+                      'flex items-center justify-between rounded-xl border border-border p-4 transition-all duration-200',
                       'hover:bg-secondary/30 hover:shadow-md cursor-pointer'
                     )}
-                    onClick={() => onRunDetail?.(run)}
                   >
                     <div className="flex items-center gap-3">
                       <StatusIcon status={run.status} />
@@ -135,6 +191,11 @@ export function RunHistoryTab({ cronjobId, onRunDetail }: RunHistoryTabProps) {
                           {run.started_at}
                           {run.completed_at && ` → ${run.completed_at}`}
                         </p>
+                        {run.logs && (
+                          <pre className="mt-2 text-xs text-muted-foreground line-clamp-2 font-mono">
+                            {run.logs}
+                          </pre>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -143,8 +204,8 @@ export function RunHistoryTab({ cronjobId, onRunDetail }: RunHistoryTabProps) {
                           run.status === 'success'
                             ? 'success'
                             : run.status === 'failed'
-                            ? 'destructive'
-                            : 'secondary'
+                              ? 'destructive'
+                              : 'secondary'
                         }
                       >
                         {run.status}
@@ -157,30 +218,83 @@ export function RunHistoryTab({ cronjobId, onRunDetail }: RunHistoryTabProps) {
                 ))}
               </div>
             </TabsContent>
-            <TabsContent value="artifacts">
+            <TabsContent value="trace" className="mt-0">
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {runs.map((run) => (
+                  <div
+                    key={run.id}
+                    className="rounded-xl border border-border p-4 transition-all duration-200 hover:bg-secondary/20"
+                  >
+                    <p className="text-sm font-medium text-foreground mb-2">
+                      Run {formatDate(run.started_at)} — Inter-agent message trace
+                    </p>
+                    <pre className="text-xs bg-secondary rounded-lg p-3 overflow-x-auto font-mono text-muted-foreground">
+                      {run.logs || 'No message trace recorded for this run.'}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="artifacts" className="mt-0">
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
                 {runs
                   .filter((r) => r.artifacts && Object.keys(r.artifacts).length > 0)
                   .map((run) => (
                     <div
                       key={run.id}
-                      className="rounded-lg border border-border p-4"
+                      className="rounded-xl border border-border p-4 transition-all duration-200 hover:bg-secondary/20"
                     >
                       <p className="text-sm font-medium text-foreground mb-2">
                         Run {formatDate(run.started_at)}
                       </p>
-                      <pre className="text-xs bg-secondary rounded p-3 overflow-x-auto">
+                      <pre className="text-xs bg-secondary rounded-lg p-3 overflow-x-auto font-mono">
                         {JSON.stringify(run.artifacts, null, 2)}
                       </pre>
                     </div>
                   ))}
                 {runs.every((r) => !r.artifacts || Object.keys(r.artifacts).length === 0) && (
-                  <p className="text-sm text-muted-foreground py-8 text-center">
-                    No artifacts recorded
-                  </p>
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <p className="text-sm text-muted-foreground">No artifacts recorded</p>
+                  </div>
                 )}
               </div>
             </TabsContent>
+            <TabsContent value="diffs" className="mt-0">
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {runs.map((run) => (
+                  <div
+                    key={run.id}
+                    className="rounded-xl border border-border p-4 transition-all duration-200 hover:bg-secondary/20"
+                  >
+                    <p className="text-sm font-medium text-foreground mb-2">
+                      Run {formatDate(run.started_at)} — Diffs
+                    </p>
+                    <pre className="text-xs bg-secondary rounded-lg p-3 overflow-x-auto font-mono text-muted-foreground">
+                      {(run.artifacts as { diff?: string })?.diff || 'No diffs recorded for this run.'}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+            {failedRuns.length > 0 && (
+              <TabsContent value="errors" className="mt-0">
+                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                  {failedRuns.map((run) => (
+                    <div
+                      key={run.id}
+                      className="rounded-xl border border-red-500/30 bg-red-500/5 p-4"
+                    >
+                      <p className="text-sm font-medium text-foreground mb-2">
+                        Run {formatDate(run.started_at)}
+                      </p>
+                      <pre className="text-xs text-red-400 font-mono whitespace-pre-wrap">
+                        {run.error || 'Unknown error'}
+                      </pre>
+                    </div>
+                  ))}
+                </div>
+              </TabsContent>
+            )}
           </Tabs>
         )}
       </CardContent>

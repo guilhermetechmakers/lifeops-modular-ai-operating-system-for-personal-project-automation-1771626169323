@@ -64,7 +64,7 @@ export function PermissionsMatrix({
   ]
 
   return (
-    <Card>
+    <Card className="transition-shadow duration-300 hover:shadow-card">
       <CardHeader>
         <CardTitle>Permissions Matrix</CardTitle>
         <CardDescription>Who can edit, approve, and run this cronjob</CardDescription>
