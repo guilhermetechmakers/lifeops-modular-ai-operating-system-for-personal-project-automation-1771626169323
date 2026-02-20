@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Plus, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Plus, ChevronRight, AlertTriangle, Download, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -26,8 +26,103 @@ import {
   updateCronjob,
   deleteCronjob,
   runCronjobNow,
+  fetchCronjobRun,
 } from '@/api/cronjobs'
+import { getRunArtifactUrls } from '@/api/artifacts'
 import type { Cronjob, CronjobRun } from '@/types/cronjobs'
+
+interface RunDetailContentProps {
+  runDetail: CronjobRun
+  artifactUrls: { key: string; url: string; type: string; filename: string }[]
+  artifactUrlsLoading: boolean
+  onLoadArtifacts: () => void
+  runId: string
+}
+
+function RunDetailContent({
+  runDetail,
+  artifactUrls,
+  artifactUrlsLoading,
+  onLoadArtifacts,
+  runId,
+}: RunDetailContentProps) {
+  useEffect(() => {
+    if (!runId) return
+    onLoadArtifacts()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only fetch when runId changes
+  }, [runId])
+  const hasStoredArtifacts = artifactUrls.length > 0
+  const hasInlineArtifacts = runDetail.artifacts && Object.keys(runDetail.artifacts).length > 0
+
+  return (
+    <div className="space-y-4 text-sm">
+      {runDetail.logs && (
+        <div>
+          <p className="font-medium text-foreground mb-2">Logs</p>
+          <pre className="rounded-lg bg-secondary p-4 overflow-x-auto font-mono text-xs text-muted-foreground whitespace-pre-wrap">
+            {runDetail.logs}
+          </pre>
+        </div>
+      )}
+      {runDetail.error && (
+        <div>
+          <p className="font-medium text-red-400 mb-2">Error</p>
+          <pre className="rounded-lg bg-red-500/10 p-4 overflow-x-auto font-mono text-xs text-red-400 whitespace-pre-wrap">
+            {runDetail.error}
+          </pre>
+        </div>
+      )}
+      {/* S3-compatible artifact storage: signed URLs for download */}
+      <div>
+        <p className="font-medium text-foreground mb-2">Artifacts & Export</p>
+        {artifactUrlsLoading ? (
+          <div className="rounded-lg bg-secondary/50 p-4 animate-pulse text-muted-foreground">
+            Loading artifact links...
+          </div>
+        ) : hasStoredArtifacts ? (
+          <div className="flex flex-wrap gap-2">
+            {artifactUrls.map((a) => (
+              <a
+                key={a.key}
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-xs font-medium transition-all duration-200 hover:border-accent/50 hover:bg-secondary"
+              >
+                <Download className="h-4 w-4" />
+                {a.filename} ({a.type})
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-border bg-secondary/30 p-4">
+            <p className="text-xs text-muted-foreground">
+              No artifacts in object storage. Run artifacts, diffs, and logs are stored via the S3-compatible API when cronjobs complete.
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onLoadArtifacts}
+              disabled={artifactUrlsLoading}
+              className="mt-2 transition-all hover:scale-[1.02]"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+          </div>
+        )}
+      </div>
+      {hasInlineArtifacts && (
+        <div>
+          <p className="font-medium text-foreground mb-2">Inline Artifacts</p>
+          <pre className="rounded-lg bg-secondary p-4 overflow-x-auto font-mono text-xs text-muted-foreground">
+            {JSON.stringify(runDetail.artifacts, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const MOCK_CRONJOBS: Cronjob[] = [
   {
@@ -83,6 +178,8 @@ export default function CronjobsDashboard() {
   const [runningId, setRunningId] = useState<string | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [runDetail, setRunDetail] = useState<CronjobRun | null>(null)
+  const [artifactUrls, setArtifactUrls] = useState<{ key: string; url: string; type: string; filename: string }[]>([])
+  const [artifactUrlsLoading, setArtifactUrlsLoading] = useState(false)
 
   useEffect(() => {
     if (searchParams.get('create') === '1') {
@@ -91,6 +188,19 @@ export default function CronjobsDashboard() {
       setSearchParams({}, { replace: true })
     }
   }, [searchParams, setSearchParams])
+
+  const runIdFromUrl = searchParams.get('run')
+  useEffect(() => {
+    if (!runIdFromUrl) return
+    fetchCronjobRun(runIdFromUrl).then((result) => {
+      if (result) {
+        const { run, cronjob } = result
+        const job = cronjobs.find((c) => c.id === cronjob.id) ?? cronjob
+        setSelectedCronjob(job)
+        setRunDetail(run)
+      }
+    })
+  }, [runIdFromUrl, cronjobs])
 
   const loadCronjobs = useCallback(async () => {
     setIsLoading(true)
@@ -349,41 +459,36 @@ export default function CronjobsDashboard() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!runDetail} onOpenChange={(open) => !open && setRunDetail(null)}>
+      <Dialog
+        open={!!runDetail}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRunDetail(null)
+            setArtifactUrls([])
+          }
+        }}
+      >
         <DialogContent showClose className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Run Detail</DialogTitle>
+            <DialogTitle>Run Detail & Artifacts</DialogTitle>
             <DialogDescription>
               {runDetail && new Date(runDetail.started_at).toLocaleString()} — {runDetail?.status}
             </DialogDescription>
           </DialogHeader>
           {runDetail && (
-            <div className="space-y-4 text-sm">
-              {runDetail.logs && (
-                <div>
-                  <p className="font-medium text-foreground mb-2">Logs</p>
-                  <pre className="rounded-lg bg-secondary p-4 overflow-x-auto font-mono text-xs text-muted-foreground whitespace-pre-wrap">
-                    {runDetail.logs}
-                  </pre>
-                </div>
-              )}
-              {runDetail.error && (
-                <div>
-                  <p className="font-medium text-red-400 mb-2">Error</p>
-                  <pre className="rounded-lg bg-red-500/10 p-4 overflow-x-auto font-mono text-xs text-red-400 whitespace-pre-wrap">
-                    {runDetail.error}
-                  </pre>
-                </div>
-              )}
-              {runDetail.artifacts && Object.keys(runDetail.artifacts).length > 0 && (
-                <div>
-                  <p className="font-medium text-foreground mb-2">Artifacts</p>
-                  <pre className="rounded-lg bg-secondary p-4 overflow-x-auto font-mono text-xs text-muted-foreground">
-                    {JSON.stringify(runDetail.artifacts, null, 2)}
-                  </pre>
-                </div>
-              )}
-            </div>
+            <RunDetailContent
+              runDetail={runDetail}
+              artifactUrls={artifactUrls}
+              artifactUrlsLoading={artifactUrlsLoading}
+              onLoadArtifacts={() => {
+                setArtifactUrlsLoading(true)
+                getRunArtifactUrls(runDetail.id)
+                  .then((urls) => setArtifactUrls(urls))
+                  .catch(() => setArtifactUrls([]))
+                  .finally(() => setArtifactUrlsLoading(false))
+              }}
+              runId={runDetail.id}
+            />
           )}
         </DialogContent>
       </Dialog>

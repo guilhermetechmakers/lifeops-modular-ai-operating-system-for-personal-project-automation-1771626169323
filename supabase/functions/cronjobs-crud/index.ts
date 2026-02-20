@@ -61,6 +61,11 @@ interface ListRunsPayload {
   cronjob_id: string
 }
 
+interface GetRunPayload {
+  action: 'get_run'
+  run_id: string
+}
+
 type CronjobsPayload =
   | ListPayload
   | GetPayload
@@ -69,6 +74,7 @@ type CronjobsPayload =
   | DeletePayload
   | RunNowPayload
   | ListRunsPayload
+  | GetRunPayload
 
 function getAuthToken(req: Request): string | null {
   const auth = req.headers.get('Authorization')
@@ -241,6 +247,36 @@ serve(async (req) => {
         .limit(50)
       if (error) throw error
       return new Response(JSON.stringify({ data }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
+    if (payload.action === 'get_run') {
+      const { data: run, error } = await supabase
+        .from('cronjob_runs')
+        .select('*')
+        .eq('id', payload.run_id)
+        .single()
+      if (error || !run) {
+        return new Response(JSON.stringify({ error: 'Run not found' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 404,
+        })
+      }
+      const { data: cronjob, error: cjError } = await supabase
+        .from('cronjobs_dashboard')
+        .select('*')
+        .eq('id', run.cronjob_id)
+        .eq('user_id', user.id)
+        .single()
+      if (cjError || !cronjob) {
+        return new Response(JSON.stringify({ error: 'Run not found' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 404,
+        })
+      }
+      return new Response(JSON.stringify({ data: { run, cronjob } }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       })

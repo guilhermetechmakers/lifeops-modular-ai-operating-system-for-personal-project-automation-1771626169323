@@ -78,3 +78,16 @@ export async function fetchCronjobRuns(cronjobId: string): Promise<CronjobRun[]>
   })
   return res.data ?? []
 }
+
+export async function fetchCronjobRun(
+  runId: string
+): Promise<{ run: CronjobRun; cronjob: Cronjob } | null> {
+  try {
+    const res = await cronjobsFetch<{
+      data: { run: CronjobRun; cronjob: Cronjob }
+    }>({ action: 'get_run', run_id: runId })
+    return res.data ?? null
+  } catch {
+    return null
+  }
+}
