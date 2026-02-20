@@ -24,7 +24,7 @@ const SIDEBAR_STORAGE_KEY = 'lifeops-sidebar-collapsed'
 
 const mainNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Master Dashboard' },
-  { to: '/dashboard/cronjobs', icon: Clock, label: 'Cronjobs' },
+  { to: '/dashboard/cronjobs', icon: Clock, label: 'Cronjobs Dashboard' },
   { to: '/dashboard/agents', icon: Bot, label: 'Agents & Workflows' },
   { to: '/dashboard/approvals', icon: CheckSquare, label: 'Approvals Queue' },
 ]

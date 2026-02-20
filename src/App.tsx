@@ -6,7 +6,7 @@ import { LoginPage } from '@/pages/auth/login'
 import { SignupPage } from '@/pages/auth/signup'
 import { LoginSignupPage } from '@/pages/login-signup'
 import { MasterDashboard } from '@/pages/dashboard/master-dashboard'
-import { CronjobsDashboard } from '@/pages/dashboard/cronjobs'
+import CronjobsDashboard from '@/pages/CronjobsDashboard'
 import { AgentsDashboard } from '@/pages/dashboard/agents'
 import { ApprovalsQueue } from '@/pages/dashboard/approvals'
 import { SettingsPage } from '@/pages/dashboard/settings'
@@ -31,6 +31,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<MasterDashboard />} />
           <Route path="cronjobs" element={<CronjobsDashboard />} />
+          <Route path="cronjobs-dashboard" element={<CronjobsDashboard />} />
           <Route path="agents" element={<AgentsDashboard />} />
           <Route path="approvals" element={<ApprovalsQueue />} />
           <Route
