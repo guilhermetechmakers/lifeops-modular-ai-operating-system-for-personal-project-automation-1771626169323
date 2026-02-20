@@ -1,7 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Plus, ChevronRight, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import {
@@ -19,7 +27,7 @@ import {
   deleteCronjob,
   runCronjobNow,
 } from '@/api/cronjobs'
-import type { Cronjob } from '@/types/cronjobs'
+import type { Cronjob, CronjobRun } from '@/types/cronjobs'
 
 const MOCK_CRONJOBS: Cronjob[] = [
   {
@@ -64,6 +72,7 @@ const MOCK_CRONJOBS: Cronjob[] = [
 ]
 
 export default function CronjobsDashboard() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [cronjobs, setCronjobs] = useState<Cronjob[]>([])
   const [selectedCronjob, setSelectedCronjob] = useState<Cronjob | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -72,6 +81,16 @@ export default function CronjobsDashboard() {
   const [wizardEditData, setWizardEditData] = useState<Cronjob | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [runningId, setRunningId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [runDetail, setRunDetail] = useState<CronjobRun | null>(null)
+
+  useEffect(() => {
+    if (searchParams.get('create') === '1') {
+      setShowWizard(true)
+      setWizardEditData(null)
+      setSearchParams({}, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   const loadCronjobs = useCallback(async () => {
     setIsLoading(true)
@@ -166,12 +185,17 @@ export default function CronjobsDashboard() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this cronjob?')) return
+  const handleDeleteClick = (id: string) => {
+    setDeleteConfirmId(id)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmId) return
     try {
-      await deleteCronjob(id)
-      setCronjobs((prev) => prev.filter((c) => c.id !== id))
-      if (selectedCronjob?.id === id) setSelectedCronjob(null)
+      await deleteCronjob(deleteConfirmId)
+      setCronjobs((prev) => prev.filter((c) => c.id !== deleteConfirmId))
+      if (selectedCronjob?.id === deleteConfirmId) setSelectedCronjob(null)
+      setDeleteConfirmId(null)
       toast.success('Cronjob deleted')
     } catch {
       toast.error('Failed to delete cronjob')
@@ -285,6 +309,7 @@ export default function CronjobsDashboard() {
                 <RunHistoryTab
                   cronjobId={selectedCronjob.id}
                   onRunNow={() => handleRunNow(selectedCronjob.id)}
+                  onRunDetail={setRunDetail}
                 />
               </TabsContent>
             </Tabs>
@@ -295,7 +320,8 @@ export default function CronjobsDashboard() {
               onRunNow={handleRunNow}
               onPause={handlePause}
               onClone={handleClone}
-              onDelete={handleDelete}
+              onExport={() => toast.success('Cronjob exported')}
+              onDelete={handleDeleteClick}
               onEdit={handleEdit}
               isRunning={runningId === selectedCronjob.id}
             />
@@ -303,6 +329,64 @@ export default function CronjobsDashboard() {
           </div>
         </div>
       )}
+
+      <Dialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <DialogContent showClose>
+          <DialogHeader>
+            <DialogTitle>Delete Cronjob</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this cronjob? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!runDetail} onOpenChange={(open) => !open && setRunDetail(null)}>
+        <DialogContent showClose className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Run Detail</DialogTitle>
+            <DialogDescription>
+              {runDetail && new Date(runDetail.started_at).toLocaleString()} — {runDetail?.status}
+            </DialogDescription>
+          </DialogHeader>
+          {runDetail && (
+            <div className="space-y-4 text-sm">
+              {runDetail.logs && (
+                <div>
+                  <p className="font-medium text-foreground mb-2">Logs</p>
+                  <pre className="rounded-lg bg-secondary p-4 overflow-x-auto font-mono text-xs text-muted-foreground whitespace-pre-wrap">
+                    {runDetail.logs}
+                  </pre>
+                </div>
+              )}
+              {runDetail.error && (
+                <div>
+                  <p className="font-medium text-red-400 mb-2">Error</p>
+                  <pre className="rounded-lg bg-red-500/10 p-4 overflow-x-auto font-mono text-xs text-red-400 whitespace-pre-wrap">
+                    {runDetail.error}
+                  </pre>
+                </div>
+              )}
+              {runDetail.artifacts && Object.keys(runDetail.artifacts).length > 0 && (
+                <div>
+                  <p className="font-medium text-foreground mb-2">Artifacts</p>
+                  <pre className="rounded-lg bg-secondary p-4 overflow-x-auto font-mono text-xs text-muted-foreground">
+                    {JSON.stringify(runDetail.artifacts, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

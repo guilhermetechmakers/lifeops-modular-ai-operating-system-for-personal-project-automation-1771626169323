@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { LucideIcon } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -7,9 +8,11 @@ interface ModulePlaceholderProps {
   description: string
   icon: LucideIcon
   features: string[]
+  /** Optional CTA to schedule runs (e.g. for Finance: link to cronjobs) */
+  scheduleCta?: { label: string; to: string }
 }
 
-export function ModulePlaceholder({ title, description, icon: Icon, features }: ModulePlaceholderProps) {
+export function ModulePlaceholder({ title, description, icon: Icon, features, scheduleCta }: ModulePlaceholderProps) {
   return (
     <div className="space-y-8">
       <div>
@@ -40,7 +43,14 @@ export function ModulePlaceholder({ title, description, icon: Icon, features }: 
               </li>
             ))}
           </ul>
-          <Button className="mt-8">Get Notified</Button>
+          <div className="mt-8 flex flex-wrap gap-3">
+            {scheduleCta && (
+              <Button asChild className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity">
+                <Link to={scheduleCta.to}>{scheduleCta.label}</Link>
+              </Button>
+            )}
+            <Button variant="outline">Get Notified</Button>
+          </div>
         </CardContent>
       </Card>
     </div>

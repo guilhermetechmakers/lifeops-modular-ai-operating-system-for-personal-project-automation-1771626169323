@@ -37,6 +37,8 @@ export function GlobalActivityTimeline({
             icon={MessageSquare}
             heading="No activity yet"
             description="Agent messages, handoffs, and alerts will appear here as your agents communicate and collaborate."
+            actionLabel="View Agents"
+            actionHref="/dashboard/agents"
           />
         </CardContent>
       </Card>

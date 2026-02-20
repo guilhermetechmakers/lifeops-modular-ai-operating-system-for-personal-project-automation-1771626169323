@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const isMasterDashboard = (path: string) =>
-  path === '/dashboard' || path === '/dashboard/' || path === '/master-dashboard'
+  path === '/dashboard' ||
+  path === '/dashboard/' ||
+  path === '/dashboard/master-dashboard'
 
 export function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)

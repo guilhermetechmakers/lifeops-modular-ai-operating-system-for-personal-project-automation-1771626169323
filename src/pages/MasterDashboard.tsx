@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
@@ -12,11 +12,11 @@ import {
 } from '@/components/master-dashboard'
 import { ErrorState } from '@/components/ui/loading-states'
 import {
-  fetchMasterDashboardData,
-  approveItem,
-  rejectItem,
-  toggleCronjob,
-} from '@/api/master-dashboard'
+  useMasterDashboard,
+  useApproveItem,
+  useRejectItem,
+  useToggleCronjob,
+} from '@/hooks/use-master-dashboard'
 
 interface OutletContext {
   setMobileOpen?: (v: boolean) => void
@@ -25,45 +25,23 @@ interface OutletContext {
 export default function MasterDashboardPage() {
   const { setMobileOpen } = useOutletContext<OutletContext>() ?? {}
   const [showQuickCreate, setShowQuickCreate] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
-  const [data, setData] = useState<Awaited<ReturnType<typeof fetchMasterDashboardData>> | null>(
-    null
-  )
+  const [searchQuery, setSearchQuery] = useState('')
 
-  const loadData = useCallback(async () => {
-    setIsLoading(true)
-    setHasError(false)
-    try {
-      const result = await fetchMasterDashboardData()
-      setData(result)
-    } catch {
-      setHasError(true)
-      toast.error('Failed to load dashboard data')
-    } finally {
-      setIsLoading(false)
+  const { data, isLoading, isError, refetch } = useMasterDashboard()
+  const approveMutation = useApproveItem()
+  const rejectMutation = useRejectItem()
+  const toggleMutation = useToggleCronjob()
+
+  useEffect(() => {
+    document.title = 'Master Dashboard — LifeOps'
+    return () => {
+      document.title = 'LifeOps — AI Operating System for Life & Projects'
     }
   }, [])
 
-  useEffect(() => {
-    loadData()
-  }, [loadData])
-
   const handleApprove = async (id: string) => {
     try {
-      await approveItem(id)
-      setData((prev) =>
-        prev
-          ? {
-              ...prev,
-              approvals: prev.approvals.filter((a) => a.id !== id),
-              overview: {
-                ...prev.overview,
-                pendingApprovals: Math.max(0, prev.overview.pendingApprovals - 1),
-              },
-            }
-          : null
-      )
+      await approveMutation.mutateAsync(id)
       toast.success('Approved')
     } catch {
       toast.error('Failed to approve')
@@ -72,19 +50,7 @@ export default function MasterDashboardPage() {
 
   const handleReject = async (id: string) => {
     try {
-      await rejectItem(id)
-      setData((prev) =>
-        prev
-          ? {
-              ...prev,
-              approvals: prev.approvals.filter((a) => a.id !== id),
-              overview: {
-                ...prev.overview,
-                pendingApprovals: Math.max(0, prev.overview.pendingApprovals - 1),
-              },
-            }
-          : null
-      )
+      await rejectMutation.mutateAsync(id)
       toast.success('Rejected')
     } catch {
       toast.error('Failed to reject')
@@ -93,17 +59,7 @@ export default function MasterDashboardPage() {
 
   const handleToggleCronjob = async (id: string, enabled: boolean) => {
     try {
-      await toggleCronjob(id, enabled)
-      setData((prev) =>
-        prev
-          ? {
-              ...prev,
-              activeCronjobs: prev.activeCronjobs.map((c) =>
-                c.id === id ? { ...c, enabled } : c
-              ),
-            }
-          : null
-      )
+      await toggleMutation.mutateAsync({ id, enabled })
       toast.success(enabled ? 'Cronjob enabled' : 'Cronjob disabled')
     } catch {
       toast.error('Failed to update cronjob')
@@ -113,6 +69,8 @@ export default function MasterDashboardPage() {
   return (
     <div className="space-y-8">
       <TopNav
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
         onGlobalCreate={() => setShowQuickCreate(true)}
         showMenuButton
         onMenuClick={() => setMobileOpen?.(true)}
@@ -129,11 +87,11 @@ export default function MasterDashboardPage() {
         </div>
       </div>
 
-      {hasError && (
+      {isError && (
         <ErrorState
           title="Using demo data"
           message="Could not connect to the API. Displaying demo data. Connect to the API for live data."
-          onRetry={loadData}
+          onRetry={() => refetch()}
           retryLabel="Retry connection"
         />
       )}
@@ -146,6 +104,7 @@ export default function MasterDashboardPage() {
             cronjobs={data?.activeCronjobs}
             isLoading={isLoading}
             onToggle={handleToggleCronjob}
+            searchQuery={searchQuery}
           />
         </div>
         <div>

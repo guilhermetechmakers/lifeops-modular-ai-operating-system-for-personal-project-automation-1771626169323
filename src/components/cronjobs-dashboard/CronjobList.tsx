@@ -5,13 +5,21 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import type { Cronjob } from '@/types/cronjobs'
 import { cn } from '@/lib/utils'
 
 type SortKey = 'name' | 'schedule' | 'timezone' | 'target' | 'automation_level' | 'status'
 type SortDir = 'asc' | 'desc'
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 25, 50]
+const DEFAULT_ITEMS_PER_PAGE = 10
 
 interface CronjobListProps {
   cronjobs: Cronjob[]
@@ -38,6 +46,7 @@ export function CronjobList({
   const [sortKey, setSortKey] = useState<SortKey>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [page, setPage] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE)
 
   const filteredAndSorted = useMemo(() => {
     let list = cronjobs.filter(
@@ -55,10 +64,10 @@ export function CronjobList({
     return list
   }, [cronjobs, search, sortKey, sortDir])
 
-  const totalPages = Math.ceil(filteredAndSorted.length / ITEMS_PER_PAGE) || 1
+  const totalPages = Math.ceil(filteredAndSorted.length / itemsPerPage) || 1
   const paginatedList = filteredAndSorted.slice(
-    page * ITEMS_PER_PAGE,
-    (page + 1) * ITEMS_PER_PAGE
+    page * itemsPerPage,
+    (page + 1) * itemsPerPage
   )
 
   const toggleSort = (key: SortKey) => {
@@ -67,6 +76,12 @@ export function CronjobList({
       setSortKey(key)
       setSortDir('asc')
     }
+    setPage(0)
+  }
+
+  const handleItemsPerPageChange = (value: string) => {
+    const num = parseInt(value, 10)
+    setItemsPerPage(num)
     setPage(0)
   }
 
@@ -255,12 +270,26 @@ export function CronjobList({
               </table>
             </div>
 
-            {totalPages > 1 && (
-              <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                <p className="text-sm text-muted-foreground">
-                  Showing {page * ITEMS_PER_PAGE + 1}–{Math.min((page + 1) * ITEMS_PER_PAGE, filteredAndSorted.length)} of{' '}
-                  {filteredAndSorted.length}
-                </p>
+            {(totalPages > 1 || filteredAndSorted.length > DEFAULT_ITEMS_PER_PAGE) && (
+              <div className="mt-4 flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {page * itemsPerPage + 1}–{Math.min((page + 1) * itemsPerPage, filteredAndSorted.length)} of{' '}
+                    {filteredAndSorted.length}
+                  </p>
+                  <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
+                    <SelectTrigger className="h-8 w-[100px]" aria-label="Items per page">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ITEMS_PER_PAGE_OPTIONS.map((n) => (
+                        <SelectItem key={n} value={String(n)}>
+                          {n} per page
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"

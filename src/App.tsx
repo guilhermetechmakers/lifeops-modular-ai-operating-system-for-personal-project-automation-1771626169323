@@ -73,14 +73,15 @@ function App() {
             element={
               <ModulePlaceholder
                 title="Finance"
-                description="Financial automation and forecasting"
+                description="Financial automation: transaction categorization, subscriptions, anomaly detection, forecasting, and monthly close assistance"
                 icon={Wallet}
                 features={[
-                  'Accounts overview',
-                  'Transactions feed',
+                  'Transaction categorization',
                   'Subscriptions manager',
-                  'Anomaly alerts & forecasting',
+                  'Anomaly detection',
+                  'Forecasting & monthly close assistance',
                 ]}
+                scheduleCta={{ label: 'Schedule Finance Checks', to: '/dashboard/cronjobs-dashboard?create=1' }}
               />
             }
           />
@@ -108,6 +109,7 @@ function App() {
         </Route>
 
         <Route path="/user-profile" element={<Navigate to="/dashboard/user-profile" replace />} />
+        <Route path="/master-dashboard" element={<Navigate to="/dashboard/master-dashboard" replace />} />
         <Route path="/help" element={<HelpPlaceholder />} />
         <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />
         <Route path="/terms" element={<LegalPlaceholder title="Terms of Service" />} />

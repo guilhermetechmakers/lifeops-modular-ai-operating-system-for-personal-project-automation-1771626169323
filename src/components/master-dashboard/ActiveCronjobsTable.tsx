@@ -11,6 +11,7 @@ export interface ActiveCronjobsTableProps {
   cronjobs?: ActiveCronjob[]
   isLoading?: boolean
   onToggle?: (id: string, enabled: boolean) => void
+  searchQuery?: string
   className?: string
 }
 
@@ -21,12 +22,25 @@ const statusVariant = {
   pending: 'secondary' as const,
 }
 
+function filterCronjobs(cronjobs: ActiveCronjob[], query: string): ActiveCronjob[] {
+  if (!query.trim()) return cronjobs
+  const q = query.toLowerCase()
+  return cronjobs.filter(
+    (c) =>
+      c.name.toLowerCase().includes(q) ||
+      c.target.toLowerCase().includes(q) ||
+      c.schedule.toLowerCase().includes(q)
+  )
+}
+
 export function ActiveCronjobsTable({
   cronjobs = [],
   isLoading,
   onToggle,
+  searchQuery = '',
   className,
 }: ActiveCronjobsTableProps) {
+  const filteredCronjobs = filterCronjobs(cronjobs, searchQuery)
   if (isLoading) {
     return (
       <SkeletonTable
@@ -37,7 +51,8 @@ export function ActiveCronjobsTable({
     )
   }
 
-  if (cronjobs.length === 0) {
+  if (filteredCronjobs.length === 0) {
+    const hasCronjobs = cronjobs.length > 0
     return (
       <Card className={className}>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -54,10 +69,14 @@ export function ActiveCronjobsTable({
         <CardContent>
           <EmptyState
             icon={Clock}
-            heading="No cronjobs yet"
-            description="Create your first cronjob to automate workflows. Schedule agents and workflows to run on a recurring basis."
-            actionLabel="Create Cronjob"
-            actionHref="/dashboard/cronjobs-dashboard"
+            heading={hasCronjobs ? 'No matches found' : 'No cronjobs yet'}
+            description={
+              hasCronjobs
+                ? 'Try a different search term to find cronjobs.'
+                : 'Create your first cronjob to automate workflows. Schedule agents and workflows to run on a recurring basis.'
+            }
+            actionLabel={hasCronjobs ? undefined : 'Create Cronjob'}
+            actionHref={hasCronjobs ? undefined : '/dashboard/cronjobs-dashboard'}
           />
         </CardContent>
       </Card>
@@ -78,9 +97,36 @@ export function ActiveCronjobsTable({
         </Link>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        {/* Mobile: card list */}
+        <div className="space-y-3 md:hidden">
+          {filteredCronjobs.map((job) => (
+            <div
+              key={job.id}
+              className="rounded-lg border border-border p-4 transition-all duration-200 hover:border-accent/30 hover:bg-secondary/30"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-foreground">{job.name}</p>
+                  <p className="text-xs text-muted-foreground">{job.target}</p>
+                  <p className="mt-1 font-mono text-xs text-muted-foreground">{job.schedule}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Next: {job.nextRun}</span>
+                    <Badge variant={statusVariant[job.lastOutcome]}>{job.lastOutcome}</Badge>
+                  </div>
+                </div>
+                <Switch
+                  checked={job.enabled}
+                  onCheckedChange={(checked) => onToggle?.(job.id, checked)}
+                  aria-label={`Toggle ${job.name}`}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop: table */}
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-border">
                 <th className="pb-3 text-left text-sm font-medium text-muted-foreground">
                   Name
@@ -103,10 +149,10 @@ export function ActiveCronjobsTable({
               </tr>
             </thead>
             <tbody>
-              {cronjobs.map((job) => (
+              {filteredCronjobs.map((job) => (
                 <tr
                   key={job.id}
-                  className="border-b border-border/50 transition-colors hover:bg-secondary/30"
+                  className="border-b border-border/50 transition-all duration-200 hover:bg-secondary/30 hover:shadow-sm"
                 >
                   <td className="py-3 text-sm font-medium text-foreground">{job.name}</td>
                   <td className="py-3 text-sm text-muted-foreground">{job.target}</td>

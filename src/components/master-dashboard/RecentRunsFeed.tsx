@@ -72,9 +72,37 @@ export function RecentRunsFeed({ runs = [], isLoading, className }: RecentRunsFe
         </Link>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        {/* Mobile: card list */}
+        <div className="space-y-3 md:hidden">
+          {runs.map((run) => (
+            <div
+              key={run.id}
+              className="rounded-lg border border-border p-4 transition-all duration-200 hover:border-accent/30 hover:bg-secondary/30"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground">{run.name}</p>
+                  <p className="text-xs text-muted-foreground">{run.time}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Badge variant={statusVariant[run.status]}>{run.status}</Badge>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link
+                      to={run.logsLink ?? `/dashboard/cronjobs-dashboard?run=${run.id}`}
+                      className="transition-all hover:scale-[1.02]"
+                    >
+                      Logs
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop: table */}
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-border">
                 <th className="pb-3 text-left text-sm font-medium text-muted-foreground">
                   Job
@@ -94,7 +122,7 @@ export function RecentRunsFeed({ runs = [], isLoading, className }: RecentRunsFe
               {runs.map((run) => (
                 <tr
                   key={run.id}
-                  className="border-b border-border/50 transition-colors hover:bg-secondary/30"
+                  className="border-b border-border/50 transition-all duration-200 hover:bg-secondary/30 hover:shadow-sm"
                 >
                   <td className="py-3 text-sm font-medium text-foreground">{run.name}</td>
                   <td className="py-3">

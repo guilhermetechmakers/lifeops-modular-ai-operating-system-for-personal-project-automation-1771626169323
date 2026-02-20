@@ -15,6 +15,8 @@ import {
 import { cn } from '@/lib/utils'
 
 export interface TopNavProps {
+  searchQuery?: string
+  onSearchChange?: (value: string) => void
   onGlobalCreate?: () => void
   onMenuClick?: () => void
   showMenuButton?: boolean
@@ -22,12 +24,16 @@ export interface TopNavProps {
 }
 
 export function TopNav({
+  searchQuery: controlledSearch,
+  onSearchChange,
   onGlobalCreate,
   onMenuClick,
   showMenuButton = false,
   className,
 }: TopNavProps) {
-  const [searchQuery, setSearchQuery] = useState('')
+  const [internalSearch, setInternalSearch] = useState('')
+  const searchQuery = controlledSearch ?? internalSearch
+  const setSearchQuery = onSearchChange ?? setInternalSearch
 
   return (
     <header
