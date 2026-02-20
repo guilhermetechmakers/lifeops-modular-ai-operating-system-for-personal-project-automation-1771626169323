@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Zap,
   BarChart3,
+  User,
   Users,
   HelpCircle,
 } from 'lucide-react'
@@ -37,6 +38,7 @@ const moduleNavItems = [
 ]
 
 const bottomNavItems = [
+  { to: '/dashboard/user-profile', icon: User, label: 'User Profile' },
   { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
   { to: '/dashboard/billing', icon: BarChart3, label: 'Billing' },
   { to: '/dashboard/admin', icon: Users, label: 'Admin' },

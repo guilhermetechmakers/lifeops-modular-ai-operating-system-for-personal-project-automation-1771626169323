@@ -5,7 +5,7 @@ import { LandingPage } from '@/pages/landing'
 import { LoginPage } from '@/pages/auth/login'
 import { SignupPage } from '@/pages/auth/signup'
 import { LoginSignupPage } from '@/pages/login-signup'
-import { MasterDashboard } from '@/pages/dashboard/master-dashboard'
+import MasterDashboardPage from '@/pages/MasterDashboard'
 import CronjobsDashboard from '@/pages/CronjobsDashboard'
 import { AgentsDashboard } from '@/pages/dashboard/agents'
 import { ApprovalsQueue } from '@/pages/dashboard/approvals'
@@ -13,6 +13,7 @@ import { SettingsPage } from '@/pages/dashboard/settings'
 import { BillingPage } from '@/pages/dashboard/billing'
 import { AdminDashboard } from '@/pages/dashboard/admin'
 import { ProfilePage } from '@/pages/dashboard/profile'
+import UserProfile from '@/pages/UserProfile'
 import { ModulePlaceholder } from '@/pages/dashboard/module-placeholder'
 import { PasswordResetPage } from '@/pages/auth/password-reset'
 import { NotFoundPage } from '@/pages/errors/not-found'
@@ -29,7 +30,8 @@ function App() {
         <Route path="/password-reset" element={<PasswordResetPage />} />
 
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<MasterDashboard />} />
+          <Route index element={<MasterDashboardPage />} />
+          <Route path="master-dashboard" element={<MasterDashboardPage />} />
           <Route path="cronjobs" element={<CronjobsDashboard />} />
           <Route path="cronjobs-dashboard" element={<CronjobsDashboard />} />
           <Route path="agents" element={<AgentsDashboard />} />
@@ -102,6 +104,7 @@ function App() {
           <Route path="billing" element={<BillingPage />} />
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="user-profile" element={<UserProfile />} />
         </Route>
 
         <Route path="/help" element={<HelpPlaceholder />} />
