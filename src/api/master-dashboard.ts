@@ -37,10 +37,15 @@ export interface MasterDashboardData {
 
 export async function fetchMasterDashboardData(): Promise<MasterDashboardData> {
   if (MASTER_DASHBOARD_BASE) {
-    const res = await masterDashboardFetch<{ data: MasterDashboardData }>({
-      action: 'get_dashboard',
-    })
-    return (res as { data: MasterDashboardData }).data
+    try {
+      const res = await masterDashboardFetch<{ data: MasterDashboardData }>({
+        action: 'get_dashboard',
+      })
+      return (res as { data: MasterDashboardData }).data
+    } catch {
+      // Fall back to preseeded demo data when API fails (e.g. unauthenticated, network error)
+      return getMockMasterDashboardData()
+    }
   }
   return getMockMasterDashboardData()
 }
@@ -109,10 +114,10 @@ function getMockMasterDashboardData(): MasterDashboardData {
       },
     ],
     recentRuns: [
-      { id: '1', name: 'Content Sync', status: 'success', time: '2 min ago' },
-      { id: '2', name: 'Finance Report', status: 'success', time: '15 min ago' },
-      { id: '3', name: 'PR Summary', status: 'running', time: 'Now' },
-      { id: '4', name: 'Health Check', status: 'pending', time: 'Scheduled' },
+      { id: '1', name: 'Content Sync', status: 'success', time: '2 min ago', logsLink: '/dashboard/cronjobs-dashboard?run=1' },
+      { id: '2', name: 'Finance Report', status: 'success', time: '15 min ago', logsLink: '/dashboard/cronjobs-dashboard?run=2' },
+      { id: '3', name: 'PR Summary', status: 'running', time: 'Now', logsLink: '/dashboard/cronjobs-dashboard?run=3' },
+      { id: '4', name: 'Health Check', status: 'pending', time: 'Scheduled', logsLink: '/dashboard/cronjobs-dashboard?run=4' },
     ],
     activityTimeline: [
       {

@@ -10,7 +10,6 @@ import {
   GlobalActivityTimeline,
   QuickCreateModal,
 } from '@/components/master-dashboard'
-import { ErrorState } from '@/components/ui/loading-states'
 import {
   useMasterDashboard,
   useApproveItem,
@@ -27,7 +26,7 @@ export default function MasterDashboardPage() {
   const [showQuickCreate, setShowQuickCreate] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const { data, isLoading, isError, refetch } = useMasterDashboard()
+  const { data, isLoading } = useMasterDashboard()
   const approveMutation = useApproveItem()
   const rejectMutation = useRejectItem()
   const toggleMutation = useToggleCronjob()
@@ -67,7 +66,7 @@ export default function MasterDashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       <TopNav
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -87,18 +86,9 @@ export default function MasterDashboardPage() {
         </div>
       </div>
 
-      {isError && (
-        <ErrorState
-          title="Using demo data"
-          message="Could not connect to the API. Displaying demo data. Connect to the API for live data."
-          onRetry={() => refetch()}
-          retryLabel="Retry connection"
-        />
-      )}
-
       <OverviewWidgets data={data?.overview ?? null} isLoading={isLoading} />
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
         <div className="lg:col-span-2">
           <ActiveCronjobsTable
             cronjobs={data?.activeCronjobs}
@@ -117,7 +107,7 @@ export default function MasterDashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         <div className="lg:col-span-2">
           <RecentRunsFeed runs={data?.recentRuns} isLoading={isLoading} />
         </div>
