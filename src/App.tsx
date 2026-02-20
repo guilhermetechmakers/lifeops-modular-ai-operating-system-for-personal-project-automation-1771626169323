@@ -4,6 +4,7 @@ import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LandingPage } from '@/pages/landing'
 import { LoginPage } from '@/pages/auth/login'
 import { SignupPage } from '@/pages/auth/signup'
+import { LoginSignupPage } from '@/pages/login-signup'
 import { MasterDashboard } from '@/pages/dashboard/master-dashboard'
 import { CronjobsDashboard } from '@/pages/dashboard/cronjobs'
 import { AgentsDashboard } from '@/pages/dashboard/agents'
@@ -24,6 +25,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login-/-signup" element={<LoginSignupPage />} />
         <Route path="/password-reset" element={<PasswordResetPage />} />
 
         <Route path="/dashboard" element={<DashboardLayout />}>

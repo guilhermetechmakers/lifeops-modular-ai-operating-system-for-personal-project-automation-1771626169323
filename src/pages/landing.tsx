@@ -21,6 +21,9 @@ export function LandingPage() {
           <span className="text-xl font-bold text-foreground">LifeOps</span>
         </Link>
         <div className="flex items-center gap-4">
+          <Link to="/login-/-signup">
+            <Button variant="ghost">Sign in / Sign up</Button>
+          </Link>
           <Link to="/login">
             <Button variant="ghost">Sign in</Button>
           </Link>
