@@ -1,34 +1,150 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'sonner'
+import { DashboardLayout } from '@/components/layout/dashboard-layout'
+import { LandingPage } from '@/pages/landing'
+import { LoginPage } from '@/pages/auth/login'
+import { SignupPage } from '@/pages/auth/signup'
+import { MasterDashboard } from '@/pages/dashboard/master-dashboard'
+import { CronjobsDashboard } from '@/pages/dashboard/cronjobs'
+import { AgentsDashboard } from '@/pages/dashboard/agents'
+import { ApprovalsQueue } from '@/pages/dashboard/approvals'
+import { SettingsPage } from '@/pages/dashboard/settings'
+import { BillingPage } from '@/pages/dashboard/billing'
+import { AdminDashboard } from '@/pages/dashboard/admin'
+import { ProfilePage } from '@/pages/dashboard/profile'
+import { ModulePlaceholder } from '@/pages/dashboard/module-placeholder'
+import { PasswordResetPage } from '@/pages/auth/password-reset'
+import { NotFoundPage } from '@/pages/errors/not-found'
+import { FolderKanban, FileText, Wallet, Heart } from 'lucide-react'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/password-reset" element={<PasswordResetPage />} />
+
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<MasterDashboard />} />
+          <Route path="cronjobs" element={<CronjobsDashboard />} />
+          <Route path="agents" element={<AgentsDashboard />} />
+          <Route path="approvals" element={<ApprovalsQueue />} />
+          <Route
+            path="projects"
+            element={
+              <ModulePlaceholder
+                title="Projects"
+                description="Developer-centric project automation"
+                icon={FolderKanban}
+                features={[
+                  'Projects list & roadmap',
+                  'Tickets board with external sync',
+                  'PRs & releases',
+                  'CI orchestrator',
+                ]}
+              />
+            }
+          />
+          <Route
+            path="content"
+            element={
+              <ModulePlaceholder
+                title="Content"
+                description="End-to-end content lifecycle automation"
+                icon={FileText}
+                features={[
+                  'Ideas board',
+                  'Research workspace',
+                  'Draft editor with diffs',
+                  'Editorial calendar & publishing',
+                ]}
+              />
+            }
+          />
+          <Route
+            path="finance"
+            element={
+              <ModulePlaceholder
+                title="Finance"
+                description="Financial automation and forecasting"
+                icon={Wallet}
+                features={[
+                  'Accounts overview',
+                  'Transactions feed',
+                  'Subscriptions manager',
+                  'Anomaly alerts & forecasting',
+                ]}
+              />
+            }
+          />
+          <Route
+            path="health"
+            element={
+              <ModulePlaceholder
+                title="Health"
+                description="Personal health automation"
+                icon={Heart}
+                features={[
+                  'Habits & goals',
+                  'Training & nutrition plans',
+                  'Recovery insights',
+                  'Workload balancer',
+                ]}
+              />
+            }
+          />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="billing" element={<BillingPage />} />
+          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
+
+        <Route path="/help" element={<HelpPlaceholder />} />
+        <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />
+        <Route path="/terms" element={<LegalPlaceholder title="Terms of Service" />} />
+
+        <Route path="/404" element={<NotFoundPage />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
+      </Routes>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: 'rgb(var(--card))',
+            border: '1px solid rgb(var(--border))',
+            color: 'rgb(var(--foreground))',
+          },
+        }}
+      />
+    </BrowserRouter>
+  )
+}
+
+function HelpPlaceholder() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-foreground">Help & Documentation</h1>
+        <p className="mt-2 text-muted-foreground">Coming soon</p>
+        <a href="/" className="mt-4 inline-block text-accent hover:underline">
+          Back to home
         </a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
+  )
+}
+
+function LegalPlaceholder({ title }: { title: string }) {
+  return (
+    <div className="min-h-screen bg-background p-8 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+      <p className="mt-4 text-muted-foreground">Legal content will be displayed here.</p>
+      <a href="/" className="mt-4 inline-block text-accent hover:underline">
+        Back to home
+      </a>
+    </div>
   )
 }
 
