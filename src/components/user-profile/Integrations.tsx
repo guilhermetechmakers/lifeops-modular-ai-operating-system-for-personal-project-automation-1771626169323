@@ -65,7 +65,13 @@ export function Integrations({
 
   if (integrations.length === 0) {
     return (
-      <Card className={cn('transition-all duration-300 hover:shadow-card-hover', className)}>
+      <Card
+        className={cn(
+          'transition-all duration-300 hover:shadow-card-hover',
+          'border border-border hover:border-accent/20',
+          className
+        )}
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Link2 className="h-5 w-5" />
@@ -75,10 +81,15 @@ export function Integrations({
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Plug className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="font-semibold text-foreground">No integrations</h3>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary mb-4">
+              <Plug className="h-7 w-7 text-muted-foreground" />
+            </div>
+            <h3 className="font-semibold text-foreground">No integrations yet</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-sm">
               Connect services like Slack, GitHub, and Google to extend your workflow.
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Integrations will appear here once available.
             </p>
           </div>
         </CardContent>
@@ -87,7 +98,13 @@ export function Integrations({
   }
 
   return (
-    <Card className={cn('transition-all duration-300 hover:shadow-card-hover', className)}>
+    <Card
+      className={cn(
+        'transition-all duration-300 hover:shadow-card-hover',
+        'border border-border hover:border-accent/20',
+        className
+      )}
+    >
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Link2 className="h-5 w-5" />
@@ -102,7 +119,7 @@ export function Integrations({
             return (
               <div
                 key={int.id}
-                className="flex items-center justify-between rounded-lg border border-border p-4 transition-all hover:border-accent/30"
+                className="flex items-center justify-between rounded-lg border border-border p-4 transition-all duration-200 hover:border-accent/30 hover:bg-secondary/30"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">

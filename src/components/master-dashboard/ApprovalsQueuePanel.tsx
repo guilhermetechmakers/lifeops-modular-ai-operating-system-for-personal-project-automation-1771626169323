@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
-import { FileText, GitMerge, DollarSign, ArrowUpRight } from 'lucide-react'
+import { FileText, GitMerge, DollarSign, ArrowUpRight, CheckSquare } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, SkeletonList } from '@/components/ui/loading-states'
 import type { ApprovalItem } from '@/types/master-dashboard'
 
 export interface ApprovalsQueuePanelProps {
@@ -28,26 +28,11 @@ export function ApprovalsQueuePanel({
 }: ApprovalsQueuePanelProps) {
   if (isLoading) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <Skeleton className="h-6 w-40" />
-          <Skeleton className="mt-1 h-4 w-32" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1, 2].map((i) => (
-              <div key={i} className="rounded-lg border border-border p-3">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="mt-2 h-3 w-3/4" />
-                <div className="mt-3 flex gap-2">
-                  <Skeleton className="h-9 w-20" />
-                  <Skeleton className="h-9 w-16" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <SkeletonList
+        className={className}
+        items={3}
+        variant="default"
+      />
     )
   }
 
@@ -60,26 +45,19 @@ export function ApprovalsQueuePanel({
             <CardDescription>Items requiring your review</CardDescription>
           </div>
           <Link to="/dashboard/approvals">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
               <ArrowUpRight className="h-4 w-4" />
             </Button>
           </Link>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
-              <FileText className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-foreground">No pending approvals</h3>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-              When agents request approval, they&apos;ll appear here
-            </p>
-            <Link to="/dashboard/approvals">
-              <Button variant="outline" className="mt-4">
-                View Approvals
-              </Button>
-            </Link>
-          </div>
+          <EmptyState
+            icon={CheckSquare}
+            heading="No pending approvals"
+            description="When agents request approval for content, code, or finance actions, they'll appear here for your review."
+            actionLabel="View Approvals"
+            actionHref="/dashboard/approvals"
+          />
         </CardContent>
       </Card>
     )

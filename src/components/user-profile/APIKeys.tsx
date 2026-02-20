@@ -114,7 +114,13 @@ export function APIKeys({
 
   return (
     <>
-      <Card className={cn('transition-all duration-300 hover:shadow-card-hover', className)}>
+      <Card
+        className={cn(
+          'transition-all duration-300 hover:shadow-card-hover',
+          'border border-border hover:border-accent/20',
+          className
+        )}
+      >
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -133,8 +139,10 @@ export function APIKeys({
         <CardContent>
           {apiKeys.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Key className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="font-semibold text-foreground">No API keys</h3>
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary mb-4">
+                <Key className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold text-foreground">No API keys yet</h3>
               <p className="text-sm text-muted-foreground mt-1 max-w-sm">
                 Create an API key to use LifeOps programmatically.
               </p>
@@ -148,7 +156,7 @@ export function APIKeys({
               {apiKeys.map((k) => (
                 <div
                   key={k.id}
-                  className="flex items-center justify-between rounded-lg border border-border p-4"
+                  className="flex items-center justify-between rounded-lg border border-border p-4 transition-all duration-200 hover:border-accent/20 hover:bg-secondary/30"
                 >
                   <div>
                     <p className="font-medium text-foreground">{k.name}</p>

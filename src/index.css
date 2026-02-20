@@ -52,6 +52,19 @@
 }
 
 @layer utilities {
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--muted)) 0%,
+      rgb(var(--muted)) 40%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgb(var(--muted)) 60%,
+      rgb(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
   .text-balance {
     text-wrap: balance;
   }

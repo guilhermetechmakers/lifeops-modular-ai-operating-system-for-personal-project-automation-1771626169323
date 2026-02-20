@@ -1,6 +1,6 @@
 import { MessageSquare, Bell } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, SkeletonList } from '@/components/ui/loading-states'
 import { cn } from '@/lib/utils'
 import type { ActivityEvent } from '@/types/master-dashboard'
 
@@ -17,25 +17,11 @@ export function GlobalActivityTimeline({
 }: GlobalActivityTimelineProps) {
   if (isLoading) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="mt-1 h-4 w-56" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex gap-3">
-                <Skeleton className="h-8 w-8 shrink-0 rounded-full" />
-                <div className="flex-1 space-y-1">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-3 w-24" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <SkeletonList
+        className={className}
+        items={4}
+        variant="timeline"
+      />
     )
   }
 
@@ -47,15 +33,11 @@ export function GlobalActivityTimeline({
           <CardDescription>Agent-to-agent messages and alerts</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
-              <MessageSquare className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-foreground">No activity yet</h3>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-              Agent messages and alerts will appear here
-            </p>
-          </div>
+          <EmptyState
+            icon={MessageSquare}
+            heading="No activity yet"
+            description="Agent messages, handoffs, and alerts will appear here as your agents communicate and collaborate."
+          />
         </CardContent>
       </Card>
     )

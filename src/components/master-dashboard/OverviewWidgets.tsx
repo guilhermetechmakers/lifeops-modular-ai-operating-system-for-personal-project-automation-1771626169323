@@ -1,6 +1,6 @@
 import { Bot, Clock, CheckSquare, DollarSign } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { SkeletonWidget } from '@/components/ui/loading-states'
 import { cn } from '@/lib/utils'
 import type { DashboardOverview } from '@/types/master-dashboard'
 
@@ -50,16 +50,11 @@ export function OverviewWidgets({ data, isLoading, className }: OverviewWidgetsP
     return (
       <div className={cn('grid gap-4 sm:grid-cols-2 lg:grid-cols-4', className)}>
         {widgets.map((w, i) => (
-          <Card key={w.key} className="animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <Skeleton className="h-4 w-24" />
-              <w.icon className={cn('h-4 w-4', w.color)} />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="mb-2 h-8 w-16" />
-              <Skeleton className="h-4 w-20" />
-            </CardContent>
-          </Card>
+          <SkeletonWidget
+            key={w.key}
+            className="animate-fade-in"
+            style={{ animationDelay: `${i * 50}ms` }}
+          />
         ))}
       </div>
     )

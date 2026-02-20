@@ -18,8 +18,10 @@ export function BillingSummaryCTA({
   return (
     <Card
       className={cn(
-        'overflow-hidden transition-all duration-300 hover:shadow-card-hover',
+        'overflow-hidden transition-all duration-300',
+        'hover:shadow-card-hover hover:scale-[1.01]',
         'bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20',
+        'hover:border-accent/40',
         className
       )}
     >
@@ -36,7 +38,7 @@ export function BillingSummaryCTA({
             <p className="font-medium text-foreground">{planName} Plan</p>
             <p className="text-sm text-muted-foreground">{planAmount}</p>
           </div>
-          <Button asChild className="group">
+          <Button asChild className="group transition-transform duration-200">
             <Link to="/dashboard/billing">
               View billing page
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

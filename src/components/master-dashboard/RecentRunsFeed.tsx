@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, FileText } from 'lucide-react'
+import { ArrowUpRight, PlayCircle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, SkeletonTable } from '@/components/ui/loading-states'
 import type { RecentRun } from '@/types/master-dashboard'
 
 export interface RecentRunsFeedProps {
@@ -22,25 +22,11 @@ const statusVariant = {
 export function RecentRunsFeed({ runs = [], isLoading, className }: RecentRunsFeedProps) {
   if (isLoading) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="mt-1 h-4 w-48" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg border border-border p-3">
-                <div className="space-y-1">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-3 w-16" />
-                </div>
-                <Skeleton className="h-6 w-16" />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <SkeletonTable
+        className={className}
+        columns={4}
+        rows={4}
+      />
     )
   }
 
@@ -53,26 +39,19 @@ export function RecentRunsFeed({ runs = [], isLoading, className }: RecentRunsFe
             <CardDescription>Chronological runs with status</CardDescription>
           </div>
           <Link to="/dashboard/cronjobs-dashboard">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
               <ArrowUpRight className="h-4 w-4" />
             </Button>
           </Link>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
-              <FileText className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-foreground">No runs yet</h3>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-              Cronjob runs will appear here when they execute
-            </p>
-            <Link to="/dashboard/cronjobs-dashboard">
-              <Button variant="outline" className="mt-4">
-                View Cronjobs
-              </Button>
-            </Link>
-          </div>
+          <EmptyState
+            icon={PlayCircle}
+            heading="No runs yet"
+            description="Cronjob and workflow runs will appear here when they execute. Create a cronjob to get started."
+            actionLabel="View Cronjobs"
+            actionHref="/dashboard/cronjobs-dashboard"
+          />
         </CardContent>
       </Card>
     )

@@ -10,6 +10,7 @@ import {
   GlobalActivityTimeline,
   QuickCreateModal,
 } from '@/components/master-dashboard'
+import { ErrorState } from '@/components/ui/loading-states'
 import {
   fetchMasterDashboardData,
   approveItem,
@@ -129,16 +130,12 @@ export default function MasterDashboardPage() {
       </div>
 
       {hasError && (
-        <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-          <p className="text-sm text-foreground">Using demo data. Connect to API for live data.</p>
-          <button
-            type="button"
-            onClick={loadData}
-            className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-secondary"
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorState
+          title="Using demo data"
+          message="Could not connect to the API. Displaying demo data. Connect to the API for live data."
+          onRetry={loadData}
+          retryLabel="Retry connection"
+        />
       )}
 
       <OverviewWidgets data={data?.overview ?? null} isLoading={isLoading} />

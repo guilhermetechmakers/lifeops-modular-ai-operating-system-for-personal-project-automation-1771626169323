@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -58,14 +58,24 @@ export function AccountSettings({
   const [tz, setTz] = useState(timezone)
   const [lang, setLang] = useState(language)
   const [isSaving, setIsSaving] = useState(false)
+  const [hasError, setHasError] = useState(false)
+
+  useEffect(() => {
+    setFullName(name)
+    setTz(timezone)
+    setLang(language)
+  }, [name, timezone, language])
 
   const handleSave = async () => {
+    setHasError(false)
     setIsSaving(true)
     try {
       await onUpdate({ full_name: fullName, timezone: tz, language: lang })
       toast.success('Account settings updated')
     } catch {
+      setHasError(true)
       toast.error('Failed to update settings')
+      setTimeout(() => setHasError(false), 500)
     } finally {
       setIsSaving(false)
     }
@@ -89,7 +99,14 @@ export function AccountSettings({
   }
 
   return (
-    <Card className={cn('transition-all duration-300 hover:shadow-card-hover', className)}>
+    <Card
+      className={cn(
+        'transition-all duration-300 hover:shadow-card-hover',
+        'border border-border hover:border-accent/20',
+        hasError && 'animate-shake',
+        className
+      )}
+    >
       <CardHeader>
         <CardTitle>Account Settings</CardTitle>
         <CardDescription>Manage your name, email, timezone, and language</CardDescription>
@@ -102,7 +119,7 @@ export function AccountSettings({
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Your name"
-            className="transition-colors focus:border-accent/50"
+            className="transition-colors duration-200 focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div className="space-y-2">
@@ -146,7 +163,11 @@ export function AccountSettings({
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={handleSave} disabled={isSaving} className="mt-2">
+        <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="mt-2 transition-all duration-200"
+        >
           {isSaving ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />

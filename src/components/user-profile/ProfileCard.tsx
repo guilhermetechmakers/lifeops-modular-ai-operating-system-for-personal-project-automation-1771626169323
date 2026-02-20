@@ -46,23 +46,31 @@ export function ProfileCard({ name, avatar, role, organization, isLoading, class
   }
 
   return (
-    <Card className={cn('overflow-hidden transition-all duration-300 hover:shadow-card-hover', className)}>
-      <CardHeader>
+    <Card
+      className={cn(
+        'overflow-hidden transition-all duration-300',
+        'hover:shadow-card-hover hover:shadow-accent-glow/50',
+        'border border-border hover:border-accent/20',
+        'bg-gradient-to-br from-card to-card/95',
+        className
+      )}
+    >
+      <CardHeader className="pb-2">
         <CardTitle className="text-lg">Profile</CardTitle>
         <CardDescription>Your account information and role</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-4">
-          <Avatar className="h-16 w-16 border-2 border-border">
+          <Avatar className="h-16 w-16 border-2 border-accent/30 shadow-lg ring-2 ring-accent/10">
             <AvatarImage src={avatar ?? undefined} alt={name} />
-            <AvatarFallback className="bg-accent/20 text-accent text-lg">
+            <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent-purple/20 text-accent text-lg font-semibold">
               {name ? getInitials(name) : <User className="h-8 w-8" />}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-foreground truncate">{name || 'Unknown'}</p>
             <div className="flex flex-wrap items-center gap-2 mt-1">
-              <Badge variant="secondary" className="font-normal">
+              <Badge variant="secondary" className="font-normal border-accent/20">
                 {role || 'Member'}
               </Badge>
               {organization && (

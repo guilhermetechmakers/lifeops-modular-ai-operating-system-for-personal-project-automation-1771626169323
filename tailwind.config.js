@@ -63,12 +63,18 @@ export default {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-4px)" },
+          "20%, 40%, 60%, 80%": { transform: "translateX(4px)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.3s ease-out forwards",
         "fade-in-up": "fade-in-up 0.4s ease-out forwards",
         shimmer: "shimmer 1.5s ease-in-out infinite",
         "gradient-shift": "gradient-shift 8s ease infinite",
+        shake: "shake 0.5s ease-in-out",
       },
       transitionDuration: {
         "200": "200ms",

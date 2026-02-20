@@ -44,7 +44,13 @@ export function ActivityLog({ entries, isLoading, className }: ActivityLogProps)
   }
 
   return (
-    <Card className={cn('transition-all duration-300 hover:shadow-card-hover', className)}>
+    <Card
+      className={cn(
+        'transition-all duration-300 hover:shadow-card-hover',
+        'border border-border hover:border-accent/20',
+        className
+      )}
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -65,11 +71,19 @@ export function ActivityLog({ entries, isLoading, className }: ActivityLogProps)
       <CardContent>
         {entries.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <Activity className="h-12 w-12 text-muted-foreground mb-4" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary mb-4">
+              <Activity className="h-7 w-7 text-muted-foreground" />
+            </div>
             <h3 className="font-semibold text-foreground">No recent activity</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-sm">
               Your recent actions will appear here.
             </p>
+            <Button variant="outline" size="sm" className="mt-4" asChild>
+              <Link to="/dashboard/settings">
+                View full audit log
+                <ExternalLink className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
           </div>
         ) : (
           <div className="space-y-3">
@@ -78,7 +92,7 @@ export function ActivityLog({ entries, isLoading, className }: ActivityLogProps)
               return (
                 <div
                   key={entry.id}
-                  className="flex items-start gap-4 rounded-lg border border-border p-4 transition-colors hover:bg-secondary/30"
+                  className="flex items-start gap-4 rounded-lg border border-border p-4 transition-all duration-200 hover:bg-secondary/30 hover:border-accent/10"
                 >
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary">
                     <Icon className="h-4 w-4 text-muted-foreground" />

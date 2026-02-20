@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Clock } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, SkeletonTable } from '@/components/ui/loading-states'
 import type { ActiveCronjob } from '@/types/master-dashboard'
 
 export interface ActiveCronjobsTableProps {
@@ -29,25 +29,11 @@ export function ActiveCronjobsTable({
 }: ActiveCronjobsTableProps) {
   if (isLoading) {
     return (
-      <Card className={className}>
-        <CardHeader>
-          <Skeleton className="h-6 w-48" />
-          <Skeleton className="mt-1 h-4 w-64" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between rounded-lg border border-border p-4">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-24" />
-                </div>
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <SkeletonTable
+        className={className}
+        columns={6}
+        rows={3}
+      />
     )
   }
 
@@ -60,24 +46,19 @@ export function ActiveCronjobsTable({
             <CardDescription>Name, target, schedule, next run, last outcome</CardDescription>
           </div>
           <Link to="/dashboard/cronjobs-dashboard">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
               <ArrowUpRight className="h-4 w-4" />
             </Button>
           </Link>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
-              <ArrowUpRight className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-foreground">No cronjobs yet</h3>
-            <p className="mt-2 text-center text-sm text-muted-foreground">
-              Create your first cronjob to automate workflows
-            </p>
-            <Link to="/dashboard/cronjobs-dashboard">
-              <Button className="mt-4">Create Cronjob</Button>
-            </Link>
-          </div>
+          <EmptyState
+            icon={Clock}
+            heading="No cronjobs yet"
+            description="Create your first cronjob to automate workflows. Schedule agents and workflows to run on a recurring basis."
+            actionLabel="Create Cronjob"
+            actionHref="/dashboard/cronjobs-dashboard"
+          />
         </CardContent>
       </Card>
     )

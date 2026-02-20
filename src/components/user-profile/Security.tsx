@@ -113,7 +113,13 @@ export function Security({
 
   return (
     <>
-      <Card className={cn('transition-all duration-300 hover:shadow-card-hover', className)}>
+      <Card
+        className={cn(
+          'transition-all duration-300 hover:shadow-card-hover',
+          'border border-border hover:border-accent/20',
+          className
+        )}
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
@@ -158,7 +164,13 @@ export function Security({
             </div>
             <div className="divide-y divide-border max-h-48 overflow-y-auto">
               {sessions.length === 0 ? (
-                <div className="p-4 text-sm text-muted-foreground">No active sessions</div>
+                <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+                  <Monitor className="h-10 w-10 text-muted-foreground mb-2" />
+                  <p className="text-sm font-medium text-foreground">No active sessions</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    When you sign in from other devices, they will appear here.
+                  </p>
+                </div>
               ) : (
                 sessions.map((s) => (
                   <div

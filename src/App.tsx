@@ -107,6 +107,7 @@ function App() {
           <Route path="user-profile" element={<UserProfile />} />
         </Route>
 
+        <Route path="/user-profile" element={<Navigate to="/dashboard/user-profile" replace />} />
         <Route path="/help" element={<HelpPlaceholder />} />
         <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />
         <Route path="/terms" element={<LegalPlaceholder title="Terms of Service" />} />
