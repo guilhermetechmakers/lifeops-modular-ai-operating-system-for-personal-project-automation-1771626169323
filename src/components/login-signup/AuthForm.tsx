@@ -73,7 +73,10 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
   const rememberMe = watch('rememberMe')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={cn('space-y-4', error && 'animate-shake')}
+    >
       {error && (
         <div
           className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400"

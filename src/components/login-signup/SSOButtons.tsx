@@ -75,7 +75,7 @@ export function SSOButtons({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {SSO_PROVIDERS.map((provider) => (
           <Button
             key={provider.id}
@@ -84,9 +84,10 @@ export function SSOButtons({
             disabled={disabled}
             onClick={() => onSSO?.(provider.id)}
             className="transition-all duration-200 hover:scale-[1.02] hover:border-accent/50 active:scale-[0.98]"
+            aria-label={`Sign in with ${provider.label}`}
           >
             <provider.icon />
-            <span className="sr-only">{provider.label}</span>
+            <span>{provider.label}</span>
           </Button>
         ))}
       </div>
@@ -97,6 +98,7 @@ export function SSOButtons({
         disabled={disabled}
         onClick={onEnterprise}
         className="w-full transition-all duration-200 hover:scale-[1.02] hover:border-accent/50 active:scale-[0.98]"
+        aria-label="Sign in with SSO or Enterprise"
       >
         SSO / Enterprise
       </Button>

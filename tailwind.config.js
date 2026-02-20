@@ -72,6 +72,10 @@ export default {
       animation: {
         "fade-in": "fade-in 0.3s ease-out forwards",
         "fade-in-up": "fade-in-up 0.4s ease-out forwards",
+        "fade-in-up-delay-1": "fade-in-up 0.5s ease-out 0.1s both",
+        "fade-in-up-delay-2": "fade-in-up 0.5s ease-out 0.2s both",
+        "fade-in-up-delay-3": "fade-in-up 0.5s ease-out 0.3s both",
+        "fade-in-up-delay-4": "fade-in-up 0.5s ease-out 0.4s both",
         shimmer: "shimmer 1.5s ease-in-out infinite",
         "gradient-shift": "gradient-shift 8s ease infinite",
         shake: "shake 0.5s ease-in-out",

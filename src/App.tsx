@@ -15,9 +15,10 @@ import { AdminDashboard } from '@/pages/dashboard/admin'
 import { ProfilePage } from '@/pages/dashboard/profile'
 import UserProfile from '@/pages/UserProfile'
 import { ModulePlaceholder } from '@/pages/dashboard/module-placeholder'
+import HealthModule from '@/pages/HealthModule'
 import { PasswordResetPage } from '@/pages/auth/password-reset'
 import { NotFoundPage } from '@/pages/errors/not-found'
-import { FolderKanban, FileText, Wallet, Heart } from 'lucide-react'
+import { FolderKanban, FileText, Wallet } from 'lucide-react'
 
 function App() {
   return (
@@ -85,22 +86,7 @@ function App() {
               />
             }
           />
-          <Route
-            path="health"
-            element={
-              <ModulePlaceholder
-                title="Health"
-                description="Personal health automation"
-                icon={Heart}
-                features={[
-                  'Habits & goals',
-                  'Training & nutrition plans',
-                  'Recovery insights',
-                  'Workload balancer',
-                ]}
-              />
-            }
-          />
+          <Route path="health" element={<HealthModule />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="billing" element={<BillingPage />} />
           <Route path="admin" element={<AdminDashboard />} />
@@ -110,6 +96,7 @@ function App() {
 
         <Route path="/user-profile" element={<Navigate to="/dashboard/user-profile" replace />} />
         <Route path="/master-dashboard" element={<Navigate to="/dashboard/master-dashboard" replace />} />
+        <Route path="/health-(health-module)" element={<Navigate to="/dashboard/health" replace />} />
         <Route path="/help" element={<HelpPlaceholder />} />
         <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />
         <Route path="/terms" element={<LegalPlaceholder title="Terms of Service" />} />
