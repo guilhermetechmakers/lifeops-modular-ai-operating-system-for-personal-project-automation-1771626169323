@@ -134,8 +134,9 @@ export function RecentRunsFeed({ runs = [], isLoading, className }: RecentRunsFe
                       <Link
                         to={run.logsLink ?? `/dashboard/cronjobs-dashboard?run=${run.id}`}
                         className="transition-all hover:scale-[1.02]"
+                        aria-label={`View logs for ${run.name}`}
                       >
-                        View
+                        Logs
                       </Link>
                     </Button>
                   </td>

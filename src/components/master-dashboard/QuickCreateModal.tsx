@@ -34,7 +34,7 @@ const templates = [
   {
     id: 'cronjob',
     label: 'Create Cronjob',
-    description: 'Schedule a recurring job or task',
+    description: 'Schedule a recurring job or task for automation',
     icon: Clock,
     to: '/dashboard/cronjobs-dashboard?create=1',
     gradient: 'from-accent-blue to-accent-green',
@@ -67,8 +67,10 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
               className={cn(
                 'flex items-start gap-4 rounded-xl border border-border p-4 text-left transition-all duration-200',
                 'hover:border-accent/50 hover:bg-secondary/50 hover:shadow-card-hover hover:-translate-y-0.5',
-                'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background'
+                'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background',
+                'focus-visible:ring-2 focus-visible:ring-accent'
               )}
+              aria-label={t.label}
             >
               <div
                 className={cn(

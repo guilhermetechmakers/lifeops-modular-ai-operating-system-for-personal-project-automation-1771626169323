@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useDeferredValue } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
@@ -16,6 +16,7 @@ import {
   useRejectItem,
   useToggleCronjob,
 } from '@/hooks/use-master-dashboard'
+import { ErrorState } from '@/components/ui/loading-states'
 
 interface OutletContext {
   setMobileOpen?: (v: boolean) => void
@@ -25,8 +26,9 @@ export default function MasterDashboardPage() {
   const { setMobileOpen } = useOutletContext<OutletContext>() ?? {}
   const [showQuickCreate, setShowQuickCreate] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const deferredSearchQuery = useDeferredValue(searchQuery)
 
-  const { data, isLoading } = useMasterDashboard()
+  const { data, isLoading, isError, refetch } = useMasterDashboard()
   const approveMutation = useApproveItem()
   const rejectMutation = useRejectItem()
   const toggleMutation = useToggleCronjob()
@@ -65,8 +67,38 @@ export default function MasterDashboardPage() {
     }
   }
 
+  if (isError) {
+    return (
+      <div className="space-y-8">
+        <TopNav
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onGlobalCreate={() => setShowQuickCreate(true)}
+          showMenuButton
+          onMenuClick={() => setMobileOpen?.(true)}
+        />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              Master Dashboard
+            </h1>
+            <p className="text-muted-foreground">
+              Your command center for agents, cronjobs, and approvals
+            </p>
+          </div>
+        </div>
+        <ErrorState
+          title="Failed to load dashboard"
+          message="We couldn't load your dashboard data. Please check your connection and try again."
+          onRetry={() => refetch()}
+          retryLabel="Retry"
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in" role="main" aria-label="Master Dashboard">
       <TopNav
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -77,10 +109,10 @@ export default function MasterDashboardPage() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Master Dashboard
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+            <span className="gradient-text">Master Dashboard</span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="mt-1 text-muted-foreground">
             Your command center for agents, cronjobs, and approvals
           </p>
         </div>
@@ -94,7 +126,7 @@ export default function MasterDashboardPage() {
             cronjobs={data?.activeCronjobs}
             isLoading={isLoading}
             onToggle={handleToggleCronjob}
-            searchQuery={searchQuery}
+            searchQuery={deferredSearchQuery}
           />
         </div>
         <div>
