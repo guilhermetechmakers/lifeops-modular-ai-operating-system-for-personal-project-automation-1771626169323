@@ -66,8 +66,8 @@ function RunDetailContent({
       )}
       {runDetail.error && (
         <div>
-          <p className="font-medium text-red-400 mb-2">Error</p>
-          <pre className="rounded-lg bg-red-500/10 p-4 overflow-x-auto font-mono text-xs text-red-400 whitespace-pre-wrap">
+          <p className="font-medium text-destructive mb-2">Error</p>
+          <pre className="rounded-lg bg-destructive/10 p-4 overflow-x-auto font-mono text-xs text-destructive whitespace-pre-wrap">
             {runDetail.error}
           </pre>
         </div>
@@ -88,8 +88,9 @@ function RunDetailContent({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-xs font-medium transition-all duration-200 hover:border-accent/50 hover:bg-secondary"
+                aria-label={`Download artifact ${a.filename} (${a.type})`}
               >
-                <Download className="h-4 w-4" />
+                <Download className="h-4 w-4" aria-hidden />
                 {a.filename} ({a.type})
               </a>
             ))}
@@ -105,8 +106,9 @@ function RunDetailContent({
               onClick={onLoadArtifacts}
               disabled={artifactUrlsLoading}
               className="mt-2 transition-all hover:scale-[1.02]"
+              aria-label="Retry loading artifact links"
             >
-              <ExternalLink className="mr-2 h-4 w-4" />
+              <ExternalLink className="mr-2 h-4 w-4" aria-hidden />
               Retry
             </Button>
           </div>
@@ -203,14 +205,18 @@ export default function CronjobsDashboard() {
   const runIdFromUrl = searchParams.get('run')
   useEffect(() => {
     if (!runIdFromUrl) return
-    fetchCronjobRun(runIdFromUrl).then((result) => {
-      if (result) {
-        const { run, cronjob } = result
-        const job = cronjobs.find((c) => c.id === cronjob.id) ?? cronjob
-        setSelectedCronjob(job)
-        setRunDetail(run)
-      }
-    })
+    fetchCronjobRun(runIdFromUrl)
+      .then((result) => {
+        if (result) {
+          const { run, cronjob } = result
+          const job = cronjobs.find((c) => c.id === cronjob.id) ?? cronjob
+          setSelectedCronjob(job)
+          setRunDetail(run)
+        }
+      })
+      .catch(() => {
+        toast.error('Failed to load run details')
+      })
   }, [runIdFromUrl, cronjobs])
 
   const handleCreate = () => {
@@ -365,13 +371,15 @@ export default function CronjobsDashboard() {
           <Button
             onClick={handleCreate}
             className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
+            aria-label="Create new cronjob"
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4" aria-hidden />
             Quick Create
           </Button>
           <Button
             variant="outline"
             onClick={() => navigate('/dashboard/cronjob-editor')}
+            aria-label="Open advanced cronjob editor"
           >
             Advanced Editor
           </Button>
@@ -379,12 +387,21 @@ export default function CronjobsDashboard() {
       </div>
 
       {hasError && (
-        <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+        <div
+          className="flex items-center justify-between rounded-xl border border-warning/30 bg-warning/10 p-4"
+          role="alert"
+          aria-live="polite"
+        >
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <AlertTriangle className="h-5 w-5 text-warning" aria-hidden />
             <p className="text-sm text-foreground">Using demo data. Connect to API for live data.</p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => refetchCronjobs()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetchCronjobs()}
+            aria-label="Retry fetching cronjobs from API"
+          >
             Retry
           </Button>
         </div>
@@ -393,9 +410,11 @@ export default function CronjobsDashboard() {
       <CronjobList
         cronjobs={cronjobs}
         isLoading={isLoading}
+        isError={hasError}
         onSelect={setSelectedCronjob}
         selectedId={selectedCronjob?.id}
         onCreateClick={handleCreate}
+        onRetry={() => refetchCronjobs()}
       />
 
       {selectedCronjob && (
@@ -446,10 +465,18 @@ export default function CronjobsDashboard() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteConfirmId(null)}
+              aria-label="Cancel delete cronjob"
+            >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm}>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              aria-label="Confirm delete cronjob"
+            >
               Delete
             </Button>
           </DialogFooter>
