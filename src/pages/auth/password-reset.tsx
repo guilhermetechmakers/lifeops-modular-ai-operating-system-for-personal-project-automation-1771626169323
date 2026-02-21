@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Zap, Mail } from 'lucide-react'
+import { Zap, Mail, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -101,16 +101,33 @@ export function PasswordResetPage() {
                     id="email"
                     type="email"
                     placeholder="you@example.com"
-                    className={cn('pl-10', errors.email && 'border-red-500/50')}
+                    aria-label="Email address for password reset"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
+                    className={cn('pl-10', errors.email && 'border-destructive/50 focus-visible:ring-destructive/50')}
                     {...register('email')}
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-sm text-red-400">{errors.email.message}</p>
+                  <p id="email-error" className="text-sm text-destructive" role="alert">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Sending...' : 'Send reset link'}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading}
+                aria-label={isLoading ? 'Sending reset email' : 'Send password reset link'}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Sending...
+                  </>
+                ) : (
+                  'Send reset link'
+                )}
               </Button>
             </form>
             <p className="mt-4 text-center text-sm text-muted-foreground">
