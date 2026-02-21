@@ -59,12 +59,15 @@ function NavItem({
   collapsed: boolean
 }) {
   const location = useLocation()
+  const path = location.pathname
   const isActive =
-    location.pathname === to ||
-    location.pathname.startsWith(`${to}/`) ||
+    path === to ||
+    path === `${to}/` ||
+    (to === '/dashboard' &&
+      (path === '/dashboard' || path === '/dashboard/' || path === '/dashboard/master-dashboard')) ||
+    (to !== '/dashboard' && path.startsWith(`${to}/`)) ||
     (to === '/dashboard/cronjobs-dashboard' &&
-    (location.pathname === '/dashboard/cronjobs' ||
-      location.pathname.startsWith('/dashboard/cronjob-editor')))
+      (path === '/dashboard/cronjobs' || path.startsWith('/dashboard/cronjob-editor')))
 
   return (
     <Link

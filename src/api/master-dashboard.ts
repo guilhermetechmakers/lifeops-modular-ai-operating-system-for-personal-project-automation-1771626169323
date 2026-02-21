@@ -1,3 +1,4 @@
+import { supabase } from '@/lib/supabase'
 import type {
   DashboardOverview,
   ActiveCronjob,
@@ -6,23 +7,12 @@ import type {
   ActivityEvent,
 } from '@/types/master-dashboard'
 
-const MASTER_DASHBOARD_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
-  ? `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/master-dashboard`
-  : undefined
-
 async function masterDashboardFetch<T>(body: object): Promise<T> {
-  if (MASTER_DASHBOARD_BASE) {
-    const res = await fetch(MASTER_DASHBOARD_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error((err as { error?: string }).error ?? res.statusText)
-    }
-    return res.json()
+  if (supabase) {
+    const { data, error } = await supabase.functions.invoke<T>('master-dashboard', { body })
+    if (error) throw new Error(error.message)
+    if (data == null) throw new Error('No response from master-dashboard')
+    return data
   }
   throw new Error('Master dashboard API not configured')
 }
@@ -36,7 +26,7 @@ export interface MasterDashboardData {
 }
 
 export async function fetchMasterDashboardData(): Promise<MasterDashboardData> {
-  if (MASTER_DASHBOARD_BASE) {
+  if (supabase) {
     try {
       const res = await masterDashboardFetch<{ data: MasterDashboardData }>({
         action: 'get_dashboard',
@@ -147,21 +137,21 @@ function getMockMasterDashboardData(): MasterDashboardData {
 }
 
 export async function approveItem(id: string): Promise<void> {
-  if (MASTER_DASHBOARD_BASE) {
+  if (supabase) {
     await masterDashboardFetch({ action: 'approve', id })
   }
   // Demo mode: no-op, caller updates local state
 }
 
 export async function rejectItem(id: string): Promise<void> {
-  if (MASTER_DASHBOARD_BASE) {
+  if (supabase) {
     await masterDashboardFetch({ action: 'reject', id })
   }
   // Demo mode: no-op, caller updates local state
 }
 
 export async function toggleCronjob(id: string, enabled: boolean): Promise<void> {
-  if (MASTER_DASHBOARD_BASE) {
+  if (supabase) {
     await masterDashboardFetch({ action: 'toggle_cronjob', id, enabled })
   }
   // Demo mode: no-op, caller updates local state
