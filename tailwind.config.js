@@ -36,6 +36,10 @@ export default {
           DEFAULT: "rgb(var(--destructive))",
           foreground: "rgb(var(--destructive-foreground))",
         },
+        warning: {
+          DEFAULT: "rgb(var(--warning))",
+          foreground: "rgb(var(--warning-foreground))",
+        },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

@@ -44,9 +44,9 @@ export function ApprovalsQueuePanel({
             <CardTitle>Approvals Queue</CardTitle>
             <CardDescription>Items requiring your review</CardDescription>
           </div>
-          <Link to="/dashboard/approvals">
-            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
-              <ArrowUpRight className="h-4 w-4" />
+          <Link to="/dashboard/approvals" aria-label="View all approvals">
+            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]" aria-label="View all approvals">
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Button>
           </Link>
         </CardHeader>
@@ -70,9 +70,9 @@ export function ApprovalsQueuePanel({
           <CardTitle>Approvals Queue</CardTitle>
           <CardDescription>Items requiring your review</CardDescription>
         </div>
-        <Link to="/dashboard/approvals">
-          <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
-            <ArrowUpRight className="h-4 w-4" />
+        <Link to="/dashboard/approvals" aria-label="View all approvals">
+          <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]" aria-label="View all approvals">
+            <ArrowUpRight className="h-4 w-4" aria-hidden />
           </Button>
         </Link>
       </CardHeader>
@@ -102,6 +102,7 @@ export function ApprovalsQueuePanel({
                     size="sm"
                     onClick={() => onApprove?.(item.id)}
                     className="transition-all hover:scale-[1.02]"
+                    aria-label={`Approve ${item.action} from ${item.agent}`}
                   >
                     Approve
                   </Button>
@@ -110,6 +111,7 @@ export function ApprovalsQueuePanel({
                     variant="destructive"
                     onClick={() => onReject?.(item.id)}
                     className="transition-all hover:scale-[1.02]"
+                    aria-label={`Reject ${item.action} from ${item.agent}`}
                   >
                     Reject
                   </Button>

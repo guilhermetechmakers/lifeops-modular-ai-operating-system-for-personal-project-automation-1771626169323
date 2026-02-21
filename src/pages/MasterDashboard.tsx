@@ -41,29 +41,32 @@ export default function MasterDashboardPage() {
   }, [])
 
   const handleApprove = async (id: string) => {
+    const toastId = toast.loading('Approving...')
     try {
       await approveMutation.mutateAsync(id)
-      toast.success('Approved')
+      toast.success('Approved', { id: toastId })
     } catch {
-      toast.error('Failed to approve')
+      toast.error('Failed to approve', { id: toastId })
     }
   }
 
   const handleReject = async (id: string) => {
+    const toastId = toast.loading('Rejecting...')
     try {
       await rejectMutation.mutateAsync(id)
-      toast.success('Rejected')
+      toast.success('Rejected', { id: toastId })
     } catch {
-      toast.error('Failed to reject')
+      toast.error('Failed to reject', { id: toastId })
     }
   }
 
   const handleToggleCronjob = async (id: string, enabled: boolean) => {
+    const toastId = toast.loading(enabled ? 'Enabling cronjob...' : 'Disabling cronjob...')
     try {
       await toggleMutation.mutateAsync({ id, enabled })
-      toast.success(enabled ? 'Cronjob enabled' : 'Cronjob disabled')
+      toast.success(enabled ? 'Cronjob enabled' : 'Cronjob disabled', { id: toastId })
     } catch {
-      toast.error('Failed to update cronjob')
+      toast.error('Failed to update cronjob', { id: toastId })
     }
   }
 
@@ -92,6 +95,7 @@ export default function MasterDashboardPage() {
           message="We couldn't load your dashboard data. Please check your connection and try again."
           onRetry={() => refetch()}
           retryLabel="Retry"
+          retryAriaLabel="Retry loading dashboard"
         />
       </div>
     )
@@ -120,7 +124,12 @@ export default function MasterDashboardPage() {
 
       <OverviewWidgets data={data?.overview ?? null} isLoading={isLoading} />
 
-      <div className="grid gap-6 lg:grid-cols-3 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+      <div
+        className="grid gap-6 lg:grid-cols-3 animate-fade-in-up"
+        style={{ animationDelay: '100ms' }}
+        role="region"
+        aria-label="Cronjobs and approvals"
+      >
         <div className="lg:col-span-2">
           <ActiveCronjobsTable
             cronjobs={data?.activeCronjobs}
@@ -139,7 +148,12 @@ export default function MasterDashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+      <div
+        className="grid gap-6 lg:grid-cols-3 animate-fade-in-up"
+        style={{ animationDelay: '200ms' }}
+        role="region"
+        aria-label="Recent runs and activity"
+      >
         <div className="lg:col-span-2">
           <RecentRunsFeed runs={data?.recentRuns} isLoading={isLoading} />
         </div>

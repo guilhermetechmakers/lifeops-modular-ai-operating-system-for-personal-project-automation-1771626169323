@@ -64,7 +64,7 @@ export function GlobalActivityTimeline({
                 className={cn(
                   'relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-card',
                   event.type === 'alert'
-                    ? 'bg-amber-500/20 text-amber-400'
+                    ? 'bg-warning/20 text-warning'
                     : 'bg-accent/20 text-accent'
                 )}
               >

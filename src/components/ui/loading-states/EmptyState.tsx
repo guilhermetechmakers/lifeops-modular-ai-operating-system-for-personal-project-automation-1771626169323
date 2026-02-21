@@ -61,6 +61,7 @@ export function EmptyState({
             <Button
               asChild
               className="transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+              aria-label={actionLabel}
             >
               <Link to={actionHref}>{actionLabel}</Link>
             </Button>

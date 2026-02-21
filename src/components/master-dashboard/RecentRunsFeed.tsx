@@ -38,9 +38,9 @@ export function RecentRunsFeed({ runs = [], isLoading, className }: RecentRunsFe
             <CardTitle>Recent Runs</CardTitle>
             <CardDescription>Chronological runs with status</CardDescription>
           </div>
-          <Link to="/dashboard/cronjobs-dashboard">
-            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
-              <ArrowUpRight className="h-4 w-4" />
+          <Link to="/dashboard/cronjobs-dashboard" aria-label="Go to cronjobs dashboard">
+            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]" aria-label="Go to cronjobs dashboard">
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Button>
           </Link>
         </CardHeader>
@@ -64,10 +64,10 @@ export function RecentRunsFeed({ runs = [], isLoading, className }: RecentRunsFe
           <CardTitle>Recent Runs</CardTitle>
           <CardDescription>Chronological runs with status</CardDescription>
         </div>
-        <Link to="/dashboard/cronjobs-dashboard">
-          <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
+        <Link to="/dashboard/cronjobs-dashboard" aria-label="View all cronjob runs">
+          <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]" aria-label="View all cronjob runs">
             View all
-            <ArrowUpRight className="ml-1 h-4 w-4" />
+            <ArrowUpRight className="ml-1 h-4 w-4" aria-hidden />
           </Button>
         </Link>
       </CardHeader>

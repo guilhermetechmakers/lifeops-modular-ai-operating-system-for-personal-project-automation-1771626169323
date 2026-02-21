@@ -23,6 +23,8 @@ export interface TopNavProps {
   className?: string
 }
 
+const SEARCH_MAX_LENGTH = 200
+
 export function TopNav({
   searchQuery: controlledSearch,
   onSearchChange,
@@ -32,8 +34,19 @@ export function TopNav({
   className,
 }: TopNavProps) {
   const [internalSearch, setInternalSearch] = useState('')
+  const [searchError, setSearchError] = useState<string | null>(null)
   const searchQuery = controlledSearch ?? internalSearch
   const setSearchQuery = onSearchChange ?? setInternalSearch
+
+  const handleSearchChange = (value: string) => {
+    if (value.length > SEARCH_MAX_LENGTH) {
+      setSearchError(`Search must be ${SEARCH_MAX_LENGTH} characters or less`)
+      setSearchQuery(value.slice(0, SEARCH_MAX_LENGTH))
+    } else {
+      setSearchError(null)
+      setSearchQuery(value)
+    }
+  }
 
   return (
     <header
@@ -55,15 +68,29 @@ export function TopNav({
           </Button>
         )}
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
             type="search"
             placeholder="Search agents, cronjobs, runs..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-10 pl-9 pr-4 transition-all duration-200 focus:border-accent/50 focus:ring-accent/20"
-            aria-label="Search"
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className={cn(
+              'h-10 pl-9 pr-4 transition-all duration-200 focus:border-accent/50 focus:ring-accent/20',
+              searchError && 'border-destructive focus:border-destructive focus:ring-destructive/20'
+            )}
+            aria-label="Search agents, cronjobs, and runs"
+            aria-invalid={!!searchError}
+            aria-errormessage={searchError ? 'search-error' : undefined}
           />
+          {searchError && (
+            <p
+              id="search-error"
+              className="mt-1 text-xs text-destructive"
+              role="alert"
+            >
+              {searchError}
+            </p>
+          )}
         </div>
       </div>
 
@@ -72,7 +99,7 @@ export function TopNav({
           size="sm"
           onClick={onGlobalCreate}
           className="bg-gradient-to-r from-accent to-primary shadow-accent-glow transition-all duration-200 hover:scale-[1.02] hover:opacity-90 hover:shadow-accent-glow"
-          aria-label="Quick create"
+          aria-label="Quick create agent, workflow, or cronjob"
         >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Create</span>
@@ -84,7 +111,7 @@ export function TopNav({
               variant="ghost"
               size="icon"
               className="rounded-full transition-all duration-200 hover:scale-[1.02]"
-              aria-label="User menu"
+              aria-label="Open user account menu"
             >
               <Avatar className="h-8 w-8 border-2 border-border">
                 <AvatarFallback className="bg-accent/20 text-accent text-sm font-medium">
@@ -114,8 +141,11 @@ export function TopNav({
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red-400 focus:text-red-400">
-              <LogOut className="h-4 w-4" />
+            <DropdownMenuItem
+              className="cursor-pointer text-destructive focus:text-destructive"
+              aria-label="Sign out of your account"
+            >
+              <LogOut className="h-4 w-4" aria-hidden />
               Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>

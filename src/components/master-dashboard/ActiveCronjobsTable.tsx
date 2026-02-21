@@ -60,9 +60,9 @@ export function ActiveCronjobsTable({
             <CardTitle>Active Cronjobs</CardTitle>
             <CardDescription>Name, target, schedule, next run, last outcome</CardDescription>
           </div>
-          <Link to="/dashboard/cronjobs-dashboard">
-            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
-              <ArrowUpRight className="h-4 w-4" />
+          <Link to="/dashboard/cronjobs-dashboard" aria-label="Go to cronjobs dashboard">
+            <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]" aria-label="Go to cronjobs dashboard">
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Button>
           </Link>
         </CardHeader>
@@ -90,9 +90,9 @@ export function ActiveCronjobsTable({
           <CardTitle>Active Cronjobs</CardTitle>
           <CardDescription>Name, target, schedule, next run, last outcome</CardDescription>
         </div>
-        <Link to="/dashboard/cronjobs-dashboard">
-          <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]">
-            <ArrowUpRight className="h-4 w-4" />
+        <Link to="/dashboard/cronjobs-dashboard" aria-label="Go to cronjobs dashboard">
+          <Button variant="ghost" size="sm" className="transition-all hover:scale-[1.02]" aria-label="Go to cronjobs dashboard">
+            <ArrowUpRight className="h-4 w-4" aria-hidden />
           </Button>
         </Link>
       </CardHeader>

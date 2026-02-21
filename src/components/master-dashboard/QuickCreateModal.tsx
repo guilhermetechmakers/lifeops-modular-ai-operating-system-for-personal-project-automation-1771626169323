@@ -70,7 +70,7 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
                 'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background',
                 'focus-visible:ring-2 focus-visible:ring-accent'
               )}
-              aria-label={t.label}
+              aria-label={`${t.label}: ${t.description}`}
             >
               <div
                 className={cn(
@@ -78,7 +78,7 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
                   t.gradient
                 )}
               >
-                <t.icon className="h-6 w-6 text-white" />
+                <t.icon className="h-6 w-6 text-primary-foreground" aria-hidden />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-foreground">{t.label}</p>
