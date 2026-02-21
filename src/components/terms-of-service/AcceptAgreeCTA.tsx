@@ -65,7 +65,7 @@ export function AcceptAgreeCTA({
           <>
             <label
               htmlFor="terms-agree"
-              className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-secondary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background"
+              className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-4 transition-all duration-200 hover:bg-secondary/50 hover:border-accent/20 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background"
             >
               <Checkbox
                 id="terms-agree"
@@ -84,9 +84,11 @@ export function AcceptAgreeCTA({
               aria-busy={isSubmitting}
               aria-label={isSubmitting ? 'Processing acceptance' : 'Accept and agree to Terms of Service'}
               className={cn(
-                'w-full sm:w-auto',
+                'w-full sm:w-auto min-h-[44px]',
                 'bg-gradient-to-r from-accent to-primary',
                 'transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-accent/20',
+                'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'active:scale-[0.98]',
                 'disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed'
               )}
             >

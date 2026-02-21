@@ -42,6 +42,7 @@ export function TermsText({ className }: TermsTextProps) {
       className={cn(
         'animate-fade-in border-accent/10',
         'transition-all duration-300 hover:shadow-card-hover hover:border-accent/20',
+        'hover:-translate-y-0.5',
         className
       )}
     >
@@ -72,7 +73,7 @@ export function TermsText({ className }: TermsTextProps) {
                   </span>
                   {section.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                <p className="prose prose-sm sm:prose-base max-w-none text-muted-foreground leading-relaxed">
                   {section.content}
                 </p>
               </section>
