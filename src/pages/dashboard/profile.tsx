@@ -1,15 +1,17 @@
+import { Link } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ArrowRight } from 'lucide-react'
 
 export function ProfilePage() {
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          User Profile
+          Profile
         </h1>
         <p className="text-muted-foreground">
           Account center and security settings
@@ -43,6 +45,12 @@ export function ProfilePage() {
               <Input id="email" type="email" defaultValue="john@example.com" />
             </div>
             <Button>Save changes</Button>
+            <Button variant="outline" asChild className="mt-4">
+              <Link to="/dashboard/user-profile" className="flex items-center gap-2">
+                Full account center
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </CardContent>
         </Card>
 

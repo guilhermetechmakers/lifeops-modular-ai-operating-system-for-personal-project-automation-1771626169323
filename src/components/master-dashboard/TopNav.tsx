@@ -129,9 +129,9 @@ export function TopNav({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="/dashboard/profile" className="flex cursor-pointer items-center gap-2">
+              <Link to="/dashboard/user-profile" className="flex cursor-pointer items-center gap-2">
                 <User className="h-4 w-4" />
-                Profile
+                User Profile
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

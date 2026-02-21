@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { Menu, Bell, User } from 'lucide-react'
 import { Sidebar } from './sidebar'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { BackForwardNav } from './back-forward-nav'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +21,7 @@ export function DashboardLayout() {
     <div className="flex min-h-screen bg-background">
       {/* Desktop sidebar */}
       <div className="hidden lg:block">
-        <Sidebar />
+        <Sidebar onNavigate={() => setMobileOpen(false)} />
       </div>
 
       {/* Mobile sidebar overlay */}
@@ -38,7 +40,7 @@ export function DashboardLayout() {
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <Sidebar />
+        <Sidebar onNavigate={() => setMobileOpen(false)} />
       </div>
 
       {/* Main content */}
@@ -49,16 +51,19 @@ export function DashboardLayout() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden shrink-0"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
             </Button>
 
-            <div className="flex-1" />
+            <div className="flex flex-1 items-center gap-4 min-w-0">
+              <BackForwardNav className="hidden sm:flex shrink-0" />
+              <Breadcrumb className="min-w-0 flex-1" />
+            </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button variant="ghost" size="icon" aria-label="Notifications">
                 <Bell className="h-5 w-5" />
               </Button>

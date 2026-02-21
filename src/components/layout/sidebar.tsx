@@ -18,6 +18,7 @@ import {
   Users,
   HelpCircle,
   Scale,
+  ScrollText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -43,6 +44,7 @@ const bottomNavItems = [
   { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
   { to: '/dashboard/billing', icon: BarChart3, label: 'Billing' },
   { to: '/dashboard/admin', icon: Users, label: 'Admin' },
+  { to: '/dashboard/audit', icon: ScrollText, label: 'Activity Log' },
   { to: '/help', icon: HelpCircle, label: 'Help' },
   { to: '/terms-of-service', icon: Scale, label: 'Terms of Service' },
 ]
@@ -52,11 +54,13 @@ function NavItem({
   icon: Icon,
   label,
   collapsed,
+  onNavigate,
 }: {
   to: string
   icon: React.ElementType
   label: string
   collapsed: boolean
+  onNavigate?: () => void
 }) {
   const location = useLocation()
   const path = location.pathname
@@ -72,6 +76,7 @@ function NavItem({
   return (
     <Link
       to={to}
+      onClick={onNavigate}
       className={cn(
         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
         'hover:bg-secondary hover:text-foreground',
@@ -86,7 +91,11 @@ function NavItem({
   )
 }
 
-export function Sidebar() {
+export interface SidebarProps {
+  onNavigate?: () => void
+}
+
+export function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true'
@@ -136,7 +145,7 @@ export function Sidebar() {
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
         <div className="space-y-1">
           {mainNavItems.map((item) => (
-            <NavItem key={item.to} {...item} collapsed={collapsed} />
+            <NavItem key={item.to} {...item} collapsed={collapsed} onNavigate={onNavigate} />
           ))}
         </div>
 
@@ -149,7 +158,7 @@ export function Sidebar() {
         )}
         <div className="space-y-1">
           {moduleNavItems.map((item) => (
-            <NavItem key={item.to} {...item} collapsed={collapsed} />
+            <NavItem key={item.to} {...item} collapsed={collapsed} onNavigate={onNavigate} />
           ))}
         </div>
 
@@ -163,7 +172,7 @@ export function Sidebar() {
           )}
           <div className="space-y-1">
             {bottomNavItems.map((item) => (
-              <NavItem key={item.to} {...item} collapsed={collapsed} />
+              <NavItem key={item.to} {...item} collapsed={collapsed} onNavigate={onNavigate} />
             ))}
           </div>
         </div>

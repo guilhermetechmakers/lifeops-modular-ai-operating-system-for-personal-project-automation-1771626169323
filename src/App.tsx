@@ -141,9 +141,14 @@ function HelpPlaceholder() {
       <div className="text-center">
         <h1 className="text-2xl font-bold text-foreground">Help & Documentation</h1>
         <p className="mt-2 text-muted-foreground">Coming soon</p>
-        <Link to="/" className="mt-4 inline-block text-accent hover:underline">
-          Back to home
-        </Link>
+        <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+          <Link to="/" className="text-accent hover:underline">
+            Back to home
+          </Link>
+          <Link to="/dashboard" className="text-accent hover:underline">
+            Go to Dashboard
+          </Link>
+        </div>
       </div>
     </div>
   )
@@ -154,9 +159,14 @@ function LegalPlaceholder({ title }: { title: string }) {
     <div className="min-h-screen bg-background p-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold text-foreground">{title}</h1>
       <p className="mt-4 text-muted-foreground">Legal content will be displayed here.</p>
-      <Link to="/" className="mt-4 inline-block text-accent hover:underline">
-        Back to home
-      </Link>
+      <div className="mt-4 flex flex-col sm:flex-row gap-3">
+        <Link to="/" className="text-accent hover:underline">
+          Back to home
+        </Link>
+        <Link to="/dashboard" className="text-accent hover:underline">
+          Go to Dashboard
+        </Link>
+      </div>
     </div>
   )
 }
