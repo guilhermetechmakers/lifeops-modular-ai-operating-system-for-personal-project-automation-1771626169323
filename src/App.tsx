@@ -100,6 +100,7 @@ function App() {
 
         <Route path="/user-profile" element={<Navigate to="/dashboard/user-profile" replace />} />
         <Route path="/master-dashboard" element={<Navigate to="/dashboard/master-dashboard" replace />} />
+        <Route path="/cronjobs-dashboard" element={<Navigate to="/dashboard/cronjobs-dashboard" replace />} />
         <Route path="/health-(health-module)" element={<Navigate to="/dashboard/health" replace />} />
         <Route path="/help" element={<HelpPlaceholder />} />
         <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />

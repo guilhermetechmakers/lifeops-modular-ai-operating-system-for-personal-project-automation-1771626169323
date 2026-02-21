@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { FileText, AlertCircle, CheckCircle, Clock, Loader2, Play, MessageSquare, GitCompare, AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
-import { fetchCronjobRuns } from '@/api/cronjobs'
+import { useCronjobRuns } from '@/hooks/use-cronjobs'
 import type { CronjobRun } from '@/types/cronjobs'
 import { cn } from '@/lib/utils'
 
@@ -26,36 +26,9 @@ function formatDate(iso: string) {
 }
 
 export function RunHistoryTab({ cronjobId, onRunDetail, onRunNow }: RunHistoryTabProps) {
-  const [runs, setRuns] = useState<CronjobRun[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [hasError, setHasError] = useState(false)
   const [activeTab, setActiveTab] = useState('logs')
-
-  const loadRuns = () => {
-    if (!cronjobId) return
-    setHasError(false)
-    setIsLoading(true)
-    fetchCronjobRuns(cronjobId)
-      .then((data) => {
-        setRuns(data)
-      })
-      .catch(() => {
-        setRuns([])
-        setHasError(true)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  }
-
-  useEffect(() => {
-    if (!cronjobId) {
-      setRuns([])
-      setHasError(false)
-      return
-    }
-    loadRuns()
-  }, [cronjobId])
+  const { data: runs = [], isLoading, isError, refetch } = useCronjobRuns(cronjobId)
+  const hasError = isError
 
   if (!cronjobId) {
     return (
@@ -112,7 +85,7 @@ export function RunHistoryTab({ cronjobId, onRunDetail, onRunNow }: RunHistoryTa
           <p className="mt-2 text-sm text-muted-foreground max-w-sm">
             There was a problem loading the run history. Please try again.
           </p>
-          <Button variant="outline" onClick={loadRuns} className="mt-6">
+          <Button variant="outline" onClick={() => refetch()} className="mt-6">
             Retry
           </Button>
         </CardContent>

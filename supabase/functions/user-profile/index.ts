@@ -14,12 +14,18 @@ function getAuthToken(req: Request): string | null {
   return auth?.startsWith('Bearer ') ? auth.slice(7) : null
 }
 
+// Connectors framework catalog: GitHub, Jira, Stripe, Slack, Plaid, Health APIs, CMS
 const AVAILABLE_INTEGRATIONS = [
-  { id: 'slack', name: 'Slack', icon: 'slack' },
-  { id: 'github', name: 'GitHub', icon: 'github' },
-  { id: 'google', name: 'Google', icon: 'google' },
-  { id: 'notion', name: 'Notion', icon: 'notion' },
-  { id: 'linear', name: 'Linear', icon: 'linear' },
+  { id: 'github', name: 'GitHub', icon: 'github', category: 'dev', description: 'Repos, PRs, issues, CI/CD' },
+  { id: 'jira', name: 'Jira', icon: 'jira', category: 'dev', description: 'Issues, sprints, project management' },
+  { id: 'linear', name: 'Linear', icon: 'linear', category: 'dev', description: 'Issues and roadmap' },
+  { id: 'slack', name: 'Slack', icon: 'slack', category: 'communication', description: 'Team messaging and notifications' },
+  { id: 'google', name: 'Google', icon: 'google', category: 'communication', description: 'Calendar, Drive, Gmail' },
+  { id: 'stripe', name: 'Stripe', icon: 'stripe', category: 'finance', description: 'Payments and subscriptions' },
+  { id: 'plaid', name: 'Plaid', icon: 'plaid', category: 'finance', description: 'Bank connections and transactions' },
+  { id: 'health', name: 'Health APIs', icon: 'health', category: 'health', description: 'Fitness and health device data' },
+  { id: 'notion', name: 'Notion', icon: 'notion', category: 'cms', description: 'Docs and wikis' },
+  { id: 'cms', name: 'CMS', icon: 'cms', category: 'cms', description: 'Content management systems' },
 ]
 
 serve(async (req) => {
@@ -135,11 +141,32 @@ serve(async (req) => {
         id: i.id,
         name: i.name,
         icon: i.icon,
+        category: i.category,
+        description: i.description,
         connected: connectedMap.has(i.id),
         connected_at: connectedMap.get(i.id)?.connected_at,
       }))
 
       return new Response(JSON.stringify({ data: list }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
+    if (payload.action === 'get_oauth_url') {
+      const id = payload.integration_id
+      const integration = AVAILABLE_INTEGRATIONS.find((i) => i.id === id)
+      if (!integration) {
+        return new Response(JSON.stringify({ error: 'Unknown integration' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        })
+      }
+      // OAuth URL generation: configure per-connector client IDs in env
+      // For now return a placeholder; production would build provider-specific OAuth URL
+      const baseUrl = Deno.env.get('SITE_URL') ?? 'https://app.example.com'
+      const oauthUrl = `${baseUrl}/integrations/oauth/callback?provider=${id}&state=${crypto.randomUUID()}`
+      return new Response(JSON.stringify({ data: { url: oauthUrl, provider: id } }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       })

@@ -33,6 +33,10 @@ const automationLabels: Record<string, string> = {
   full: 'Full',
   assisted: 'Assisted',
   manual: 'Manual',
+  suggest_only: 'Suggest Only',
+  approval_required: 'Approval Required',
+  conditional_auto_execute: 'Conditional',
+  bounded_autopilot: 'Bounded Autopilot',
 }
 
 export function CronjobList({
@@ -222,7 +226,7 @@ export function CronjobList({
 
             {/* Desktop: table */}
             <div className="hidden md:block overflow-x-auto -mx-1">
-              <table className="w-full">
+              <table className="w-full" aria-label="Cronjobs list">
                 <thead className="sticky top-0 bg-card z-10 border-b border-border">
                   <tr>
                     <Th label="Name" sortKey="name" />
@@ -237,12 +241,15 @@ export function CronjobList({
                   {paginatedList.map((job) => (
                     <tr
                       key={job.id}
+                      tabIndex={0}
                       className={cn(
                         'border-b border-border/50 transition-all duration-200 cursor-pointer',
-                        'hover:bg-secondary/30 hover:shadow-sm',
+                        'hover:bg-secondary/30 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:ring-inset',
                         selectedId === job.id && 'bg-accent/10'
                       )}
                       onClick={() => onSelect?.(job)}
+                      onKeyDown={(e) => e.key === 'Enter' && onSelect?.(job)}
+                      aria-selected={selectedId === job.id}
                     >
                       <td className="py-4">
                         <p className="font-medium text-foreground">{job.name}</p>

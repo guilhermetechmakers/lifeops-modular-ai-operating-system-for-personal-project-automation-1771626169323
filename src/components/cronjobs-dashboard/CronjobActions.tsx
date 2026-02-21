@@ -66,7 +66,7 @@ export function CronjobActions({
             size="sm"
             onClick={() => onRunNow?.(cronjob.id)}
             disabled={isRunning || cronjob.status === 'paused'}
-            className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
+            className="bg-gradient-to-r from-accent to-primary hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             {isRunning ? (
               <>
@@ -84,6 +84,7 @@ export function CronjobActions({
             variant="outline"
             size="sm"
             onClick={() => onPause?.(cronjob.id)}
+            className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           >
             <Pause className="mr-2 h-4 w-4" />
             {cronjob.status === 'paused' ? 'Resume' : 'Pause'}

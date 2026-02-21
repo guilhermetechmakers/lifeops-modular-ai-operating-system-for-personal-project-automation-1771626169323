@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { Plus, ChevronRight, AlertTriangle, Download, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -21,13 +21,13 @@ import {
   PermissionsMatrix,
 } from '@/components/cronjobs-dashboard'
 import {
-  fetchCronjobs,
-  createCronjob,
-  updateCronjob,
-  deleteCronjob,
-  runCronjobNow,
-  fetchCronjobRun,
-} from '@/api/cronjobs'
+  useCronjobs,
+  useCreateCronjob,
+  useUpdateCronjob,
+  useDeleteCronjob,
+  useRunCronjobNow,
+} from '@/hooks/use-cronjobs'
+import { fetchCronjobRun } from '@/api/cronjobs'
 import { getRunArtifactUrls } from '@/api/artifacts'
 import type { Cronjob, CronjobRun } from '@/types/cronjobs'
 
@@ -169,18 +169,21 @@ const MOCK_CRONJOBS: Cronjob[] = [
 export default function CronjobsDashboard() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const [cronjobs, setCronjobs] = useState<Cronjob[]>([])
   const [selectedCronjob, setSelectedCronjob] = useState<Cronjob | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
   const [showWizard, setShowWizard] = useState(false)
   const [wizardEditData, setWizardEditData] = useState<Cronjob | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [runningId, setRunningId] = useState<string | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
   const [runDetail, setRunDetail] = useState<CronjobRun | null>(null)
   const [artifactUrls, setArtifactUrls] = useState<{ key: string; url: string; type: string; filename: string }[]>([])
   const [artifactUrlsLoading, setArtifactUrlsLoading] = useState(false)
+
+  const { data: cronjobsData = [], isLoading, isError: hasError, refetch: refetchCronjobs } = useCronjobs()
+  const cronjobs = hasError ? MOCK_CRONJOBS : cronjobsData
+
+  const createMutation = useCreateCronjob()
+  const updateMutation = useUpdateCronjob()
+  const deleteMutation = useDeleteCronjob()
+  const runNowMutation = useRunCronjobNow()
 
   useEffect(() => {
     if (searchParams.get('create') === '1') {
@@ -189,6 +192,13 @@ export default function CronjobsDashboard() {
       setSearchParams({}, { replace: true })
     }
   }, [searchParams, setSearchParams])
+
+  useEffect(() => {
+    document.title = 'Cronjobs Dashboard | LifeOps - Manage scheduled jobs and workflows'
+    return () => {
+      document.title = 'LifeOps'
+    }
+  }, [])
 
   const runIdFromUrl = searchParams.get('run')
   useEffect(() => {
@@ -203,27 +213,6 @@ export default function CronjobsDashboard() {
     })
   }, [runIdFromUrl, cronjobs])
 
-  const loadCronjobs = useCallback(async () => {
-    setIsLoading(true)
-    setHasError(false)
-    try {
-      const data = await fetchCronjobs()
-      setCronjobs(data)
-      if (selectedCronjob && !data.find((c) => c.id === selectedCronjob.id)) {
-        setSelectedCronjob(null)
-      }
-    } catch {
-      setCronjobs(MOCK_CRONJOBS)
-      setHasError(true)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [selectedCronjob?.id])
-
-  useEffect(() => {
-    loadCronjobs()
-  }, [loadCronjobs])
-
   const handleCreate = () => {
     setWizardEditData(null)
     setShowWizard(true)
@@ -236,36 +225,31 @@ export default function CronjobsDashboard() {
   const handleWizardSubmit = async (
     data: Omit<Cronjob, 'id' | 'user_id' | 'created_at' | 'updated_at'>
   ) => {
-    setIsSubmitting(true)
     try {
       if (wizardEditData?.id) {
-        const updated = await updateCronjob(wizardEditData.id, data)
-        setCronjobs((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
+        const updated = await updateMutation.mutateAsync({
+          id: wizardEditData.id,
+          cronjob: data,
+        })
         setSelectedCronjob(updated)
         toast.success('Cronjob updated')
       } else {
-        const created = await createCronjob(data)
-        setCronjobs((prev) => [created, ...prev])
+        const created = await createMutation.mutateAsync(data)
         setSelectedCronjob(created)
         toast.success('Cronjob created')
       }
       setShowWizard(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to save cronjob')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
   const handleRunNow = async (id: string) => {
-    setRunningId(id)
     try {
-      await runCronjobNow(id)
+      await runNowMutation.mutateAsync(id)
       toast.success('Run triggered')
     } catch {
       toast.error('Failed to trigger run')
-    } finally {
-      setRunningId(null)
     }
   }
 
@@ -274,8 +258,10 @@ export default function CronjobsDashboard() {
     if (!job) return
     const newStatus = job.status === 'paused' ? 'active' : 'paused'
     try {
-      const updated = await updateCronjob(id, { status: newStatus })
-      setCronjobs((prev) => prev.map((c) => (c.id === id ? updated : c)))
+      const updated = await updateMutation.mutateAsync({
+        id,
+        cronjob: { status: newStatus },
+      })
       setSelectedCronjob((s) => (s?.id === id ? updated : s))
       toast.success(newStatus === 'paused' ? 'Cronjob paused' : 'Cronjob resumed')
     } catch {
@@ -286,8 +272,10 @@ export default function CronjobsDashboard() {
   const handleClone = async (cronjob: Cronjob) => {
     try {
       const { id: _id, user_id: _uid, created_at: _ca, updated_at: _ua, ...rest } = cronjob
-      const created = await createCronjob({ ...rest, name: `${cronjob.name} (Copy)` })
-      setCronjobs((prev) => [created, ...prev])
+      const created = await createMutation.mutateAsync({
+        ...rest,
+        name: `${cronjob.name} (Copy)`,
+      })
       setSelectedCronjob(created)
       toast.success('Cronjob cloned')
     } catch {
@@ -302,8 +290,7 @@ export default function CronjobsDashboard() {
   const handleDeleteConfirm = async () => {
     if (!deleteConfirmId) return
     try {
-      await deleteCronjob(deleteConfirmId)
-      setCronjobs((prev) => prev.filter((c) => c.id !== deleteConfirmId))
+      await deleteMutation.mutateAsync(deleteConfirmId)
       if (selectedCronjob?.id === deleteConfirmId) setSelectedCronjob(null)
       setDeleteConfirmId(null)
       toast.success('Cronjob deleted')
@@ -315,8 +302,10 @@ export default function CronjobsDashboard() {
   const handleDetailsUpdate = async (updates: Partial<Cronjob>) => {
     if (!selectedCronjob) return
     try {
-      const updated = await updateCronjob(selectedCronjob.id, updates)
-      setCronjobs((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
+      const updated = await updateMutation.mutateAsync({
+        id: selectedCronjob.id,
+        cronjob: updates,
+      })
       setSelectedCronjob(updated)
       toast.success('Details updated')
     } catch {
@@ -349,7 +338,7 @@ export default function CronjobsDashboard() {
             initialData={wizardEditData ?? undefined}
             onSubmit={handleWizardSubmit}
             onCancel={() => setShowWizard(false)}
-            isSubmitting={isSubmitting}
+            isSubmitting={createMutation.isPending || updateMutation.isPending}
           />
         </div>
       </div>
@@ -395,7 +384,7 @@ export default function CronjobsDashboard() {
             <AlertTriangle className="h-5 w-5 text-amber-500" />
             <p className="text-sm text-foreground">Using demo data. Connect to API for live data.</p>
           </div>
-          <Button variant="outline" size="sm" onClick={loadCronjobs}>
+          <Button variant="outline" size="sm" onClick={() => refetchCronjobs()}>
             Retry
           </Button>
         </div>
@@ -441,7 +430,7 @@ export default function CronjobsDashboard() {
               onExport={() => toast.success('Cronjob exported')}
               onDelete={handleDeleteClick}
               onEdit={handleEdit}
-              isRunning={runningId === selectedCronjob.id}
+              isRunning={runNowMutation.isPending && runNowMutation.variables === selectedCronjob.id}
             />
             <PermissionsMatrix cronjob={selectedCronjob} />
           </div>

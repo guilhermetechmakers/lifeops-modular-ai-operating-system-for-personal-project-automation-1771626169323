@@ -15,10 +15,14 @@ export interface UserProfile {
   language?: string
 }
 
+export type IntegrationCategory = 'dev' | 'communication' | 'finance' | 'health' | 'cms'
+
 export interface Integration {
   id: string
   name: string
   icon: string
+  category?: IntegrationCategory
+  description?: string
   connected: boolean
   connected_at?: string
 }
