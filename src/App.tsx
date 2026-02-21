@@ -7,6 +7,7 @@ import { SignupPage } from '@/pages/auth/signup'
 import { LoginSignupPage } from '@/pages/login-signup'
 import MasterDashboardPage from '@/pages/MasterDashboard'
 import CronjobsDashboard from '@/pages/CronjobsDashboard'
+import CronjobEditorPage from '@/pages/CronjobEditorPage'
 import { AgentsDashboard } from '@/pages/dashboard/agents'
 import { ApprovalsQueue } from '@/pages/dashboard/approvals'
 import { SettingsPage } from '@/pages/dashboard/settings'
@@ -18,6 +19,7 @@ import { ModulePlaceholder } from '@/pages/dashboard/module-placeholder'
 import HealthModule from '@/pages/HealthModule'
 import { PasswordResetPage } from '@/pages/auth/password-reset'
 import { NotFoundPage } from '@/pages/errors/not-found'
+import TermsofService from '@/pages/TermsofService'
 import { FolderKanban, FileText, Wallet } from 'lucide-react'
 
 function App() {
@@ -35,6 +37,8 @@ function App() {
           <Route path="master-dashboard" element={<MasterDashboardPage />} />
           <Route path="cronjobs" element={<CronjobsDashboard />} />
           <Route path="cronjobs-dashboard" element={<CronjobsDashboard />} />
+          <Route path="cronjob-editor" element={<CronjobEditorPage />} />
+          <Route path="cronjob-editor/:id" element={<CronjobEditorPage />} />
           <Route path="agents" element={<AgentsDashboard />} />
           <Route path="approvals" element={<ApprovalsQueue />} />
           <Route
@@ -99,7 +103,8 @@ function App() {
         <Route path="/health-(health-module)" element={<Navigate to="/dashboard/health" replace />} />
         <Route path="/help" element={<HelpPlaceholder />} />
         <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />
-        <Route path="/terms" element={<LegalPlaceholder title="Terms of Service" />} />
+        <Route path="/terms-of-service" element={<TermsofService />} />
+        <Route path="/terms" element={<Navigate to="/terms-of-service" replace />} />
 
         <Route path="/404" element={<NotFoundPage />} />
         <Route path="*" element={<Navigate to="/404" replace />} />

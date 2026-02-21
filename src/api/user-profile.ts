@@ -1,26 +1,15 @@
 import { apiPost } from '@/lib/api'
+import { supabase } from '@/lib/supabase'
 import type { UserProfile, Integration, ApiKey, ActiveSession, ActivityLogEntry } from '@/types/user-profile'
 
-const USER_PROFILE_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
-  ? `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/user-profile`
-  : undefined
-const USER_PROFILE_PATH = USER_PROFILE_BASE ?? '/user-profile'
-
 async function userProfileFetch<T>(body: object): Promise<T> {
-  if (USER_PROFILE_BASE) {
-    const res = await fetch(USER_PROFILE_PATH, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error((err as { error?: string }).error ?? res.statusText)
-    }
-    return res.json()
+  if (supabase) {
+    const { data, error } = await supabase.functions.invoke<T>('user-profile', { body })
+    if (error) throw new Error(error.message)
+    if (data == null) throw new Error('No response from user-profile')
+    return data
   }
-  return apiPost<T>(USER_PROFILE_PATH, body)
+  return apiPost<T>('/user-profile', body)
 }
 
 export async function fetchUserProfile(): Promise<UserProfile | null> {

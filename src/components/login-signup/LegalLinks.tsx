@@ -14,7 +14,7 @@ export function LegalLinks({ className }: LegalLinksProps) {
     <div className={cn('space-y-2', className)}>
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <Link
-          to="/terms"
+          to="/terms-of-service"
           className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
         >
           <FileText className="h-3.5 w-3.5" />

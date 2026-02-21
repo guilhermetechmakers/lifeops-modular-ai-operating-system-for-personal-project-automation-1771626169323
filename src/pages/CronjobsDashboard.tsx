@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { Plus, ChevronRight, AlertTriangle, Download, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -168,6 +168,7 @@ const MOCK_CRONJOBS: Cronjob[] = [
 
 export default function CronjobsDashboard() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [cronjobs, setCronjobs] = useState<Cronjob[]>([])
   const [selectedCronjob, setSelectedCronjob] = useState<Cronjob | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -229,8 +230,7 @@ export default function CronjobsDashboard() {
   }
 
   const handleEdit = (cronjob: Cronjob) => {
-    setWizardEditData(cronjob)
-    setShowWizard(true)
+    navigate(`/dashboard/cronjob-editor/${cronjob.id}`)
   }
 
   const handleWizardSubmit = async (
@@ -372,13 +372,21 @@ export default function CronjobsDashboard() {
             Manage scheduled jobs and workflows: create, edit, enable/disable, view run history
           </p>
         </div>
-        <Button
-          onClick={handleCreate}
-          className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create Cronjob
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={handleCreate}
+            className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Quick Create
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/dashboard/cronjob-editor')}
+          >
+            Advanced Editor
+          </Button>
+        </div>
       </div>
 
       {hasError && (

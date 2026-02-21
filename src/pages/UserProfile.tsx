@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { ChevronRight, AlertCircle, RefreshCw } from 'lucide-react'
@@ -12,22 +12,27 @@ import {
   ActivityLog,
 } from '@/components/user-profile'
 import {
-  fetchUserProfile,
-  updateUserProfile,
-  fetchIntegrations,
-  connectIntegration,
-  disconnectIntegration,
-  fetchApiKeys,
-  createApiKey,
-  revokeApiKey,
-  rotateApiKey,
-  fetchActiveSessions,
-  revokeSession,
-  fetchActivityLog,
-} from '@/api/user-profile'
-import type { UserProfile, Integration, ApiKey, ActiveSession, ActivityLogEntry } from '@/types/user-profile'
+  useUserProfile,
+  useUpdateUserProfile,
+  useIntegrations,
+  useConnectIntegration,
+  useDisconnectIntegration,
+  useApiKeys,
+  useCreateApiKey,
+  useRevokeApiKey,
+  useRotateApiKey,
+  useActiveSessions,
+  useRevokeSession,
+  useActivityLog,
+} from '@/hooks/use-user-profile'
+import type {
+  UserProfile as UserProfileType,
+  Integration,
+  ActiveSession,
+  ActivityLogEntry,
+} from '@/types/user-profile'
 
-const MOCK_PROFILE: UserProfile = {
+const MOCK_PROFILE: UserProfileType = {
   id: 'mock-1',
   user_id: 'mock-user',
   title: 'Member',
@@ -45,202 +50,175 @@ const MOCK_PROFILE: UserProfile = {
 }
 
 const MOCK_INTEGRATIONS: Integration[] = [
-  { id: 'slack', name: 'Slack', icon: 'slack', connected: true, connected_at: new Date().toISOString() },
+  {
+    id: 'slack',
+    name: 'Slack',
+    icon: 'slack',
+    connected: true,
+    connected_at: new Date().toISOString(),
+  },
   { id: 'github', name: 'GitHub', icon: 'github', connected: false },
-  { id: 'google', name: 'Google', icon: 'google', connected: true, connected_at: new Date().toISOString() },
+  {
+    id: 'google',
+    name: 'Google',
+    icon: 'google',
+    connected: true,
+    connected_at: new Date().toISOString(),
+  },
   { id: 'notion', name: 'Notion', icon: 'notion', connected: false },
   { id: 'linear', name: 'Linear', icon: 'linear', connected: false },
 ]
 
 const MOCK_SESSIONS: ActiveSession[] = [
-  { id: 'current', device: 'Chrome on macOS', location: 'San Francisco, CA', last_active: new Date().toISOString(), current: true },
+  {
+    id: 'current',
+    device: 'Chrome on macOS',
+    location: 'San Francisco, CA',
+    last_active: new Date().toISOString(),
+    current: true,
+  },
 ]
 
 const MOCK_ACTIVITY: ActivityLogEntry[] = [
-  { id: '1', action: 'Login', resource: 'Dashboard', timestamp: new Date().toISOString(), ip_address: '192.168.1.1' },
-  { id: '2', action: 'Update profile', resource: 'Account settings', timestamp: new Date(Date.now() - 3600000).toISOString() },
-  { id: '3', action: 'Create API key', resource: 'Production API', timestamp: new Date(Date.now() - 86400000).toISOString() },
+  {
+    id: '1',
+    action: 'Login',
+    resource: 'Dashboard',
+    timestamp: new Date().toISOString(),
+    ip_address: '192.168.1.1',
+  },
+  {
+    id: '2',
+    action: 'Update profile',
+    resource: 'Account settings',
+    timestamp: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: '3',
+    action: 'Create API key',
+    resource: 'Production API',
+    timestamp: new Date(Date.now() - 86400000).toISOString(),
+  },
 ]
 
 export default function UserProfile() {
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [integrations, setIntegrations] = useState<Integration[]>([])
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
-  const [sessions, setSessions] = useState<ActiveSession[]>([])
-  const [activity, setActivity] = useState<ActivityLogEntry[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [useMock, setUseMock] = useState(false)
+  const profileQuery = useUserProfile()
+  const integrationsQuery = useIntegrations()
+  const apiKeysQuery = useApiKeys()
+  const sessionsQuery = useActiveSessions()
+  const activityQuery = useActivityLog(10)
 
-  const loadData = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const [profileRes, integrationsRes, apiKeysRes, sessionsRes, activityRes] = await Promise.allSettled([
-        fetchUserProfile(),
-        fetchIntegrations(),
-        fetchApiKeys(),
-        fetchActiveSessions(),
-        fetchActivityLog(10),
-      ])
+  const updateProfile = useUpdateUserProfile()
+  const connectIntegration = useConnectIntegration()
+  const disconnectIntegration = useDisconnectIntegration()
+  const createApiKey = useCreateApiKey()
+  const revokeApiKey = useRevokeApiKey()
+  const rotateApiKey = useRotateApiKey()
+  const revokeSession = useRevokeSession()
 
-      if (profileRes.status === 'fulfilled' && profileRes.value) {
-        setProfile(profileRes.value)
-      } else {
-        setProfile(MOCK_PROFILE)
-        setUseMock(true)
-      }
+  const profile =
+    profileQuery.data ??
+    (profileQuery.isError ? MOCK_PROFILE : null)
+  const integrations =
+    integrationsQuery.data ??
+    (integrationsQuery.isError ? MOCK_INTEGRATIONS : [])
+  const apiKeys = apiKeysQuery.data ?? (apiKeysQuery.isError ? [] : [])
+  const sessions =
+    sessionsQuery.data ?? (sessionsQuery.isError ? MOCK_SESSIONS : [])
+  const activity =
+    activityQuery.data ?? (activityQuery.isError ? MOCK_ACTIVITY : [])
 
-      if (integrationsRes.status === 'fulfilled') {
-        setIntegrations(integrationsRes.value)
-      } else {
-        setIntegrations(MOCK_INTEGRATIONS)
-        setUseMock(true)
-      }
+  const isLoading =
+    profileQuery.isPending ||
+    integrationsQuery.isPending ||
+    apiKeysQuery.isPending ||
+    sessionsQuery.isPending ||
+    activityQuery.isPending
 
-      if (apiKeysRes.status === 'fulfilled') {
-        setApiKeys(apiKeysRes.value)
-      } else {
-        setApiKeys([])
-      }
-
-      if (sessionsRes.status === 'fulfilled') {
-        setSessions(sessionsRes.value)
-      } else {
-        setSessions(MOCK_SESSIONS)
-        setUseMock(true)
-      }
-
-      if (activityRes.status === 'fulfilled') {
-        setActivity(activityRes.value)
-      } else {
-        setActivity(MOCK_ACTIVITY)
-        setUseMock(true)
-      }
-    } catch {
-      setProfile(MOCK_PROFILE)
-      setIntegrations(MOCK_INTEGRATIONS)
-      setApiKeys([])
-      setSessions(MOCK_SESSIONS)
-      setActivity(MOCK_ACTIVITY)
-      setUseMock(true)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
+  const refetchAll = useCallback(() => {
+    profileQuery.refetch()
+    integrationsQuery.refetch()
+    apiKeysQuery.refetch()
+    sessionsQuery.refetch()
+    activityQuery.refetch()
+  }, [
+    profileQuery,
+    integrationsQuery,
+    apiKeysQuery,
+    sessionsQuery,
+    activityQuery,
+  ])
 
   const handleUpdateProfile = useCallback(
-    async (updates: Parameters<typeof updateUserProfile>[0]) => {
-      if (useMock) {
-        setProfile((p) => (p ? { ...p, ...updates, updated_at: new Date().toISOString() } : null))
-        return
-      }
-      const updated = await updateUserProfile(updates)
-      setProfile(updated)
+    async (
+      updates: Parameters<typeof updateProfile.mutateAsync>[0]
+    ) => {
+      await updateProfile.mutateAsync(updates)
     },
-    [useMock]
+    [updateProfile]
   )
 
   const handleConnectIntegration = useCallback(
     async (id: string) => {
-      if (useMock) {
-        setIntegrations((prev) =>
-          prev.map((i) => (i.id === id ? { ...i, connected: true, connected_at: new Date().toISOString() } : i))
-        )
-        return
-      }
-      await connectIntegration(id)
-      const list = await fetchIntegrations()
-      setIntegrations(list)
+      await connectIntegration.mutateAsync(id)
     },
-    [useMock]
+    [connectIntegration]
   )
 
   const handleDisconnectIntegration = useCallback(
     async (id: string) => {
-      if (useMock) {
-        setIntegrations((prev) => prev.map((i) => (i.id === id ? { ...i, connected: false, connected_at: undefined } : i)))
-        return
-      }
-      await disconnectIntegration(id)
-      const list = await fetchIntegrations()
-      setIntegrations(list)
+      await disconnectIntegration.mutateAsync(id)
     },
-    [useMock]
+    [disconnectIntegration]
   )
 
   const handleCreateApiKey = useCallback(
     async (name: string, scope: string[]) => {
-      if (useMock) {
-        const newKey: ApiKey = {
-          id: `mock-${Date.now()}`,
-          name,
-          prefix: 'lk_xxxxxxxx...',
-          scope,
-          created_at: new Date().toISOString(),
-        }
-        setApiKeys((prev) => [newKey, ...prev])
-        return { key: 'lk_mock_key_do_not_use_in_production', apiKey: newKey }
-      }
-      return createApiKey(name, scope)
+      return createApiKey.mutateAsync({ name, scope })
     },
-    [useMock]
+    [createApiKey]
   )
 
   const handleRevokeApiKey = useCallback(
     async (id: string) => {
-      if (useMock) {
-        setApiKeys((prev) => prev.filter((k) => k.id !== id))
-        return
-      }
-      await revokeApiKey(id)
-      const list = await fetchApiKeys()
-      setApiKeys(list)
+      await revokeApiKey.mutateAsync(id)
     },
-    [useMock]
+    [revokeApiKey]
   )
 
   const handleRotateApiKey = useCallback(
     async (id: string) => {
-      if (useMock) {
-        return { key: 'lk_rotated_mock_key' }
-      }
-      return rotateApiKey(id)
+      return rotateApiKey.mutateAsync(id)
     },
-    [useMock]
+    [rotateApiKey]
   )
 
-  const handleChangePassword = useCallback(async (_current: string, _newPassword: string) => {
-    toast.info('Password change requires authentication. Configure Supabase to enable.')
-  }, [])
+  const handleChangePassword = useCallback(
+    async (_current: string, _newPassword: string) => {
+      toast.info(
+        'Password change requires authentication. Configure Supabase to enable.'
+      )
+    },
+    []
+  )
 
   const handleEnable2FA = useCallback(async () => {
-    toast.info('2FA setup requires authentication. Configure Supabase to enable.')
+    toast.info(
+      '2FA setup requires authentication. Configure Supabase to enable.'
+    )
   }, [])
 
   const handleRevokeSession = useCallback(
     async (id: string) => {
-      if (useMock) {
-        setSessions((prev) => prev.filter((s) => s.id !== id))
-        return
-      }
-      await revokeSession(id)
-      const list = await fetchActiveSessions()
-      setSessions(list)
+      await revokeSession.mutateAsync(id)
     },
-    [useMock]
+    [revokeSession]
   )
 
   const handleRevokeTokens = useCallback(async () => {
-    if (useMock) {
-      setSessions([])
-      return
-    }
-    await revokeSession('current')
+    await revokeSession.mutateAsync('current')
     toast.info('All sessions revoked. You may need to sign in again.')
-  }, [useMock])
+  }, [revokeSession])
 
   if (!profile && !isLoading) {
     return (
@@ -249,12 +227,15 @@ export default function UserProfile() {
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10 mb-6">
             <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
-          <h2 className="text-xl font-semibold text-foreground">Failed to load profile</h2>
+          <h2 className="text-xl font-semibold text-foreground">
+            Failed to load profile
+          </h2>
           <p className="text-muted-foreground mt-2">
-            We couldn&apos;t load your account data. Please check your connection and try again.
+            We couldn&apos;t load your account data. Please check your
+            connection and try again.
           </p>
           <button
-            onClick={loadData}
+            onClick={refetchAll}
             className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-md hover:shadow-accent-glow"
           >
             <RefreshCw className="h-4 w-4" />
@@ -267,8 +248,10 @@ export default function UserProfile() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Breadcrumbs */}
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground" aria-label="Breadcrumb">
+      <nav
+        className="flex items-center gap-2 text-sm text-muted-foreground"
+        aria-label="Breadcrumb"
+      >
         <Link to="/dashboard" className="hover:text-foreground transition-colors">
           Dashboard
         </Link>
@@ -281,7 +264,8 @@ export default function UserProfile() {
           User Profile
         </h1>
         <p className="text-muted-foreground mt-1 text-base">
-          Account center for personal info, security settings, integrations, billing, and API keys
+          Account center for personal info, security settings, integrations,
+          billing, and API keys
         </p>
       </div>
 
@@ -297,47 +281,47 @@ export default function UserProfile() {
         </div>
         <div className="animate-fade-in-up [animation-delay:0.1s] [animation-fill-mode:both]">
           <AccountSettings
-          name={profile?.full_name ?? ''}
-          email={profile?.email ?? ''}
-          timezone={profile?.timezone ?? 'UTC'}
-          language={profile?.language ?? 'en'}
-          onUpdate={handleUpdateProfile}
-          isLoading={isLoading}
-        />
+            name={profile?.full_name ?? ''}
+            email={profile?.email ?? ''}
+            timezone={profile?.timezone ?? 'UTC'}
+            language={profile?.language ?? 'en'}
+            onUpdate={handleUpdateProfile}
+            isLoading={isLoading}
+          />
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="animate-fade-in-up [animation-delay:0.15s] [animation-fill-mode:both]">
           <Security
-          twoFactorEnabled={false}
-          sessions={sessions}
-          onChangePassword={handleChangePassword}
-          onEnable2FA={handleEnable2FA}
-          onRevokeSession={handleRevokeSession}
-          onRevokeTokens={handleRevokeTokens}
-          isLoading={isLoading}
-        />
+            twoFactorEnabled={false}
+            sessions={sessions}
+            onChangePassword={handleChangePassword}
+            onEnable2FA={handleEnable2FA}
+            onRevokeSession={handleRevokeSession}
+            onRevokeTokens={handleRevokeTokens}
+            isLoading={isLoading}
+          />
         </div>
         <div className="animate-fade-in-up [animation-delay:0.2s] [animation-fill-mode:both]">
           <Integrations
-          integrations={integrations}
-          onConnect={handleConnectIntegration}
-          onDisconnect={handleDisconnectIntegration}
-          isLoading={isLoading}
-        />
+            integrations={integrations}
+            onConnect={handleConnectIntegration}
+            onDisconnect={handleDisconnectIntegration}
+            isLoading={isLoading}
+          />
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="animate-fade-in-up [animation-delay:0.25s] [animation-fill-mode:both]">
           <APIKeys
-          apiKeys={apiKeys}
-          onCreate={handleCreateApiKey}
-          onRevoke={handleRevokeApiKey}
-          onRotate={handleRotateApiKey}
-          isLoading={isLoading}
-        />
+            apiKeys={apiKeys}
+            onCreate={handleCreateApiKey}
+            onRevoke={handleRevokeApiKey}
+            onRotate={handleRotateApiKey}
+            isLoading={isLoading}
+          />
         </div>
         <div className="animate-fade-in-up [animation-delay:0.3s] [animation-fill-mode:both]">
           <BillingSummaryCTA planName="Pro" planAmount="$29/month" />

@@ -17,6 +17,7 @@ import {
   User,
   Users,
   HelpCircle,
+  Scale,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -43,6 +44,7 @@ const bottomNavItems = [
   { to: '/dashboard/billing', icon: BarChart3, label: 'Billing' },
   { to: '/dashboard/admin', icon: Users, label: 'Admin' },
   { to: '/help', icon: HelpCircle, label: 'Help' },
+  { to: '/terms-of-service', icon: Scale, label: 'Terms of Service' },
 ]
 
 function NavItem({
@@ -60,7 +62,9 @@ function NavItem({
   const isActive =
     location.pathname === to ||
     location.pathname.startsWith(`${to}/`) ||
-    (to === '/dashboard/cronjobs-dashboard' && location.pathname === '/dashboard/cronjobs')
+    (to === '/dashboard/cronjobs-dashboard' &&
+    (location.pathname === '/dashboard/cronjobs' ||
+      location.pathname.startsWith('/dashboard/cronjob-editor')))
 
   return (
     <Link

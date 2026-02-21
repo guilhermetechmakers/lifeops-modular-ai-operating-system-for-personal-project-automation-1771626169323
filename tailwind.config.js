@@ -32,6 +32,10 @@ export default {
         border: "rgb(var(--border))",
         input: "rgb(var(--input))",
         ring: "rgb(var(--ring))",
+        destructive: {
+          DEFAULT: "rgb(var(--destructive))",
+          foreground: "rgb(var(--destructive-foreground))",
+        },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

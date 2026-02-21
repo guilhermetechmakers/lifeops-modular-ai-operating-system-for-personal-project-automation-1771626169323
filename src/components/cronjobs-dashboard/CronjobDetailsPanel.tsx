@@ -11,8 +11,14 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { Cronjob } from '@/types/cronjobs'
+import type { Cronjob, CronjobConstraints } from '@/types/cronjobs'
 import { cn } from '@/lib/utils'
+
+function getConstraintsArray(constraints: string[] | CronjobConstraints | undefined): string[] {
+  if (!constraints) return []
+  if (Array.isArray(constraints)) return constraints
+  return constraints.allowed_tools ?? []
+}
 
 interface CronjobDetailsPanelProps {
   cronjob: Cronjob | null
@@ -104,6 +110,7 @@ export function CronjobDetailsPanel({
   }
 
   const c = cronjob!
+  const constraintsArray = getConstraintsArray(c.constraints)
   return (
     <div className="space-y-6">
       <Card className="transition-shadow duration-300 hover:shadow-card">
@@ -219,7 +226,7 @@ export function CronjobDetailsPanel({
           <div>
             <Label>Constraints</Label>
             <div className="mt-2 flex flex-wrap gap-2">
-              {(c.constraints ?? []).map((constraint, i) => (
+              {constraintsArray.map((constraint: string, i: number) => (
                 <Badge key={i} variant="outline" className="gap-1">
                   {constraint}
                   {!readOnly && (
@@ -227,7 +234,7 @@ export function CronjobDetailsPanel({
                       type="button"
                       onClick={() =>
                         onUpdate?.({
-                          constraints: (c.constraints ?? []).filter((_, j) => j !== i),
+                          constraints: constraintsArray.filter((_: string, j: number) => j !== i),
                         })
                       }
                       className="ml-1 rounded hover:bg-secondary"
@@ -238,7 +245,7 @@ export function CronjobDetailsPanel({
                   )}
                 </Badge>
               ))}
-              {(!c.constraints || c.constraints.length === 0) && (
+              {constraintsArray.length === 0 && (
                 <span className="text-sm text-muted-foreground">None</span>
               )}
               {!readOnly && (
@@ -251,7 +258,7 @@ export function CronjobDetailsPanel({
                       const val = input.value.trim()
                       if (val) {
                         onUpdate?.({
-                          constraints: [...(c.constraints ?? []), val],
+                          constraints: [...constraintsArray, val],
                         })
                         input.value = ''
                       }
