@@ -36,6 +36,10 @@ export default {
           DEFAULT: "rgb(var(--destructive))",
           foreground: "rgb(var(--destructive-foreground))",
         },
+        success: {
+          DEFAULT: "rgb(var(--success))",
+          foreground: "rgb(var(--success-foreground))",
+        },
         warning: {
           DEFAULT: "rgb(var(--warning))",
           foreground: "rgb(var(--warning-foreground))",
