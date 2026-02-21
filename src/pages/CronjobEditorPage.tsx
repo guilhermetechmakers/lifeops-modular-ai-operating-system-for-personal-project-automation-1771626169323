@@ -463,6 +463,7 @@ export default function CronjobEditorPage() {
                 onEnable={onEnable}
                 onRunNow={onRunNow}
                 isSubmitting={isSubmitting}
+                isEnabling={updateMutation.isPending}
                 isRunning={isRunning}
                 isEnabled={cronjob?.status === 'active'}
                 canRunNow={!!id}
