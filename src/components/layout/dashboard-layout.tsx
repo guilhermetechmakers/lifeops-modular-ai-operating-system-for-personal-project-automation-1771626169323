@@ -59,7 +59,7 @@ export function DashboardLayout() {
             </Button>
 
             <div className="flex flex-1 items-center gap-4 min-w-0">
-              <BackForwardNav className="hidden sm:flex shrink-0" />
+              <BackForwardNav className="shrink-0" />
               <Breadcrumb className="min-w-0 flex-1" />
             </div>
 

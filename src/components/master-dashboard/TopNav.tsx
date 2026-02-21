@@ -57,7 +57,7 @@ export function TopNav({
         className
       )}
     >
-      <div className="flex flex-1 items-center gap-4 min-w-0">
+      <div className="flex flex-1 items-center gap-2 sm:gap-4 min-w-0 overflow-hidden">
         {showMenuButton && (
           <Button
             variant="ghost"
@@ -69,9 +69,9 @@ export function TopNav({
             <Menu className="h-5 w-5" />
           </Button>
         )}
-        <BackForwardNav className="hidden sm:flex shrink-0" />
-        <Breadcrumb className="min-w-0 flex-1 hidden sm:flex" />
-        <div className="relative w-full max-w-md shrink-0">
+        <BackForwardNav className="shrink-0" />
+        <Breadcrumb className="min-w-0 flex-1 shrink" />
+        <div className="relative w-full max-w-md shrink min-w-0">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
             type="search"

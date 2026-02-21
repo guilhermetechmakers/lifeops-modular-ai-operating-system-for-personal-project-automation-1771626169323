@@ -488,6 +488,13 @@ export function LandingPage() {
           </div>
           <nav className="flex flex-wrap items-center justify-center gap-6 text-body-sm" aria-label="Footer navigation">
             <Link
+              to="/login-/-signup"
+              className="inline-flex items-center gap-2 hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              aria-label="Sign in to your account"
+            >
+              Sign in
+            </Link>
+            <Link
               to="/help"
               className="inline-flex items-center gap-2 hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
               aria-label="Get help"

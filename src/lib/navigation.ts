@@ -24,6 +24,10 @@ export const ROUTE_LABELS: Record<string, string> = {
   privacy: 'Privacy Policy',
   cookies: 'Cookie Policy',
   'terms-of-service': 'Terms of Service',
+  'password-reset': 'Reset Password',
+  login: 'Sign In',
+  signup: 'Create Account',
+  'login-/-signup': 'Sign In / Sign Up',
   '404': 'Page Not Found',
 }
 

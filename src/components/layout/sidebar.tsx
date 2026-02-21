@@ -42,6 +42,7 @@ const moduleNavItems = [
 
 const bottomNavItems = [
   { to: '/', icon: Home, label: 'Home' },
+  { to: '/dashboard/profile', icon: User, label: 'Profile' },
   { to: '/dashboard/user-profile', icon: User, label: 'User Profile' },
   { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
   { to: '/dashboard/billing', icon: BarChart3, label: 'Billing' },
