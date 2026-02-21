@@ -50,23 +50,16 @@ const MOCK_PROFILE: UserProfileType = {
 }
 
 const MOCK_INTEGRATIONS: Integration[] = [
-  {
-    id: 'slack',
-    name: 'Slack',
-    icon: 'slack',
-    connected: true,
-    connected_at: new Date().toISOString(),
-  },
-  { id: 'github', name: 'GitHub', icon: 'github', connected: false },
-  {
-    id: 'google',
-    name: 'Google',
-    icon: 'google',
-    connected: true,
-    connected_at: new Date().toISOString(),
-  },
-  { id: 'notion', name: 'Notion', icon: 'notion', connected: false },
-  { id: 'linear', name: 'Linear', icon: 'linear', connected: false },
+  { id: 'github', name: 'GitHub', icon: 'github', category: 'dev', description: 'Repos, PRs, issues, CI/CD', connected: false },
+  { id: 'jira', name: 'Jira', icon: 'jira', category: 'dev', description: 'Issues, sprints, project management', connected: false },
+  { id: 'slack', name: 'Slack', icon: 'slack', category: 'communication', description: 'Team messaging and notifications', connected: true, connected_at: new Date().toISOString() },
+  { id: 'google', name: 'Google', icon: 'google', category: 'communication', description: 'Calendar, Drive, Gmail', connected: true, connected_at: new Date().toISOString() },
+  { id: 'stripe', name: 'Stripe', icon: 'stripe', category: 'finance', description: 'Payments and subscriptions', connected: false },
+  { id: 'plaid', name: 'Plaid', icon: 'plaid', category: 'finance', description: 'Bank connections and transactions', connected: false },
+  { id: 'health', name: 'Health APIs', icon: 'health', category: 'health', description: 'Fitness and health device data', connected: false },
+  { id: 'notion', name: 'Notion', icon: 'notion', category: 'cms', description: 'Docs and wikis', connected: false },
+  { id: 'cms', name: 'CMS', icon: 'cms', category: 'cms', description: 'Content management systems', connected: false },
+  { id: 'linear', name: 'Linear', icon: 'linear', category: 'dev', description: 'Issues and roadmap', connected: false },
 ]
 
 const MOCK_SESSIONS: ActiveSession[] = [

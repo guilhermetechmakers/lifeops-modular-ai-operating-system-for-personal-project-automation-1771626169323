@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Zap,
@@ -17,10 +17,12 @@ import {
   User,
   HelpCircle,
   Mail,
+  Cookie,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useInView } from '@/hooks/use-in-view'
+import { CookieConsentBanner } from '@/components/landing/CookieConsentBanner'
 
 function AnimatedSection({
   children,
@@ -58,6 +60,14 @@ function AnimatedSection({
 }
 
 export function LandingPage() {
+  const [scrollY, setScrollY] = useState(0)
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   useEffect(() => {
     document.title = 'LifeOps — AI Operating System for Life & Projects'
     const metaDesc = document.querySelector('meta[name="description"]')
@@ -86,8 +96,27 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-background via-background/95 to-background" />
       </div>
 
-      {/* Navigation */}
-      <nav className="flex h-16 items-center justify-between px-6 lg:px-12">
+      {/* Scroll progress indicator */}
+      {typeof window !== 'undefined' && (
+        <div
+          className="fixed top-0 left-0 right-0 z-40 h-0.5 bg-accent/30 origin-left"
+          style={{
+            transform: `scaleX(${(() => {
+              const max = document.documentElement.scrollHeight - window.innerHeight
+              return max > 0 ? Math.min(scrollY / max, 1) : 0
+            })()})`,
+          }}
+          aria-hidden
+        />
+      )}
+
+      {/* Sticky Navigation */}
+      <nav
+        className={cn(
+          'sticky top-0 z-30 flex h-16 items-center justify-between px-6 transition-all duration-300 lg:px-12',
+          scrollY > 20 && 'bg-background/80 backdrop-blur-md border-b border-border/50'
+        )}
+      >
         <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-90">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent shadow-accent-glow">
             <Zap className="h-5 w-5 text-accent-foreground" />
@@ -279,19 +308,22 @@ export function LandingPage() {
 
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: FolderKanban, label: 'Project Sprint', desc: 'Tickets, PRs, releases' },
-              { icon: FileText, label: 'Content Pipeline', desc: 'Ideas → drafts → publish' },
-              { icon: Wallet, label: 'Finance Review', desc: 'Categorize, forecast, close' },
-              { icon: Heart, label: 'Health Tracker', desc: 'Habits, goals, recovery' },
+              { icon: FolderKanban, label: 'Project Sprint', desc: 'Tickets, PRs, releases', slug: 'project-sprint' },
+              { icon: FileText, label: 'Content Pipeline', desc: 'Ideas → drafts → publish', slug: 'content-pipeline' },
+              { icon: Wallet, label: 'Finance Review', desc: 'Categorize, forecast, close', slug: 'finance-review' },
+              { icon: Heart, label: 'Health Tracker', desc: 'Habits, goals, recovery', slug: 'health-tracker' },
             ].map((t, i) => (
               <AnimatedSection key={t.label} delay={(i % 4) as 0 | 1 | 2 | 3}>
-                <div className="rounded-xl border border-border bg-card p-6 text-center transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30">
+                <Link
+                  to={`/login-/-signup?template=${t.slug}`}
+                  className="block rounded-xl border border-border bg-card p-6 text-center transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent-blue/20 text-accent-blue">
                     <t.icon className="h-6 w-6" />
                   </div>
                   <h3 className="mt-4 font-semibold text-foreground">{t.label}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">{t.desc}</p>
-                </div>
+                </Link>
               </AnimatedSection>
             ))}
           </div>
@@ -400,7 +432,7 @@ export function LandingPage() {
       {/* CTA */}
       <section className="px-6 py-24 lg:px-12">
         <AnimatedSection>
-          <div className="mx-auto max-w-4xl rounded-2xl border border-border bg-card p-12 text-center transition-all duration-300 hover:shadow-card-hover hover:border-accent/30">
+          <div className="gradient-border mx-auto max-w-4xl rounded-2xl p-12 text-center transition-all duration-300 hover:shadow-card-hover hover:shadow-accent-glow/50">
             <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
               Ready to automate with confidence?
             </h2>
@@ -459,9 +491,18 @@ export function LandingPage() {
             <Link to="/terms" className="hover:text-foreground transition-colors">
               Terms
             </Link>
+            <Link
+              to="/cookies"
+              className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+            >
+              <Cookie className="h-4 w-4" />
+              Cookies
+            </Link>
           </div>
         </div>
       </footer>
+
+      <CookieConsentBanner />
     </div>
   )
 }

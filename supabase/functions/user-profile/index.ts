@@ -181,11 +181,14 @@ serve(async (req) => {
           status: 400,
         })
       }
-      await supabase.from('user_integrations').upsert({
-        user_id: user.id,
-        integration_id: id,
-        name: integration.name,
-      })
+      await supabase.from('user_integrations').upsert(
+        {
+          user_id: user.id,
+          integration_id: id,
+          name: integration.name,
+        },
+        { onConflict: 'user_id,integration_id' }
+      )
       return new Response(JSON.stringify({ success: true }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,

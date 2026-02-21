@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LandingPage } from '@/pages/landing'
@@ -20,6 +20,7 @@ import HealthModule from '@/pages/HealthModule'
 import { PasswordResetPage } from '@/pages/auth/password-reset'
 import { NotFoundPage } from '@/pages/errors/not-found'
 import TermsofService from '@/pages/TermsofService'
+import { CookiePolicyPage } from '@/pages/CookiePolicy'
 import { FolderKanban, FileText, Wallet } from 'lucide-react'
 
 function App() {
@@ -106,6 +107,7 @@ function App() {
         <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />
         <Route path="/terms-of-service" element={<TermsofService />} />
         <Route path="/terms" element={<Navigate to="/terms-of-service" replace />} />
+        <Route path="/cookies" element={<CookiePolicyPage />} />
 
         <Route path="/404" element={<NotFoundPage />} />
         <Route path="*" element={<Navigate to="/404" replace />} />
@@ -130,9 +132,9 @@ function HelpPlaceholder() {
       <div className="text-center">
         <h1 className="text-2xl font-bold text-foreground">Help & Documentation</h1>
         <p className="mt-2 text-muted-foreground">Coming soon</p>
-        <a href="/" className="mt-4 inline-block text-accent hover:underline">
+        <Link to="/" className="mt-4 inline-block text-accent hover:underline">
           Back to home
-        </a>
+        </Link>
       </div>
     </div>
   )
@@ -143,9 +145,9 @@ function LegalPlaceholder({ title }: { title: string }) {
     <div className="min-h-screen bg-background p-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold text-foreground">{title}</h1>
       <p className="mt-4 text-muted-foreground">Legal content will be displayed here.</p>
-      <a href="/" className="mt-4 inline-block text-accent hover:underline">
+      <Link to="/" className="mt-4 inline-block text-accent hover:underline">
         Back to home
-      </a>
+      </Link>
     </div>
   )
 }

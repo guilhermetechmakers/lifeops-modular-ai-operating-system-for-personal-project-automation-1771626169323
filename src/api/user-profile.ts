@@ -30,6 +30,15 @@ export async function fetchIntegrations(): Promise<Integration[]> {
   return res.data ?? []
 }
 
+export async function getOAuthUrl(integrationId: string): Promise<{ url: string; provider: string }> {
+  const res = await userProfileFetch<{ data: { url: string; provider: string } }>({
+    action: 'get_oauth_url',
+    integration_id: integrationId,
+  })
+  if (!res.data) throw new Error('Failed to get OAuth URL')
+  return res.data
+}
+
 export async function connectIntegration(integrationId: string): Promise<void> {
   await userProfileFetch<unknown>({ action: 'connect_integration', integration_id: integrationId })
 }

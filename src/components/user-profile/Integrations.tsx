@@ -1,17 +1,44 @@
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { toast } from 'sonner'
-import { Plug, Link2, Unlink } from 'lucide-react'
+import { EmptyState } from '@/components/ui/loading-states'
+import {
+  Link2,
+  Unlink,
+  Loader2,
+  Github,
+  Slack,
+  CreditCard,
+  HeartPulse,
+  FileText,
+  Plug,
+  FolderKanban,
+  LayoutGrid,
+  Wallet,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { Integration } from '@/types/user-profile'
+import type { Integration, IntegrationCategory } from '@/types/user-profile'
+
+const CATEGORY_LABELS: Record<IntegrationCategory, string> = {
+  dev: 'Development',
+  communication: 'Communication',
+  finance: 'Finance',
+  health: 'Health',
+  cms: 'Content',
+}
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  slack: Plug,
-  github: Plug,
+  github: Github,
+  jira: FolderKanban,
+  linear: LayoutGrid,
+  slack: Slack,
   google: Plug,
-  notion: Plug,
-  linear: Plug,
+  stripe: CreditCard,
+  plaid: Wallet,
+  health: HeartPulse,
+  notion: FileText,
+  cms: FileText,
 }
 
 export interface IntegrationsProps {
@@ -22,6 +49,26 @@ export interface IntegrationsProps {
   className?: string
 }
 
+function groupByCategory(integrations: Integration[]): Map<IntegrationCategory | string, Integration[]> {
+  const map = new Map<IntegrationCategory | string, Integration[]>()
+  for (const int of integrations) {
+    const cat = int.category ?? 'other'
+    const list = map.get(cat) ?? []
+    list.push(int)
+    map.set(cat, list)
+  }
+  const order: (IntegrationCategory | string)[] = ['dev', 'communication', 'finance', 'health', 'cms', 'other']
+  const sorted = new Map<IntegrationCategory | string, Integration[]>()
+  for (const cat of order) {
+    const list = map.get(cat)
+    if (list?.length) sorted.set(cat, list)
+  }
+  for (const [cat, list] of map) {
+    if (!sorted.has(cat)) sorted.set(cat, list)
+  }
+  return sorted
+}
+
 export function Integrations({
   integrations,
   onConnect,
@@ -29,21 +76,23 @@ export function Integrations({
   isLoading,
   className,
 }: IntegrationsProps) {
+  const [actionId, setActionId] = useState<string | null>(null)
+
   const handleConnect = async (id: string) => {
+    setActionId(id)
     try {
       await onConnect(id)
-      toast.success('Integration connected')
-    } catch {
-      toast.error('Failed to connect')
+    } finally {
+      setActionId(null)
     }
   }
 
   const handleDisconnect = async (id: string) => {
+    setActionId(id)
     try {
       await onDisconnect(id)
-      toast.success('Integration disconnected')
-    } catch {
-      toast.error('Failed to disconnect')
+    } finally {
+      setActionId(null)
     }
   }
 
@@ -55,9 +104,10 @@ export function Integrations({
           <Skeleton className="h-4 w-48 mt-1" />
         </CardHeader>
         <CardContent className="space-y-4">
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-16 w-full skeleton-shimmer" />
+          <Skeleton className="h-16 w-full skeleton-shimmer" />
+          <Skeleton className="h-16 w-full skeleton-shimmer" />
+          <Skeleton className="h-16 w-full skeleton-shimmer" />
         </CardContent>
       </Card>
     )
@@ -75,27 +125,22 @@ export function Integrations({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Link2 className="h-5 w-5" />
-            Integrations
+            Third-Party Integrations
           </CardTitle>
-          <CardDescription>Connect external services</CardDescription>
+          <CardDescription>Connect external services to extend your workflow</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary mb-4">
-              <Plug className="h-7 w-7 text-muted-foreground" />
-            </div>
-            <h3 className="font-semibold text-foreground">No integrations yet</h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-              Connect services like Slack, GitHub, and Google to extend your workflow.
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Integrations will appear here once available.
-            </p>
-          </div>
+          <EmptyState
+            icon={Plug}
+            heading="No integrations available"
+            description="Integrations will appear here once the connectors framework is configured. Connect GitHub, Jira, Stripe, Slack, Plaid, Health APIs, and CMS to automate workflows."
+          />
         </CardContent>
       </Card>
     )
   }
+
+  const grouped = groupByCategory(integrations)
 
   return (
     <Card
@@ -108,52 +153,77 @@ export function Integrations({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Link2 className="h-5 w-5" />
-          Integrations
+          Third-Party Integrations
         </CardTitle>
-        <CardDescription>Connected services with connect/disconnect actions</CardDescription>
+        <CardDescription>
+          Connect external services (GitHub, Jira, Stripe, Slack, Plaid, Health APIs, CMS) with connect/disconnect actions
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {integrations.map((int) => {
-            const Icon = ICON_MAP[int.icon] ?? Plug
-            return (
-              <div
-                key={int.id}
-                className="flex items-center justify-between rounded-lg border border-border p-4 transition-all duration-200 hover:border-accent/30 hover:bg-secondary/30"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
-                    <Icon className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">{int.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {int.connected
-                        ? `Connected ${int.connected_at ? new Date(int.connected_at).toLocaleDateString() : ''}`
-                        : 'Not connected'}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant={int.connected ? 'outline' : 'default'}
-                  size="sm"
-                  onClick={() => (int.connected ? handleDisconnect(int.id) : handleConnect(int.id))}
-                >
-                  {int.connected ? (
-                    <>
-                      <Unlink className="h-4 w-4" />
-                      Disconnect
-                    </>
-                  ) : (
-                    <>
-                      <Link2 className="h-4 w-4" />
-                      Connect
-                    </>
-                  )}
-                </Button>
+        <div className="space-y-6">
+          {Array.from(grouped.entries()).map(([category, items], groupIdx) => (
+            <div key={category} className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {CATEGORY_LABELS[category as IntegrationCategory] ?? category}
+              </h4>
+              <div className="space-y-3">
+                {items.map((int, idx) => {
+                  const Icon = ICON_MAP[int.icon] ?? Plug
+                  const isActioning = actionId === int.id
+                  return (
+                    <div
+                      key={int.id}
+                      className={cn(
+                        'flex items-center justify-between rounded-lg border border-border p-4',
+                        'transition-all duration-200 hover:border-accent/30 hover:bg-secondary/30',
+                        'hover:shadow-sm'
+                      )}
+                      style={{
+                        animationDelay: `${(groupIdx * 100 + idx * 50)}ms`,
+                      }}
+                    >
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
+                          <Icon className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-foreground">{int.name}</p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {int.connected
+                              ? `Connected ${int.connected_at ? `since ${new Date(int.connected_at).toLocaleDateString()}` : ''}`
+                              : int.description ?? 'Not connected'}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant={int.connected ? 'outline' : 'default'}
+                        size="sm"
+                        disabled={isActioning}
+                        onClick={() =>
+                          int.connected ? handleDisconnect(int.id) : handleConnect(int.id)
+                        }
+                        className="shrink-0 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        {isActioning ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : int.connected ? (
+                          <>
+                            <Unlink className="h-4 w-4" />
+                            Disconnect
+                          </>
+                        ) : (
+                          <>
+                            <Link2 className="h-4 w-4" />
+                            Connect
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )
+                })}
               </div>
-            )
-          })}
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>
