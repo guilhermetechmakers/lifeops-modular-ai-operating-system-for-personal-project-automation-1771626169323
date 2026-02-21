@@ -19,6 +19,7 @@ import {
   HelpCircle,
   Scale,
   ScrollText,
+  Home,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -40,6 +41,7 @@ const moduleNavItems = [
 ]
 
 const bottomNavItems = [
+  { to: '/', icon: Home, label: 'Home' },
   { to: '/dashboard/user-profile', icon: User, label: 'User Profile' },
   { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
   { to: '/dashboard/billing', icon: BarChart3, label: 'Billing' },
@@ -65,11 +67,12 @@ function NavItem({
   const location = useLocation()
   const path = location.pathname
   const isActive =
+    (to === '/' ? path === '/' : false) ||
     path === to ||
     path === `${to}/` ||
     (to === '/dashboard' &&
       (path === '/dashboard' || path === '/dashboard/' || path === '/dashboard/master-dashboard')) ||
-    (to !== '/dashboard' && path.startsWith(`${to}/`)) ||
+    (to !== '/dashboard' && to !== '/' && path.startsWith(`${to}/`)) ||
     (to === '/dashboard/cronjobs-dashboard' &&
       (path === '/dashboard/cronjobs' || path.startsWith('/dashboard/cronjob-editor')))
 

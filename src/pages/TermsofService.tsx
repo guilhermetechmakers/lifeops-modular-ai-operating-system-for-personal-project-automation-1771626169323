@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { MainNav } from '@/components/layout/main-nav'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { ChevronRight, FileText } from 'lucide-react'
@@ -103,8 +104,9 @@ export default function TermsofService() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col bg-background">
+      <MainNav />
+      <div className="flex-1 mx-auto max-w-4xl w-full px-4 py-8 sm:px-6 lg:px-8">
         <nav
           className="mb-8 flex items-center gap-2 text-sm text-muted-foreground"
           aria-label="Breadcrumb navigation"

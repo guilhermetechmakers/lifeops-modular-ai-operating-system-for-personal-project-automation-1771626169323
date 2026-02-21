@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, Plus, User, Settings, LogOut, Menu } from 'lucide-react'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { BackForwardNav } from '@/components/layout/back-forward-nav'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -55,19 +57,21 @@ export function TopNav({
         className
       )}
     >
-      <div className="flex flex-1 items-center gap-4">
+      <div className="flex flex-1 items-center gap-4 min-w-0">
         {showMenuButton && (
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden shrink-0"
             onClick={onMenuClick}
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
           </Button>
         )}
-        <div className="relative w-full max-w-md">
+        <BackForwardNav className="hidden sm:flex shrink-0" />
+        <Breadcrumb className="min-w-0 flex-1 hidden sm:flex" />
+        <div className="relative w-full max-w-md shrink-0">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
             type="search"

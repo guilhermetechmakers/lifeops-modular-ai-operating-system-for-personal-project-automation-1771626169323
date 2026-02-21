@@ -23,6 +23,7 @@ import { NotFoundPage } from '@/pages/errors/not-found'
 import TermsofService from '@/pages/TermsofService'
 import { CookiePolicyPage } from '@/pages/CookiePolicy'
 import { FolderKanban, FileText, Wallet } from 'lucide-react'
+import { MainNav } from '@/components/layout/main-nav'
 
 function App() {
   return (
@@ -137,17 +138,20 @@ function CronjobEditorRedirect() {
 
 function HelpPlaceholder() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-foreground">Help & Documentation</h1>
-        <p className="mt-2 text-muted-foreground">Coming soon</p>
-        <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
-          <Link to="/" className="text-accent hover:underline">
-            Back to home
-          </Link>
-          <Link to="/dashboard" className="text-accent hover:underline">
-            Go to Dashboard
-          </Link>
+    <div className="min-h-screen flex flex-col bg-background">
+      <MainNav />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground">Help & Documentation</h1>
+          <p className="mt-2 text-muted-foreground">Coming soon</p>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/" className="text-accent hover:underline">
+              Back to home
+            </Link>
+            <Link to="/dashboard" className="text-accent hover:underline">
+              Go to Dashboard
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -156,16 +160,19 @@ function HelpPlaceholder() {
 
 function LegalPlaceholder({ title }: { title: string }) {
   return (
-    <div className="min-h-screen bg-background p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-      <p className="mt-4 text-muted-foreground">Legal content will be displayed here.</p>
-      <div className="mt-4 flex flex-col sm:flex-row gap-3">
-        <Link to="/" className="text-accent hover:underline">
-          Back to home
-        </Link>
-        <Link to="/dashboard" className="text-accent hover:underline">
-          Go to Dashboard
-        </Link>
+    <div className="min-h-screen flex flex-col bg-background">
+      <MainNav />
+      <div className="flex-1 p-8 max-w-3xl mx-auto w-full">
+        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+        <p className="mt-4 text-muted-foreground">Legal content will be displayed here.</p>
+        <div className="mt-4 flex flex-col sm:flex-row gap-3">
+          <Link to="/" className="text-accent hover:underline">
+            Back to home
+          </Link>
+          <Link to="/dashboard" className="text-accent hover:underline">
+            Go to Dashboard
+          </Link>
+        </div>
       </div>
     </div>
   )

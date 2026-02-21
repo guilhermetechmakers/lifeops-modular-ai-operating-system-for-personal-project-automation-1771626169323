@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom'
 import { Home, LayoutDashboard, Search } from 'lucide-react'
+import { MainNav } from '@/components/layout/main-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
 export function NotFoundPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
+    <div className="min-h-screen flex flex-col bg-background">
+      <MainNav />
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
       <div className="fixed inset-0 -z-10 overflow-hidden" aria-hidden>
         <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent-purple/5" />
       </div>
@@ -40,6 +43,7 @@ export function NotFoundPage() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

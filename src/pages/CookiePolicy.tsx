@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { MainNav } from '@/components/layout/main-nav'
 import { Cookie, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -63,8 +64,9 @@ export function CookiePolicyPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col bg-background">
+      <MainNav />
+      <div className="flex-1 mx-auto max-w-3xl w-full px-4 py-8 sm:px-6 lg:px-8">
         <nav aria-label="Breadcrumb">
           <Link
             to="/"

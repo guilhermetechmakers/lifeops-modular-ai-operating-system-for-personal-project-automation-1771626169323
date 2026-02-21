@@ -20,6 +20,11 @@ export const ROUTE_LABELS: Record<string, string> = {
   profile: 'Profile',
   'user-profile': 'User Profile',
   audit: 'Activity Log',
+  help: 'Help',
+  privacy: 'Privacy Policy',
+  cookies: 'Cookie Policy',
+  'terms-of-service': 'Terms of Service',
+  '404': 'Page Not Found',
 }
 
 export interface BreadcrumbItem {
