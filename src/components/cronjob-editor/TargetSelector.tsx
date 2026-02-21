@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search, Bot, Workflow } from 'lucide-react'
+import { Search, Bot, Workflow, SearchX } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MOCK_AGENTS = [
@@ -25,6 +25,7 @@ interface TargetSelectorProps {
   onChange: (value: string) => void
   disabled?: boolean
   error?: string
+  required?: boolean
   agents?: { id: string; name: string; type: string }[]
 }
 
@@ -33,9 +34,12 @@ export function TargetSelector({
   onChange,
   disabled,
   error,
+  required,
   agents = MOCK_AGENTS,
 }: TargetSelectorProps) {
   const [search, setSearch] = useState('')
+  const errorId = 'target-select-error'
+  const showError = error || (required && !value?.trim())
 
   const filtered = useMemo(() => {
     if (!search.trim()) return agents
@@ -53,7 +57,7 @@ export function TargetSelector({
     <Card className="transition-shadow duration-300 hover:shadow-card">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Bot className="h-5 w-5 text-accent" />
+          <Bot className="h-5 w-5 text-accent" aria-hidden />
           <div>
             <CardTitle>Target Selector</CardTitle>
             <CardDescription>
@@ -66,7 +70,7 @@ export function TargetSelector({
         <div className="space-y-2">
           <Label htmlFor="target-search">Search</Label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input
               id="target-search"
               placeholder="Search agents or workflows..."
@@ -74,26 +78,33 @@ export function TargetSelector({
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 transition-all duration-200 focus:border-accent/50"
               disabled={disabled}
+              aria-label="Search agents or workflows"
             />
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="target-select">Target</Label>
+          <Label htmlFor="target-select">
+            Target
+            {required && <span className="text-destructive ml-0.5" aria-hidden>*</span>}
+          </Label>
           <Select value={value || undefined} onValueChange={onChange} disabled={disabled}>
             <SelectTrigger
               id="target-select"
+              aria-label="Select target agent or workflow"
+              aria-invalid={!!showError}
+              aria-describedby={showError ? errorId : undefined}
               className={cn(
                 'transition-all duration-200',
-                error && 'border-red-500/50'
+                showError && 'border-destructive/50 focus:ring-destructive/20'
               )}
             >
               <SelectValue placeholder="Select agent or workflow">
                 {selected && (
                   <div className="flex items-center gap-2">
                     {selected.type === 'agent' ? (
-                      <Bot className="h-4 w-4 text-muted-foreground" />
+                      <Bot className="h-4 w-4 text-muted-foreground" aria-hidden />
                     ) : (
-                      <Workflow className="h-4 w-4 text-muted-foreground" />
+                      <Workflow className="h-4 w-4 text-muted-foreground" aria-hidden />
                     )}
                     <span>{selected.name}</span>
                     <span className="text-xs text-muted-foreground">({selected.id})</span>
@@ -103,17 +114,33 @@ export function TargetSelector({
             </SelectTrigger>
             <SelectContent>
               {filtered.length === 0 ? (
-                <div className="py-6 text-center text-sm text-muted-foreground">
-                  No agents or workflows found
+                <div
+                  className="flex flex-col items-center justify-center gap-3 py-8 px-4"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+                    <SearchX className="h-6 w-6 text-muted-foreground" aria-hidden />
+                  </div>
+                  <div className="text-center space-y-1">
+                    <p className="text-sm font-medium text-foreground">
+                      No agents or workflows found
+                    </p>
+                    <p className="text-xs text-muted-foreground max-w-[200px]">
+                      {search.trim()
+                        ? 'Try a different search term or clear the search to see all options.'
+                        : 'No agents or workflows are available. Add some to get started.'}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 filtered.map((a) => (
                   <SelectItem key={a.id} value={a.id}>
                     <div className="flex items-center gap-2">
                       {a.type === 'agent' ? (
-                        <Bot className="h-4 w-4" />
+                        <Bot className="h-4 w-4" aria-hidden />
                       ) : (
-                        <Workflow className="h-4 w-4" />
+                        <Workflow className="h-4 w-4" aria-hidden />
                       )}
                       <span>{a.name}</span>
                       <span className="text-xs text-muted-foreground">({a.id})</span>
@@ -129,9 +156,19 @@ export function TargetSelector({
             placeholder="Or enter target ID manually"
             className="mt-2 font-mono text-xs"
             disabled={disabled}
+            aria-label="Or enter target ID manually"
           />
-          {error && (
-            <p className="text-sm text-red-400 animate-fade-in">{error}</p>
+          {showError && (
+            <p
+              id={errorId}
+              role="alert"
+              className={cn(
+                'text-sm text-destructive animate-fade-in',
+                'transition-all duration-200'
+              )}
+            >
+              {error ?? (required && !value?.trim() ? 'Please select or enter a target.' : '')}
+            </p>
           )}
         </div>
       </CardContent>
