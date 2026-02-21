@@ -44,6 +44,10 @@ export default {
           DEFAULT: "rgb(var(--warning))",
           foreground: "rgb(var(--warning-foreground))",
         },
+        "microsoft-red": "rgb(var(--microsoft-red))",
+        "microsoft-blue": "rgb(var(--microsoft-blue))",
+        "microsoft-green": "rgb(var(--microsoft-green))",
+        "microsoft-yellow": "rgb(var(--microsoft-yellow))",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

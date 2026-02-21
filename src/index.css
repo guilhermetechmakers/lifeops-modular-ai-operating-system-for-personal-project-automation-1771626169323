@@ -30,6 +30,11 @@
     --success-foreground: 255 255 255;
     --warning: 245 158 11;
     --warning-foreground: 255 255 255;
+    /* Microsoft brand colors for SSO icon (design tokens) */
+    --microsoft-red: 242 80 34;
+    --microsoft-blue: 0 164 239;
+    --microsoft-green: 127 186 0;
+    --microsoft-yellow: 255 185 0;
   }
 
   * {

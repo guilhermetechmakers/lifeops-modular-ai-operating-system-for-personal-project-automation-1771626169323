@@ -31,10 +31,10 @@ const SSO_PROVIDERS = [
     label: 'Microsoft',
     icon: () => (
       <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden>
-        <path fill="#f25022" d="M1 1h10v10H1z" />
-        <path fill="#00a4ef" d="M1 13h10v10H1z" />
-        <path fill="#7fba00" d="M13 1h10v10H13z" />
-        <path fill="#ffb900" d="M13 13h10v10H13z" />
+        <path fill="rgb(var(--microsoft-red))" d="M1 1h10v10H1z" />
+        <path fill="rgb(var(--microsoft-blue))" d="M1 13h10v10H1z" />
+        <path fill="rgb(var(--microsoft-green))" d="M13 1h10v10H13z" />
+        <path fill="rgb(var(--microsoft-yellow))" d="M13 13h10v10H13z" />
       </svg>
     ),
   },

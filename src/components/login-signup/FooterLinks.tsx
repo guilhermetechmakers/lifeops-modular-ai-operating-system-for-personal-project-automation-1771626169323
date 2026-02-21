@@ -17,13 +17,15 @@ export function FooterLinks({ className }: FooterLinksProps) {
       <Link
         to="/help"
         className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+        aria-label="Get help"
       >
-        <HelpCircle className="h-4 w-4" />
+        <HelpCircle className="h-4 w-4" aria-hidden />
         Help
       </Link>
       <a
         href="mailto:sales@lifeops.example"
         className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+        aria-label="Contact sales"
       >
         <Phone className="h-4 w-4" />
         Contact Sales

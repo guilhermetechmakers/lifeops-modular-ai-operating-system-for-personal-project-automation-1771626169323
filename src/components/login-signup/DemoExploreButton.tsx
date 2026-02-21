@@ -42,6 +42,7 @@ export function DemoExploreButton({
         'w-full transition-all duration-200 hover:scale-[1.02] hover:border-accent/50 active:scale-[0.98]',
         className
       )}
+      aria-label="Try demo or explore without signing up"
     >
       <Sparkles className="h-4 w-4" />
       Demo / Explore

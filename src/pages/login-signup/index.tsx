@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Zap } from 'lucide-react'
+import { Zap, Loader2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AuthForm } from '@/components/login-signup/AuthForm'
 import { SSOButtons } from '@/components/login-signup/SSOButtons'
@@ -54,7 +54,24 @@ export function LoginSignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 py-12 relative">
+      {/* Loading overlay during form submission */}
+      {isLoading && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading"
+        >
+          <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 shadow-card">
+            <Loader2 className="h-10 w-10 animate-spin text-accent" aria-hidden />
+            <p className="text-sm font-medium text-foreground">
+              {mode === 'signup' ? 'Creating your account...' : 'Signing you in...'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Animated gradient background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent-purple/5 animate-gradient-shift bg-[length:200%_200%]" />
@@ -65,6 +82,7 @@ export function LoginSignupPage() {
         <Link
           to="/"
           className="mb-8 flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+          aria-label="LifeOps - Return to home"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent shadow-accent-glow">
             <Zap className="h-6 w-6 text-accent-foreground" />
@@ -109,7 +127,11 @@ export function LoginSignupPage() {
         </div>
 
         <p className="mt-8 text-center text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-foreground transition-colors">
+          <Link
+            to="/"
+            className="hover:text-foreground transition-colors"
+            aria-label="Back to home page"
+          >
             Back to home
           </Link>
         </p>

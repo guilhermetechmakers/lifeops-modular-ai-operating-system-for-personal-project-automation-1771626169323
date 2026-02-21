@@ -23,6 +23,7 @@ export function SignupToggle({ mode, onToggle, className }: SignupToggleProps) {
             type="button"
             onClick={onToggle}
             className="font-medium text-accent hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+            aria-label="Switch to sign in form"
           >
             Sign in
           </button>
@@ -34,6 +35,7 @@ export function SignupToggle({ mode, onToggle, className }: SignupToggleProps) {
             type="button"
             onClick={onToggle}
             className="font-medium text-accent hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+            aria-label="Switch to sign up form"
           >
             Sign up
           </button>

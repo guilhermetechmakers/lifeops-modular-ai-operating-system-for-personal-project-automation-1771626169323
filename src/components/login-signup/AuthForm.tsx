@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Mail, Lock, User } from 'lucide-react'
+import { Mail, Lock, User, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -79,8 +79,9 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
     >
       {error && (
         <div
-          className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
           role="alert"
+          aria-live="assertive"
         >
           {error}
         </div>
@@ -93,13 +94,15 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
             <Input
               id="name"
               placeholder="John Doe"
-              className={cn('pl-10', errors.name && 'border-red-500/50')}
+              className={cn('pl-10', errors.name && 'border-destructive focus-visible:ring-destructive')}
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? 'name-error' : undefined}
               {...register('name')}
             />
-            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           </div>
           {errors.name && (
-            <p className="text-sm text-red-400">{errors.name.message}</p>
+            <p id="name-error" className="text-sm text-destructive" role="alert">{errors.name.message}</p>
           )}
         </div>
       )}
@@ -107,17 +110,20 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
             id="email"
             type="email"
             placeholder="you@example.com"
-            className={cn('pl-10', errors.email && 'border-red-500/50')}
+            autoComplete="email"
+            className={cn('pl-10', errors.email && 'border-destructive focus-visible:ring-destructive')}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? 'email-error' : undefined}
             {...register('email')}
           />
         </div>
         {errors.email && (
-          <p className="text-sm text-red-400">{errors.email.message}</p>
+          <p id="email-error" className="text-sm text-destructive" role="alert">{errors.email.message}</p>
         )}
       </div>
 
@@ -128,7 +134,9 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
             <Input
               id="company"
               placeholder="Acme Inc."
-              className={cn(errors.company && 'border-red-500/50')}
+              className={cn(errors.company && 'border-destructive focus-visible:ring-destructive')}
+              aria-invalid={!!errors.company}
+              aria-describedby={errors.company ? 'company-error' : undefined}
               {...register('company')}
             />
           </div>
@@ -137,7 +145,9 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
             <Input
               id="role"
               placeholder="Developer, Manager, etc."
-              className={cn(errors.role && 'border-red-500/50')}
+              className={cn(errors.role && 'border-destructive focus-visible:ring-destructive')}
+              aria-invalid={!!errors.role}
+              aria-describedby={errors.role ? 'role-error' : undefined}
               {...register('role')}
             />
           </div>
@@ -151,23 +161,27 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
             <Link
               to="/password-reset"
               className="text-sm text-accent hover:underline"
+              aria-label="Reset your password"
             >
               Forgot password?
             </Link>
           )}
         </div>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input
             id="password"
             type="password"
             placeholder="••••••••"
-            className={cn('pl-10', errors.password && 'border-red-500/50')}
+            autoComplete={isSignup ? 'new-password' : 'current-password'}
+            className={cn('pl-10', errors.password && 'border-destructive focus-visible:ring-destructive')}
+            aria-invalid={!!errors.password}
+            aria-describedby={errors.password ? 'password-error' : undefined}
             {...register('password')}
           />
         </div>
         {errors.password && (
-          <p className="text-sm text-red-400">{errors.password.message}</p>
+          <p id="password-error" className="text-sm text-destructive" role="alert">{errors.password.message}</p>
         )}
         {isSignup && (
           <p className="text-xs text-muted-foreground">
@@ -182,6 +196,7 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
             id="rememberMe"
             checked={rememberMe}
             onCheckedChange={(checked) => setValue('rememberMe', !!checked)}
+            aria-label="Remember me on this device"
           />
           <Label
             htmlFor="rememberMe"
@@ -196,14 +211,19 @@ export function AuthForm({ mode, onSubmit, isLoading = false, error }: AuthFormP
         type="submit"
         className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
         disabled={isLoading}
+        aria-busy={isLoading}
+        aria-label={isLoading ? (isSignup ? 'Creating account' : 'Signing in') : (isSignup ? 'Create account' : 'Sign in')}
       >
-        {isLoading
-          ? isSignup
-            ? 'Creating account...'
-            : 'Signing in...'
-          : isSignup
-            ? 'Create account'
-            : 'Sign in'}
+        {isLoading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            {isSignup ? 'Creating account...' : 'Signing in...'}
+          </>
+        ) : isSignup ? (
+          'Create account'
+        ) : (
+          'Sign in'
+        )}
       </Button>
     </form>
   )
