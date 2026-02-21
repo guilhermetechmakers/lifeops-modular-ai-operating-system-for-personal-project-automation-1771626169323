@@ -46,7 +46,7 @@ export function RunHistoryTab({ cronjobId, onRunDetail, onRunNow }: RunHistoryTa
   const StatusIcon = ({ status }: { status: CronjobRun['status'] }) => {
     switch (status) {
       case 'success':
-        return <CheckCircle className="h-4 w-4 text-accent-green" />
+        return <CheckCircle className="h-4 w-4 text-success" />
       case 'failed':
         return <AlertCircle className="h-4 w-4 text-red-400" />
       case 'running':

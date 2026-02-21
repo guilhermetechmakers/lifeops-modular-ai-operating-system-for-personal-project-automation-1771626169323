@@ -1,27 +1,15 @@
 import { apiPost } from '@/lib/api'
+import { supabase } from '@/lib/supabase'
 import type { Cronjob, CronjobRun } from '@/types/cronjobs'
 
-// When Supabase is configured: VITE_SUPABASE_FUNCTIONS_URL = https://<project>.supabase.co/functions/v1
-const CRONJOBS_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
-  ? `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/cronjobs-crud`
-  : undefined
-const CRONJOBS_PATH = CRONJOBS_BASE ?? '/cronjobs'
-
 async function cronjobsFetch<T>(body: object): Promise<T> {
-  if (CRONJOBS_BASE) {
-    const res = await fetch(CRONJOBS_PATH, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error((err as { error?: string }).error ?? res.statusText)
-    }
-    return res.json()
+  if (supabase) {
+    const { data, error } = await supabase.functions.invoke<T>('cronjobs-crud', { body })
+    if (error) throw new Error(error.message)
+    if (data == null) throw new Error('No response from cronjobs-crud')
+    return data
   }
-  return apiPost<T>(CRONJOBS_PATH, body)
+  return apiPost<T>('/cronjobs', body)
 }
 
 export async function fetchCronjobs(): Promise<Cronjob[]> {
