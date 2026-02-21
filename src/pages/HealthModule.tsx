@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronRight, Calendar, AlertTriangle } from 'lucide-react'
+import { ChevronRight, Calendar, AlertTriangle, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { EmptyState } from '@/components/ui/loading-states/EmptyState'
 import {
   HabitsGoalsBoard,
   TrainingNutritionPlans,
@@ -62,9 +64,9 @@ export default function HealthModule() {
       </div>
 
       {isError && (
-        <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+        <div className="flex items-center justify-between rounded-xl border border-warning/30 bg-warning/10 p-4">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <AlertTriangle className="h-5 w-5 text-warning" aria-hidden />
             <p className="text-sm text-foreground">Using demo data. Connect to API for live sync.</p>
           </div>
           <Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -109,12 +111,24 @@ export default function HealthModule() {
         </div>
       </div>
 
-      {healthItems.length > 0 && (
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-sm text-muted-foreground">
-            {healthItems.length} health item(s) synced. Integrate with Cronjobs for proactive nudges and health checks.
-          </p>
-        </div>
+      {!isLoading && (
+        <Card>
+          <CardContent className="p-6">
+            {healthItems.length > 0 ? (
+              <p className="text-sm text-muted-foreground">
+                {healthItems.length} health item(s) synced. Integrate with Cronjobs for proactive nudges and health checks.
+              </p>
+            ) : (
+              <EmptyState
+                icon={Activity}
+                heading="No health items synced"
+                description="Connect your health data or create health items to sync with Cronjobs for proactive nudges and health checks."
+                actionLabel="Schedule habit nudges"
+                actionHref="/dashboard/cronjobs-dashboard?create=1"
+              />
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   )
