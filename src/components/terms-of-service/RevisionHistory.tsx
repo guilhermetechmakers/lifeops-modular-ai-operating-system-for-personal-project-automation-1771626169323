@@ -26,10 +26,17 @@ export function RevisionHistory({
   const items = revisions.length > 0 ? revisions : FALLBACK_REVISIONS
 
   return (
-    <Card className={cn('animate-fade-in-up [animation-delay:0.1s] [animation-fill-mode:both]', className)}>
+    <Card
+      id="revisions-heading"
+      className={cn(
+        'animate-fade-in-up [animation-delay:0.1s] [animation-fill-mode:both]',
+        'transition-all duration-300 hover:shadow-card-hover hover:border-accent/10',
+        className
+      )}
+    >
       <CardHeader>
         <div className="flex items-center gap-2">
-          <History className="h-5 w-5 text-muted-foreground" />
+          <History className="h-5 w-5 text-muted-foreground" aria-hidden />
           <h2 className="text-lg font-semibold tracking-tight text-foreground">
             Revision History
           </h2>

@@ -10,15 +10,46 @@ import {
   acceptTerms,
 } from '@/api/terms-of-service'
 import { ErrorState } from '@/components/ui/loading-states'
+import { Skeleton } from '@/components/ui/skeleton'
+
+function TermsPageSkeleton() {
+  return (
+    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+      <nav className="mb-8 flex items-center gap-2" aria-hidden>
+        <Skeleton className="h-4 w-12" />
+        <Skeleton className="h-4 w-4 rounded" />
+        <Skeleton className="h-4 w-32" />
+      </nav>
+      <header className="mb-10 space-y-2">
+        <Skeleton className="h-10 w-72 sm:h-12 sm:w-96" />
+        <Skeleton className="h-4 w-full max-w-xl" />
+      </header>
+      <div className="space-y-8">
+        <Skeleton className="h-64 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full rounded-xl" />
+      </div>
+    </div>
+  )
+}
 
 export default function TermsofService() {
   const queryClient = useQueryClient()
 
   useEffect(() => {
     const prevTitle = document.title
+    const prevDesc = document.querySelector('meta[name="description"]')?.getAttribute('content')
     document.title = 'Terms of Service — LifeOps'
+    const metaDesc = document.querySelector('meta[name="description"]')
+    if (metaDesc) {
+      metaDesc.setAttribute(
+        'content',
+        'Legal terms governing use of LifeOps, acceptable use policy, and liability limits.'
+      )
+    }
     return () => {
       document.title = prevTitle
+      if (metaDesc && prevDesc) metaDesc.setAttribute('content', prevDesc)
     }
   }, [])
 
@@ -54,6 +85,15 @@ export default function TermsofService() {
   })
 
   const hasAccepted = acceptedTerms.length > 0
+  const isInitialLoad = isLoadingRevisions
+
+  if (isInitialLoad) {
+    return (
+      <div className="min-h-screen bg-background">
+        <TermsPageSkeleton />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -64,13 +104,13 @@ export default function TermsofService() {
         >
           <Link
             to="/"
-            className="transition-colors hover:text-foreground"
+            className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
           >
             Home
           </Link>
-          <ChevronRight className="h-4 w-4 shrink-0" />
+          <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
           <span className="flex items-center gap-1.5 text-foreground font-medium">
-            <FileText className="h-4 w-4" />
+            <FileText className="h-4 w-4" aria-hidden />
             Terms of Service
           </span>
         </nav>
@@ -79,17 +119,23 @@ export default function TermsofService() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Terms of Service
           </h1>
-          <p className="mt-2 text-base text-muted-foreground">
+          <p className="mt-2 text-base leading-relaxed text-muted-foreground">
             Legal terms governing use of LifeOps, acceptable use policy, and liability limits.
           </p>
         </header>
 
         <div className="space-y-8">
-          <section className="animate-fade-in-up [animation-fill-mode:both]">
+          <section
+            className="animate-fade-in-up [animation-fill-mode:both]"
+            aria-labelledby="terms-heading"
+          >
             <TermsText />
           </section>
 
-          <section className="animate-fade-in-up [animation-delay:0.05s] [animation-fill-mode:both]">
+          <section
+            className="animate-fade-in-up [animation-delay:0.05s] [animation-fill-mode:both]"
+            aria-labelledby="accept-heading"
+          >
             <AcceptAgreeCTA
               onAccept={async () => {
                 await acceptMutation.mutateAsync()
@@ -99,7 +145,10 @@ export default function TermsofService() {
             />
           </section>
 
-          <section className="animate-fade-in-up [animation-delay:0.1s] [animation-fill-mode:both]">
+          <section
+            className="animate-fade-in-up [animation-delay:0.1s] [animation-fill-mode:both]"
+            aria-labelledby="revisions-heading"
+          >
             {isErrorRevisions ? (
               <ErrorState
                 title="Could not load revision history"
@@ -118,16 +167,31 @@ export default function TermsofService() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Link
               to="/"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
             >
               ← Back to Home
             </Link>
-            <Link
-              to="/privacy"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Privacy Policy
-            </Link>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                to="/terms-of-service"
+                className="text-sm font-medium text-foreground"
+                aria-current="page"
+              >
+                Terms of Service
+              </Link>
+              <Link
+                to="/privacy"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                to="/cookies"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              >
+                Cookie Policy
+              </Link>
+            </div>
           </div>
         </footer>
       </div>

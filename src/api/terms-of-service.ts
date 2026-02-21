@@ -1,24 +1,15 @@
 import { apiPost } from '@/lib/api'
+import { supabase } from '@/lib/supabase'
 import type { TermsofService, TermsRevision } from '@/types/terms-of-service'
 
-const TERMS_BASE = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
-  ? `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/terms-of-service`
-  : undefined
-const TERMS_PATH = TERMS_BASE ?? '/terms-of-service'
+const TERMS_PATH = '/terms-of-service'
 
 async function termsFetch<T>(body: object): Promise<T> {
-  if (TERMS_BASE) {
-    const res = await fetch(TERMS_PATH, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error((err as { error?: string }).error ?? res.statusText)
-    }
-    return res.json()
+  if (supabase) {
+    const { data, error } = await supabase.functions.invoke<T>('terms-of-service', { body })
+    if (error) throw new Error(error.message)
+    if (data == null) throw new Error('No response from terms-of-service')
+    return data
   }
   return apiPost<T>(TERMS_PATH, body)
 }

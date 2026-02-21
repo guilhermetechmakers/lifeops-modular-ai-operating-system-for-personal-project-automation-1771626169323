@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Loader2 } from 'lucide-react'
+import { Check, Loader2, FileCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -39,9 +39,10 @@ export function AcceptAgreeCTA({
 
   return (
     <Card
+      id="accept-heading"
       className={cn(
         'animate-fade-in-up transition-all duration-300',
-        'hover:shadow-card-hover hover:-translate-y-0.5',
+        'hover:shadow-card-hover hover:-translate-y-0.5 hover:border-accent/30',
         'border-accent/20',
         className
       )}
@@ -80,21 +81,23 @@ export function AcceptAgreeCTA({
             <Button
               onClick={handleSubmit}
               disabled={isDisabled}
+              aria-busy={isSubmitting}
+              aria-label={isSubmitting ? 'Processing acceptance' : 'Accept and agree to Terms of Service'}
               className={cn(
                 'w-full sm:w-auto',
                 'bg-gradient-to-r from-accent to-primary',
-                'transition-all duration-200 hover:scale-[1.02] hover:opacity-90',
-                'disabled:opacity-50 disabled:hover:scale-100'
+                'transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-accent/20',
+                'disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed'
               )}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                   Processing...
                 </>
               ) : (
                 <>
-                  <Check className="h-4 w-4" />
+                  <FileCheck className="h-4 w-4" aria-hidden />
                   Accept & Agree
                 </>
               )}

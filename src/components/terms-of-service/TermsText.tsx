@@ -11,7 +11,14 @@ export interface TermsTextProps {
  */
 export function TermsText({ className }: TermsTextProps) {
   return (
-    <Card className={cn('animate-fade-in', className)}>
+    <Card
+      id="terms-heading"
+      className={cn(
+        'animate-fade-in border-accent/10',
+        'transition-all duration-300 hover:shadow-card-hover hover:border-accent/20',
+        className
+      )}
+    >
       <CardHeader>
         <h2 className="text-xl font-semibold tracking-tight text-foreground">
           Terms of Service

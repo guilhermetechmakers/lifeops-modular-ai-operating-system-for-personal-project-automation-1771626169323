@@ -67,10 +67,15 @@ export function CookiePolicyPage() {
           </section>
         </div>
 
-        <div className="mt-12 flex gap-4">
+        <div className="mt-12 flex flex-wrap gap-4">
           <Link to="/">
             <Button variant="outline" className="transition-all duration-200 hover:scale-[1.02]">
               Back to home
+            </Button>
+          </Link>
+          <Link to="/terms-of-service">
+            <Button variant="ghost" className="transition-all duration-200 hover:scale-[1.02]">
+              Terms of Service
             </Button>
           </Link>
           <Link to="/privacy">
