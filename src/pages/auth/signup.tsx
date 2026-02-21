@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Zap, Mail, Lock, User } from 'lucide-react'
+import { Zap, Mail, Lock, User, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,13 +34,16 @@ export function SignupPage() {
 
   async function onSubmit(_data: SignupForm) {
     setIsLoading(true)
+    const loadingToastId = toast.loading('Creating your account...')
     try {
       // TODO: Replace with actual API call
       await new Promise((r) => setTimeout(r, 800))
-      toast.success('Account created. Please verify your email.')
+      toast.dismiss(loadingToastId)
+      toast.success('Account created successfully. Please verify your email.')
       navigate('/dashboard')
     } catch {
-      toast.error('Failed to create account')
+      toast.dismiss(loadingToastId)
+      toast.error('Failed to create account. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -72,58 +75,80 @@ export function SignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
                   <Input
                     id="name"
                     placeholder="John Doe"
-                    className={cn('pl-10', errors.name && 'border-red-500/50')}
+                    aria-label="Full name"
+                    aria-invalid={!!errors.name}
+                    aria-describedby={errors.name ? 'name-error' : undefined}
+                    className={cn('pl-10', errors.name && 'border-destructive/50 focus-visible:ring-destructive')}
                     {...register('name')}
                   />
                 </div>
                 {errors.name && (
-                  <p className="text-sm text-red-400">{errors.name.message}</p>
+                  <p id="name-error" className="text-sm text-destructive" role="alert">
+                    {errors.name.message}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
                   <Input
                     id="email"
                     type="email"
                     placeholder="you@example.com"
-                    className={cn('pl-10', errors.email && 'border-red-500/50')}
+                    aria-label="Email address"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
+                    className={cn('pl-10', errors.email && 'border-destructive/50 focus-visible:ring-destructive')}
                     {...register('email')}
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-sm text-red-400">{errors.email.message}</p>
+                  <p id="email-error" className="text-sm text-destructive" role="alert">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
                   <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
-                    className={cn('pl-10', errors.password && 'border-red-500/50')}
+                    aria-label="Password"
+                    aria-invalid={!!errors.password}
+                    aria-describedby={errors.password ? 'password-error' : 'password-hint'}
+                    className={cn('pl-10', errors.password && 'border-destructive/50 focus-visible:ring-destructive')}
                     {...register('password')}
                   />
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-red-400">{errors.password.message}</p>
-                )}
-                <p className="text-xs text-muted-foreground">
+                <p id="password-hint" className="text-xs text-muted-foreground">
                   Must be at least 8 characters
                 </p>
+                {errors.password && (
+                  <p id="password-error" className="text-sm text-destructive" role="alert">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating account...' : 'Create account'}
+              <Button type="submit" className="w-full" disabled={isLoading} aria-busy={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Creating account...
+                  </>
+                ) : (
+                  'Create account'
+                )}
               </Button>
             </form>
 
