@@ -10,6 +10,8 @@ export interface EmptyStateProps {
   actionLabel?: string
   actionHref?: string
   onAction?: () => void
+  /** Optional secondary content (e.g. examples, suggestions) */
+  children?: React.ReactNode
   className?: string
   iconClassName?: string
 }
@@ -17,6 +19,7 @@ export interface EmptyStateProps {
 /**
  * Reusable empty state with icon, heading, description, and optional CTA.
  * Use across Dashboard, Cronjobs, Runs, Projects, Content, Admin, etc.
+ * Per Design Reference: icon + heading + description + CTA, helpful copy.
  */
 export function EmptyState({
   icon: Icon,
@@ -25,6 +28,7 @@ export function EmptyState({
   actionLabel,
   actionHref,
   onAction,
+  children,
   className,
   iconClassName,
 }: EmptyStateProps) {
@@ -34,6 +38,7 @@ export function EmptyState({
     <div
       className={cn(
         'flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 px-6',
+        'transition-all duration-300 hover:border-border/80 hover:shadow-sm',
         className
       )}
     >
@@ -43,20 +48,26 @@ export function EmptyState({
           iconClassName
         )}
       >
-        <Icon className="h-8 w-8 text-muted-foreground" />
+        <Icon className="h-8 w-8 text-muted-foreground" aria-hidden />
       </div>
       <h3 className="mt-4 text-lg font-semibold text-foreground">{heading}</h3>
-      <p className="mt-2 max-w-sm text-center text-sm text-muted-foreground">{description}</p>
+      <p className="mt-2 max-w-sm text-center text-sm leading-relaxed text-muted-foreground">
+        {description}
+      </p>
+      {children && <div className="mt-4 w-full max-w-sm">{children}</div>}
       {hasAction && (
         <div className="mt-6">
           {actionHref ? (
-            <Button asChild className="transition-all duration-200 hover:scale-[1.02]">
+            <Button
+              asChild
+              className="transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+            >
               <Link to={actionHref}>{actionLabel}</Link>
             </Button>
           ) : (
             <Button
               onClick={onAction}
-              className="transition-all duration-200 hover:scale-[1.02]"
+              className="transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
             >
               {actionLabel}
             </Button>
