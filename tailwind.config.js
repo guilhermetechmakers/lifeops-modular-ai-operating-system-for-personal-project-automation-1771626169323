@@ -46,9 +46,9 @@ export default {
         "2xl": "1.25rem",
       },
       boxShadow: {
-        card: "0 2px 8px rgba(0, 0, 0, 0.2)",
-        "card-hover": "0 4px 16px rgba(0, 0, 0, 0.3)",
-        "accent-glow": "0 0 20px rgba(255, 122, 26, 0.3)",
+        card: "0 2px 8px rgb(0 0 0 / 0.2)",
+        "card-hover": "0 4px 16px rgb(0 0 0 / 0.3)",
+        "accent-glow": "0 0 20px rgb(var(--accent) / 0.3)",
       },
       keyframes: {
         "fade-in": {

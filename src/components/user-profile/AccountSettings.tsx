@@ -71,7 +71,7 @@ export function AccountSettings({
     setIsSaving(true)
     try {
       await onUpdate({ full_name: fullName, timezone: tz, language: lang })
-      toast.success('Account settings updated')
+      toast.success('Profile updated successfully')
     } catch {
       setHasError(true)
       toast.error('Failed to update settings')
@@ -167,6 +167,7 @@ export function AccountSettings({
           onClick={handleSave}
           disabled={isSaving}
           className="mt-2 transition-all duration-200"
+          aria-label={isSaving ? 'Saving changes' : 'Save account settings'}
         >
           {isSaving ? (
             <>

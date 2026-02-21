@@ -11,6 +11,7 @@ import {
   BillingSummaryCTA,
   ActivityLog,
 } from '@/components/user-profile'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   useUserProfile,
   useUpdateUserProfile,
@@ -27,7 +28,6 @@ import {
 } from '@/hooks/use-user-profile'
 import type {
   UserProfile as UserProfileType,
-  Integration,
   ActiveSession,
   ActivityLogEntry,
 } from '@/types/user-profile'
@@ -49,18 +49,6 @@ const MOCK_PROFILE: UserProfileType = {
   updated_at: new Date().toISOString(),
 }
 
-const MOCK_INTEGRATIONS: Integration[] = [
-  { id: 'github', name: 'GitHub', icon: 'github', category: 'dev', description: 'Repos, PRs, issues, CI/CD', connected: false },
-  { id: 'jira', name: 'Jira', icon: 'jira', category: 'dev', description: 'Issues, sprints, project management', connected: false },
-  { id: 'slack', name: 'Slack', icon: 'slack', category: 'communication', description: 'Team messaging and notifications', connected: true, connected_at: new Date().toISOString() },
-  { id: 'google', name: 'Google', icon: 'google', category: 'communication', description: 'Calendar, Drive, Gmail', connected: true, connected_at: new Date().toISOString() },
-  { id: 'stripe', name: 'Stripe', icon: 'stripe', category: 'finance', description: 'Payments and subscriptions', connected: false },
-  { id: 'plaid', name: 'Plaid', icon: 'plaid', category: 'finance', description: 'Bank connections and transactions', connected: false },
-  { id: 'health', name: 'Health APIs', icon: 'health', category: 'health', description: 'Fitness and health device data', connected: false },
-  { id: 'notion', name: 'Notion', icon: 'notion', category: 'cms', description: 'Docs and wikis', connected: false },
-  { id: 'cms', name: 'CMS', icon: 'cms', category: 'cms', description: 'Content management systems', connected: false },
-  { id: 'linear', name: 'Linear', icon: 'linear', category: 'dev', description: 'Issues and roadmap', connected: false },
-]
 
 const MOCK_SESSIONS: ActiveSession[] = [
   {
@@ -112,9 +100,7 @@ export default function UserProfile() {
   const profile =
     profileQuery.data ??
     (profileQuery.isError ? MOCK_PROFILE : null)
-  const integrations =
-    integrationsQuery.data ??
-    (integrationsQuery.isError ? MOCK_INTEGRATIONS : [])
+  const integrations = integrationsQuery.data ?? []
   const apiKeys = apiKeysQuery.data ?? (apiKeysQuery.isError ? [] : [])
   const sessions =
     sessionsQuery.data ?? (sessionsQuery.isError ? MOCK_SESSIONS : [])
@@ -213,12 +199,42 @@ export default function UserProfile() {
     toast.info('All sessions revoked. You may need to sign in again.')
   }, [revokeSession])
 
-  if (!profile && !isLoading) {
+  if (isLoading) {
+    return (
+      <div className="space-y-8 animate-fade-in" role="status" aria-label="Loading profile">
+        <nav className="flex items-center gap-2 text-sm text-muted-foreground" aria-label="Breadcrumb">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-4 rounded" />
+          <Skeleton className="h-4 w-24" />
+        </nav>
+        <div>
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-4 w-96 max-w-full mt-2" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Skeleton className="h-72 w-full rounded-xl" />
+          <Skeleton className="h-72 w-full rounded-xl" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+        </div>
+        <Skeleton className="h-48 w-full rounded-xl" />
+        <span className="sr-only">Loading user profile...</span>
+      </div>
+    )
+  }
+
+  if (!profile) {
     return (
       <div className="flex flex-col items-center justify-center py-24 px-4 animate-fade-in">
         <div className="flex flex-col items-center max-w-md text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10 mb-6">
-            <AlertCircle className="h-8 w-8 text-destructive" />
+            <AlertCircle className="h-8 w-8 text-destructive" aria-hidden />
           </div>
           <h2 className="text-xl font-semibold text-foreground">
             Failed to load profile
@@ -230,8 +246,9 @@ export default function UserProfile() {
           <button
             onClick={refetchAll}
             className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-md hover:shadow-accent-glow"
+            aria-label="Retry loading profile"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className="h-4 w-4" aria-hidden />
             Retry
           </button>
         </div>
@@ -245,7 +262,11 @@ export default function UserProfile() {
         className="flex items-center gap-2 text-sm text-muted-foreground"
         aria-label="Breadcrumb"
       >
-        <Link to="/dashboard" className="hover:text-foreground transition-colors">
+        <Link
+          to="/dashboard"
+          className="hover:text-foreground transition-colors"
+          aria-label="Navigate to dashboard"
+        >
           Dashboard
         </Link>
         <ChevronRight className="h-4 w-4 shrink-0" />
@@ -302,6 +323,8 @@ export default function UserProfile() {
             onConnect={handleConnectIntegration}
             onDisconnect={handleDisconnectIntegration}
             isLoading={isLoading}
+            isError={integrationsQuery.isError}
+            onRetry={() => integrationsQuery.refetch()}
           />
         </div>
       </div>

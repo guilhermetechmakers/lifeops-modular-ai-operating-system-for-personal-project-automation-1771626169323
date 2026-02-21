@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { EmptyState } from '@/components/ui/loading-states'
 import {
   Link2,
   Unlink,
@@ -18,6 +17,7 @@ import {
   Wallet,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { EmptyState, ErrorState } from '@/components/ui/loading-states'
 import type { Integration, IntegrationCategory } from '@/types/user-profile'
 
 const CATEGORY_LABELS: Record<IntegrationCategory, string> = {
@@ -46,6 +46,8 @@ export interface IntegrationsProps {
   onConnect: (id: string) => Promise<void>
   onDisconnect: (id: string) => Promise<void>
   isLoading?: boolean
+  isError?: boolean
+  onRetry?: () => void
   className?: string
 }
 
@@ -74,6 +76,8 @@ export function Integrations({
   onConnect,
   onDisconnect,
   isLoading,
+  isError,
+  onRetry,
   className,
 }: IntegrationsProps) {
   const [actionId, setActionId] = useState<string | null>(null)
@@ -113,6 +117,34 @@ export function Integrations({
     )
   }
 
+  if (isError) {
+    return (
+      <Card
+        className={cn(
+          'transition-all duration-300 hover:shadow-card-hover',
+          'border border-border hover:border-accent/20',
+          className
+        )}
+      >
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Link2 className="h-5 w-5" aria-hidden />
+            Third-Party Integrations
+          </CardTitle>
+          <CardDescription>Connect external services to extend your workflow</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ErrorState
+            title="Failed to load integrations"
+            message="We couldn't load your integrations. Please check your connection and try again."
+            onRetry={onRetry}
+            retryLabel="Retry"
+          />
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (integrations.length === 0) {
     return (
       <Card
@@ -132,8 +164,8 @@ export function Integrations({
         <CardContent>
           <EmptyState
             icon={Plug}
-            heading="No integrations available"
-            description="Integrations will appear here once the connectors framework is configured. Connect GitHub, Jira, Stripe, Slack, Plaid, Health APIs, and CMS to automate workflows."
+            heading="No integrations yet"
+            description="Connect external services like GitHub, Jira, Stripe, Slack, Plaid, Health APIs, and CMS to automate your workflows. Integrations will appear here once configured."
           />
         </CardContent>
       </Card>
@@ -203,6 +235,11 @@ export function Integrations({
                           int.connected ? handleDisconnect(int.id) : handleConnect(int.id)
                         }
                         className="shrink-0 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                        aria-label={
+                          int.connected
+                            ? `Disconnect ${int.name}`
+                            : `Connect ${int.name}`
+                        }
                       >
                         {isActioning ? (
                           <Loader2 className="h-4 w-4 animate-spin" />

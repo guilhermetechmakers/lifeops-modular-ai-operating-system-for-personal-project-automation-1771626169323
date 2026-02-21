@@ -39,7 +39,6 @@ export function useUpdateUserProfile() {
     mutationFn: updateUserProfile,
     onSuccess: (updated) => {
       queryClient.setQueryData(userProfileKeys.profile(), updated)
-      toast.success('Account settings updated')
     },
     onError: (err) => {
       toast.error(err instanceof Error ? err.message : 'Failed to update settings')

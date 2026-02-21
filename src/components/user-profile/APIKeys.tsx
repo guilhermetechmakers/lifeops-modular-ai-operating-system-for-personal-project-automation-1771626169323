@@ -130,8 +130,12 @@ export function APIKeys({
               </CardTitle>
               <CardDescription>Create, revoke, scope, and rotate API keys</CardDescription>
             </div>
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <Plus className="h-4 w-4" />
+            <Button
+              size="sm"
+              onClick={() => setCreateOpen(true)}
+              aria-label="Create new API key"
+            >
+              <Plus className="h-4 w-4" aria-hidden />
               Create
             </Button>
           </div>
@@ -173,20 +177,27 @@ export function APIKeys({
                         variant="outline"
                         size="sm"
                         onClick={() => copyToClipboard(rotatedKey, k.id)}
+                        aria-label={copiedId === k.id ? 'Copied' : 'Copy rotated API key'}
                       >
-                        {copiedId === k.id ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        {copiedId === k.id ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
                       </Button>
                     )}
-                    <Button variant="outline" size="sm" onClick={() => handleRotate(k.id)} title="Rotate">
-                      <RotateCw className="h-4 w-4" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRotate(k.id)}
+                      aria-label={`Rotate API key ${k.name}`}
+                    >
+                      <RotateCw className="h-4 w-4" aria-hidden />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       className="text-destructive hover:text-destructive"
                       onClick={() => handleRevoke(k.id)}
+                      aria-label={`Revoke API key ${k.name}`}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" aria-hidden />
                     </Button>
                   </div>
                 </div>
@@ -210,8 +221,13 @@ export function APIKeys({
             <div className="space-y-4 py-4">
               <div className="flex items-center gap-2">
                 <Input value={createdKey} readOnly className="font-mono text-sm" />
-                <Button variant="outline" size="icon" onClick={() => copyToClipboard(createdKey, 'new')}>
-                  {copiedId === 'new' ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => copyToClipboard(createdKey, 'new')}
+                  aria-label={copiedId === 'new' ? 'Copied to clipboard' : 'Copy API key'}
+                >
+                  {copiedId === 'new' ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
                 </Button>
               </div>
             </div>

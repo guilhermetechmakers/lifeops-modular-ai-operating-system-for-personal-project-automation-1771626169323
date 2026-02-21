@@ -38,10 +38,10 @@ export function BillingSummaryCTA({
             <p className="font-medium text-foreground">{planName} Plan</p>
             <p className="text-sm text-muted-foreground">{planAmount}</p>
           </div>
-          <Button asChild className="group transition-transform duration-200">
+          <Button asChild className="group transition-transform duration-200" aria-label="View billing page">
             <Link to="/dashboard/billing">
               View billing page
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
             </Link>
           </Button>
         </div>

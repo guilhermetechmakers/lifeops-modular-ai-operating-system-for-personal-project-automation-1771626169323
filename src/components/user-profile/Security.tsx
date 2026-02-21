@@ -133,7 +133,12 @@ export function Security({
               <p className="font-medium text-foreground">Change password</p>
               <p className="text-sm text-muted-foreground">Update your account password</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setChangePwdOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setChangePwdOpen(true)}
+              aria-label="Open change password dialog"
+            >
               Change
             </Button>
           </div>
@@ -151,8 +156,9 @@ export function Security({
                 size="sm"
                 onClick={handleEnable2FA}
                 disabled={isEnabling2FA}
+                aria-label={isEnabling2FA ? 'Enabling 2FA' : 'Enable two-factor authentication'}
               >
-                {isEnabling2FA ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Enable'}
+                {isEnabling2FA ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : 'Enable'}
               </Button>
             )}
           </div>
@@ -189,8 +195,9 @@ export function Security({
                         size="sm"
                         className="text-destructive hover:text-destructive"
                         onClick={() => onRevokeSession(s.id)}
+                        aria-label={`Revoke session: ${s.device}`}
                       >
-                        <LogOut className="h-4 w-4" />
+                        <LogOut className="h-4 w-4" aria-hidden />
                       </Button>
                     )}
                     {s.current && (
@@ -212,8 +219,9 @@ export function Security({
               size="sm"
               onClick={handleRevokeTokens}
               disabled={isRevokingTokens}
+              aria-label={isRevokingTokens ? 'Revoking all sessions' : 'Revoke all sessions'}
             >
-              {isRevokingTokens ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Revoke all'}
+              {isRevokingTokens ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : 'Revoke all'}
             </Button>
           </div>
         </CardContent>
