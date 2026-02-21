@@ -18,6 +18,7 @@ import {
   HelpCircle,
   Mail,
   Cookie,
+  Star,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -165,7 +166,7 @@ export function LandingPage() {
               <Link to="/login-/-signup" aria-label="Get started free">
                 <Button
                   size="xl"
-                  className="group transition-all duration-200 hover:scale-[1.05] hover:shadow-accent-glow"
+                  className="group animate-pulse-soft transition-all duration-200 hover:scale-[1.05] hover:shadow-accent-glow motion-reduce:animate-none"
                 >
                   Get Started Free
                   <ArrowRight className="ml-2 icon-md transition-transform group-hover:translate-x-1" aria-hidden />
@@ -393,13 +394,19 @@ export function LandingPage() {
               <AnimatedSection key={plan.name} delay={(i % 3) as 0 | 1 | 2}>
                 <div
                   className={cn(
-                    'rounded-xl border p-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1',
+                    'relative rounded-xl border p-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1',
                     plan.highlighted
                       ? 'border-accent bg-accent/5 shadow-accent-glow'
                       : 'border-border bg-card hover:border-accent/30'
                   )}
                 >
-                  <h3 className="text-heading-card">{plan.name}</h3>
+                  {plan.highlighted && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-accent/20 px-3 py-1 text-xs font-semibold text-accent">
+                      <Star className="h-3.5 w-3.5 fill-current" aria-hidden />
+                      Most popular
+                    </div>
+                  )}
+                  <h3 className={cn('text-heading-card', plan.highlighted && 'pt-2')}>{plan.name}</h3>
                   <div className="mt-4 flex items-baseline gap-1">
                     <span className="text-price font-bold text-foreground">{plan.price}</span>
                     <span className="text-body-sm">{plan.period}</span>
@@ -453,7 +460,7 @@ export function LandingPage() {
               <Link to="/login-/-signup" aria-label="Sign up for free">
                 <Button
                   size="xl"
-                  className="transition-all duration-200 hover:scale-[1.05] hover:shadow-accent-glow"
+                  className="animate-pulse-soft transition-all duration-200 hover:scale-[1.05] hover:shadow-accent-glow motion-reduce:animate-none"
                 >
                   Sign up free
                 </Button>

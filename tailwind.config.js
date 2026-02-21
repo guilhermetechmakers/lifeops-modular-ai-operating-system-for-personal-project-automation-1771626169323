@@ -104,6 +104,10 @@ export default {
           "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-4px)" },
           "20%, 40%, 60%, 80%": { transform: "translateX(4px)" },
         },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1", boxShadow: "0 0 0 0 rgb(var(--accent) / 0.4)" },
+          "50%": { opacity: "1", boxShadow: "0 0 0 8px rgb(var(--accent) / 0)" },
+        },
         "checkmark-scale": {
           "0%": { opacity: "0", transform: "scale(0.5)" },
           "50%": { opacity: "1", transform: "scale(1.1)" },
@@ -121,6 +125,7 @@ export default {
         "gradient-shift": "gradient-shift 8s ease infinite",
         shake: "shake 0.5s ease-in-out",
         "checkmark-scale": "checkmark-scale 0.4s ease-out forwards",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
       },
       transitionDuration: {
         "200": "200ms",
