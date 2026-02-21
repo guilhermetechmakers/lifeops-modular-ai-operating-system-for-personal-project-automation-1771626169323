@@ -14,7 +14,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 function TermsPageSkeleton() {
   return (
-    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+    <div
+      className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:px-6 lg:px-8"
+      role="status"
+      aria-label="Loading terms of service"
+    >
       <nav className="mb-8 flex items-center gap-2" aria-hidden>
         <Skeleton className="h-4 w-12" />
         <Skeleton className="h-4 w-4 rounded" />
@@ -29,6 +33,7 @@ function TermsPageSkeleton() {
         <Skeleton className="h-48 w-full rounded-xl" />
         <Skeleton className="h-48 w-full rounded-xl" />
       </div>
+      <span className="sr-only">Loading terms of service content...</span>
     </div>
   )
 }
@@ -56,6 +61,8 @@ export default function TermsofService() {
   const {
     data: acceptedTerms = [],
     isLoading: isLoadingAccepted,
+    isError: isErrorAccepted,
+    refetch: refetchAccepted,
   } = useQuery({
     queryKey: ['terms-accepted'],
     queryFn: fetchTermsAccepted,
@@ -85,7 +92,7 @@ export default function TermsofService() {
   })
 
   const hasAccepted = acceptedTerms.length > 0
-  const isInitialLoad = isLoadingRevisions
+  const isInitialLoad = isLoadingRevisions || isLoadingAccepted
 
   if (isInitialLoad) {
     return (
@@ -100,11 +107,12 @@ export default function TermsofService() {
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <nav
           className="mb-8 flex items-center gap-2 text-sm text-muted-foreground"
-          aria-label="Breadcrumb"
+          aria-label="Breadcrumb navigation"
         >
           <Link
             to="/"
-            className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+            className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
+            aria-label="Navigate to home page"
           >
             Home
           </Link>
@@ -136,6 +144,15 @@ export default function TermsofService() {
             className="animate-fade-in-up [animation-delay:0.05s] [animation-fill-mode:both]"
             aria-labelledby="accept-heading"
           >
+            {isErrorAccepted ? (
+              <ErrorState
+                title="Could not load acceptance status"
+                message="We could not verify whether you have accepted the terms. You can still accept below."
+                onRetry={() => refetchAccepted()}
+                retryLabel="Retry"
+                retryAriaLabel="Retry loading acceptance status"
+              />
+            ) : null}
             <AcceptAgreeCTA
               onAccept={async () => {
                 await acceptMutation.mutateAsync()
@@ -154,6 +171,8 @@ export default function TermsofService() {
                 title="Could not load revision history"
                 message="Revision history could not be loaded. Showing default version."
                 onRetry={() => refetchRevisions()}
+                retryLabel="Retry"
+                retryAriaLabel="Retry loading revision history"
               />
             ) : null}
             <RevisionHistory
@@ -167,27 +186,31 @@ export default function TermsofService() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Link
               to="/"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
+              aria-label="Navigate back to home page"
             >
               ← Back to Home
             </Link>
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 to="/terms-of-service"
-                className="text-sm font-medium text-foreground"
+                className="text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
                 aria-current="page"
+                aria-label="Terms of Service (current page)"
               >
                 Terms of Service
               </Link>
               <Link
                 to="/privacy"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
+                aria-label="Navigate to Privacy Policy"
               >
                 Privacy Policy
               </Link>
               <Link
                 to="/cookies"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded"
+                aria-label="Navigate to Cookie Policy"
               >
                 Cookie Policy
               </Link>
