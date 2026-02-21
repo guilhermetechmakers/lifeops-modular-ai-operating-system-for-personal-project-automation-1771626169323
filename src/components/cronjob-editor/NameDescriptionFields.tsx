@@ -2,6 +2,7 @@ import type { UseFormRegister, FieldErrors } from 'react-hook-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
 import { FileText } from 'lucide-react'
 
 export interface NameDescriptionFormValues {
@@ -21,10 +22,10 @@ export function NameDescriptionFields({
   disabled,
 }: NameDescriptionFieldsProps) {
   return (
-    <Card className="transition-shadow duration-300 hover:shadow-card">
-      <CardHeader>
+    <Card className="transition-shadow duration-300 hover:shadow-card-hover">
+      <CardHeader className="p-4 sm:p-6">
         <div className="flex items-center gap-2">
-          <FileText className="h-5 w-5 text-accent" />
+          <FileText className="icon-md text-accent" aria-hidden />
           <div>
             <CardTitle>Name & Description</CardTitle>
             <CardDescription>
@@ -33,16 +34,20 @@ export function NameDescriptionFields({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 p-4 pt-0 sm:p-6 sm:pt-0">
         <div className="space-y-2">
           <Label htmlFor="cronjob-name">Name</Label>
           <Input
             id="cronjob-name"
             placeholder="e.g. Daily Content Sync"
-            className="transition-all duration-200 focus:border-accent/50"
-            disabled={disabled}
+            aria-label="Cronjob name"
             aria-invalid={!!errors.name}
             aria-describedby={errors.name ? 'cronjob-name-error' : undefined}
+            className={cn(
+              'transition-all duration-200 focus:ring-accent/50',
+              errors.name && 'border-destructive focus-visible:ring-destructive/50'
+            )}
+            disabled={disabled}
             {...register('name', { required: 'Name is required' })}
           />
           {errors.name && (
@@ -60,10 +65,25 @@ export function NameDescriptionFields({
           <Input
             id="cronjob-description"
             placeholder="e.g. Sync content from external sources daily"
-            className="transition-all duration-200 focus:border-accent/50"
+            aria-label="Cronjob description (optional)"
+            aria-invalid={!!errors.description}
+            aria-describedby={errors.description ? 'cronjob-description-error' : undefined}
+            className={cn(
+              'transition-all duration-200',
+              errors.description && 'border-destructive focus-visible:ring-destructive/50'
+            )}
             disabled={disabled}
             {...register('description')}
           />
+          {errors.description && (
+            <p
+              id="cronjob-description-error"
+              className="text-sm text-destructive animate-fade-in"
+              role="alert"
+            >
+              {errors.description.message}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>
