@@ -74,7 +74,11 @@ export function ScheduleBuilder({
         <div className="space-y-2">
           <Label htmlFor="schedule-preset">Preset</Label>
           <Select value={schedule} onValueChange={onScheduleChange} disabled={disabled}>
-            <SelectTrigger id="schedule-preset" className="transition-all duration-200">
+            <SelectTrigger
+              id="schedule-preset"
+              className="transition-all duration-200"
+              aria-label="Select schedule preset"
+            >
               <SelectValue placeholder="Select schedule" />
             </SelectTrigger>
             <SelectContent>
@@ -98,18 +102,30 @@ export function ScheduleBuilder({
             placeholder="0 9 * * *"
             className={cn(
               'font-mono text-sm transition-all duration-200 focus:border-accent/50',
-              error && 'border-red-500/50'
+              error && 'border-destructive/50 focus:ring-destructive/20'
             )}
             disabled={disabled}
+            aria-invalid={!!error}
+            aria-describedby={error ? 'schedule-cron-error' : undefined}
           />
           {error && (
-            <p className="text-sm text-red-400 animate-fade-in">{error}</p>
+            <p
+              id="schedule-cron-error"
+              className="text-sm text-destructive animate-fade-in"
+              role="alert"
+            >
+              {error}
+            </p>
           )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="timezone">Timezone</Label>
           <Select value={timezone} onValueChange={onTimezoneChange} disabled={disabled}>
-            <SelectTrigger id="timezone" className="transition-all duration-200">
+            <SelectTrigger
+              id="timezone"
+              className="transition-all duration-200"
+              aria-label="Select timezone"
+            >
               <SelectValue placeholder="Select timezone" />
             </SelectTrigger>
             <SelectContent>

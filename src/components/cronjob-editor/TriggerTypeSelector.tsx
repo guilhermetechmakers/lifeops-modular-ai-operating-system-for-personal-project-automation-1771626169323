@@ -53,7 +53,11 @@ export function TriggerTypeSelector({
             onValueChange={(v) => onChange(v as TriggerType)}
             disabled={disabled}
           >
-            <SelectTrigger id="trigger-type" className="transition-all duration-200">
+            <SelectTrigger
+              id="trigger-type"
+              className="transition-all duration-200"
+              aria-label="Select trigger type"
+            >
               <SelectValue placeholder="Select trigger type" />
             </SelectTrigger>
             <SelectContent>

@@ -41,10 +41,18 @@ export function NameDescriptionFields({
             placeholder="e.g. Daily Content Sync"
             className="transition-all duration-200 focus:border-accent/50"
             disabled={disabled}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? 'cronjob-name-error' : undefined}
             {...register('name', { required: 'Name is required' })}
           />
           {errors.name && (
-            <p className="text-sm text-red-400 animate-fade-in">{errors.name.message}</p>
+            <p
+              id="cronjob-name-error"
+              className="text-sm text-destructive animate-fade-in"
+              role="alert"
+            >
+              {errors.name.message}
+            </p>
           )}
         </div>
         <div className="space-y-2">

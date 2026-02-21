@@ -81,8 +81,9 @@ export function SafetyRails({
               size="sm"
               onClick={addBlocked}
               disabled={disabled || !newBlocked.trim()}
+              aria-label="Add blocked operation"
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-4 w-4 mr-1" aria-hidden />
               Add
             </Button>
           </div>
@@ -92,7 +93,7 @@ export function SafetyRails({
                 <span
                   key={`${op}-${i}`}
                   className={cn(
-                    'inline-flex items-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1 text-sm text-red-400',
+                    'inline-flex items-center gap-1 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-1 text-sm text-destructive',
                     !disabled && 'group'
                   )}
                 >
@@ -101,8 +102,8 @@ export function SafetyRails({
                     <button
                       type="button"
                       onClick={() => removeBlocked(i)}
-                      className="rounded hover:bg-red-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label={`Remove ${op}`}
+                      className="rounded hover:bg-destructive/20 opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      aria-label={`Remove blocked operation ${op}`}
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>

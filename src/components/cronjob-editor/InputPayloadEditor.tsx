@@ -96,6 +96,7 @@ export function InputPayloadEditor({
             value={promptTemplate}
             onChange={(e) => onPromptTemplateChange(e.target.value)}
             placeholder="e.g. Summarize the content for {{topic}} with focus on {{aspect}}"
+            aria-label="Prompt template"
             className={cn(
               'flex min-h-[120px] w-full rounded-lg border border-border bg-input px-3 py-2 text-sm font-mono text-foreground',
               'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
@@ -116,6 +117,7 @@ export function InputPayloadEditor({
               onKeyDown={(e) => e.key === 'Enter' && addVariable()}
               className="w-40"
               disabled={disabled}
+              aria-label="Variable name"
             />
             <select
               value={newVarType}
@@ -135,8 +137,9 @@ export function InputPayloadEditor({
               size="sm"
               onClick={addVariable}
               disabled={disabled || !newVarKey.trim()}
+              aria-label="Add variable"
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-4 w-4 mr-1" aria-hidden />
               Add
             </Button>
           </div>
@@ -174,9 +177,9 @@ export function InputPayloadEditor({
                       variant="ghost"
                       size="icon-sm"
                       onClick={() => removeVariable(key)}
-                      aria-label={`Remove ${key}`}
+                      aria-label={`Remove variable ${key}`}
                     >
-                      <Trash2 className="h-4 w-4 text-red-400" />
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   )}
                 </div>

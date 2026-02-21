@@ -27,15 +27,17 @@ export function SaveEnableRunNowButtons({
           type="submit"
           disabled={isSubmitting}
           className="min-w-full bg-gradient-to-r from-accent to-primary transition-all duration-200 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]"
+          aria-label={isSubmitting ? 'Saving cronjob' : 'Save cronjob'}
+          aria-busy={isSubmitting}
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
               Saving...
             </>
           ) : (
             <>
-              <Save className="h-4 w-4" />
+              <Save className="h-4 w-4" aria-hidden />
               Save
             </>
           )}
@@ -46,8 +48,9 @@ export function SaveEnableRunNowButtons({
           onClick={onEnable}
           disabled={isSubmitting}
           className="min-w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          aria-label={isEnabled ? 'Disable cronjob' : 'Enable cronjob'}
         >
-          <Power className="h-4 w-4" />
+          <Power className="h-4 w-4" aria-hidden />
           {isEnabled ? 'Disable' : 'Enable'}
         </Button>
         <Button
@@ -56,15 +59,17 @@ export function SaveEnableRunNowButtons({
           onClick={onRunNow}
           disabled={!canRunNow || isRunning || isSubmitting}
           className="min-w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          aria-label={isRunning ? 'Running cronjob' : 'Run cronjob now'}
+          aria-busy={isRunning}
         >
           {isRunning ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
               Running...
             </>
           ) : (
             <>
-              <Play className="h-4 w-4" />
+              <Play className="h-4 w-4" aria-hidden />
               Run Now
             </>
           )}

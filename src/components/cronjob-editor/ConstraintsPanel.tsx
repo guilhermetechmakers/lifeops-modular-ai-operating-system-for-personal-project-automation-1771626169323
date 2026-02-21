@@ -105,8 +105,9 @@ export function ConstraintsPanel({
               size="sm"
               onClick={addTool}
               disabled={disabled || !newTool.trim()}
+              aria-label="Add allowed tool"
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-4 w-4 mr-1" aria-hidden />
               Add
             </Button>
           </div>

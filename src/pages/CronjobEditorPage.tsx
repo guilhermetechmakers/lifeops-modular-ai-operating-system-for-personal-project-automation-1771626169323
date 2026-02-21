@@ -258,10 +258,23 @@ export default function CronjobEditorPage() {
 
   if (isEdit && isLoading) {
     return (
-      <div className="space-y-8 animate-fade-in">
-        <Skeleton className="h-6 w-48" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-64 w-full" />
+      <div className="space-y-8 animate-fade-in" role="status" aria-label="Loading cronjob editor">
+        <Skeleton className="h-5 w-64" />
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48 sm:w-64" />
+          <Skeleton className="h-4 w-full max-w-md" />
+        </div>
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-40 w-full rounded-xl" />
+            ))}
+          </div>
+          <div className="lg:col-span-1">
+            <Skeleton className="h-48 w-full rounded-xl" />
+          </div>
+        </div>
+        <span className="sr-only">Loading cronjob editor...</span>
       </div>
     )
   }
@@ -289,19 +302,29 @@ export default function CronjobEditorPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link to="/dashboard" className="hover:text-foreground transition-colors">
+      <nav
+        className="flex items-center gap-2 text-sm text-muted-foreground"
+        aria-label="Breadcrumb"
+      >
+        <Link
+          to="/dashboard"
+          className="hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded"
+          aria-label="Go to Dashboard"
+        >
           Dashboard
         </Link>
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
         <Link
           to="/dashboard/cronjobs-dashboard"
-          className="hover:text-foreground transition-colors"
+          className="hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded"
+          aria-label="Go to Cronjobs dashboard"
         >
           Cronjobs
         </Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground">{isEdit ? 'Edit' : 'Create'}</span>
+        <ChevronRight className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="text-foreground" aria-current="page">
+          {isEdit ? 'Edit' : 'Create'}
+        </span>
       </nav>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -316,9 +339,13 @@ export default function CronjobEditorPage() {
       </div>
 
       {(createMutation.isError || updateMutation.isError) && (
-        <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+        <div
+          className="flex items-center justify-between rounded-xl border border-destructive/30 bg-destructive/10 p-4"
+          role="alert"
+          aria-live="polite"
+        >
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <AlertTriangle className="h-5 w-5 shrink-0 text-destructive" aria-hidden />
             <p className="text-sm text-foreground">
               {createMutation.error instanceof Error
                 ? createMutation.error.message
@@ -333,14 +360,20 @@ export default function CronjobEditorPage() {
               createMutation.reset()
               updateMutation.reset()
             }}
-            className="text-sm text-accent hover:underline"
+            className="text-sm text-accent hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded"
+            aria-label="Dismiss error message"
           >
             Dismiss
           </button>
         </div>
       )}
 
-      <form onSubmit={onSave} className="space-y-8">
+      <form
+        onSubmit={onSave}
+        className="space-y-8"
+        aria-label={isEdit ? 'Edit cronjob form' : 'Create cronjob form'}
+        noValidate
+      >
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="space-y-8 lg:col-span-2">
             <div className="animate-fade-in-up">
