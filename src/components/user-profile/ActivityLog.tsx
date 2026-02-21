@@ -61,7 +61,7 @@ export function ActivityLog({ entries, isLoading, className }: ActivityLogProps)
             <CardDescription>Recent actions and audit links</CardDescription>
           </div>
           <Button variant="outline" size="sm" asChild aria-label="View full audit log">
-            <Link to="/dashboard/settings">
+            <Link to="/dashboard/audit">
               Full audit log
               <ExternalLink className="h-4 w-4 ml-1" aria-hidden />
             </Link>
@@ -79,7 +79,7 @@ export function ActivityLog({ entries, isLoading, className }: ActivityLogProps)
               Your recent actions will appear here.
             </p>
             <Button variant="outline" size="sm" className="mt-4" asChild>
-              <Link to="/dashboard/settings">
+              <Link to="/dashboard/audit">
                 View full audit log
                 <ExternalLink className="h-4 w-4 ml-1" />
               </Link>

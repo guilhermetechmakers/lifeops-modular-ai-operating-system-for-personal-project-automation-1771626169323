@@ -14,6 +14,7 @@ import {
   revokeSession,
   fetchActivityLog,
 } from '@/api/user-profile'
+import { fetchBillingSummary } from '@/api/billing'
 
 export const userProfileKeys = {
   all: ['user-profile'] as const,
@@ -23,6 +24,7 @@ export const userProfileKeys = {
   sessions: () => [...userProfileKeys.all, 'sessions'] as const,
   activity: (limit?: number) =>
     [...userProfileKeys.all, 'activity', limit] as const,
+  billing: () => [...userProfileKeys.all, 'billing'] as const,
 }
 
 export function useUserProfile() {
@@ -142,5 +144,13 @@ export function useActivityLog(limit = 10) {
     queryKey: userProfileKeys.activity(limit),
     queryFn: () => fetchActivityLog(limit),
     staleTime: 1000 * 60 * 2,
+  })
+}
+
+export function useBillingSummary() {
+  return useQuery({
+    queryKey: userProfileKeys.billing(),
+    queryFn: fetchBillingSummary,
+    staleTime: 1000 * 60 * 5,
   })
 }

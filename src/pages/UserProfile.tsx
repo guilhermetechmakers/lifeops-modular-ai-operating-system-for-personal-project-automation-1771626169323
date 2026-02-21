@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { ChevronRight, AlertCircle, RefreshCw } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 import {
   ProfileCard,
   AccountSettings,
@@ -25,6 +26,7 @@ import {
   useActiveSessions,
   useRevokeSession,
   useActivityLog,
+  useBillingSummary,
 } from '@/hooks/use-user-profile'
 import type {
   UserProfile as UserProfileType,
@@ -88,6 +90,7 @@ export default function UserProfile() {
   const apiKeysQuery = useApiKeys()
   const sessionsQuery = useActiveSessions()
   const activityQuery = useActivityLog(10)
+  const billingQuery = useBillingSummary()
 
   const updateProfile = useUpdateUserProfile()
   const connectIntegration = useConnectIntegration()
@@ -107,12 +110,15 @@ export default function UserProfile() {
   const activity =
     activityQuery.data ?? (activityQuery.isError ? MOCK_ACTIVITY : [])
 
+  const billingSummary = billingQuery.data ?? { planName: 'Pro', planAmount: '$29/month' }
+
   const isLoading =
     profileQuery.isPending ||
     integrationsQuery.isPending ||
     apiKeysQuery.isPending ||
     sessionsQuery.isPending ||
-    activityQuery.isPending
+    activityQuery.isPending ||
+    billingQuery.isPending
 
   const refetchAll = useCallback(() => {
     profileQuery.refetch()
@@ -120,12 +126,14 @@ export default function UserProfile() {
     apiKeysQuery.refetch()
     sessionsQuery.refetch()
     activityQuery.refetch()
+    billingQuery.refetch()
   }, [
     profileQuery,
     integrationsQuery,
     apiKeysQuery,
     sessionsQuery,
     activityQuery,
+    billingQuery,
   ])
 
   const handleUpdateProfile = useCallback(
@@ -173,10 +181,16 @@ export default function UserProfile() {
   )
 
   const handleChangePassword = useCallback(
-    async (_current: string, _newPassword: string) => {
-      toast.info(
-        'Password change requires authentication. Configure Supabase to enable.'
-      )
+    async (_current: string, newPassword: string) => {
+      if (supabase) {
+        const { error } = await supabase.auth.updateUser({ password: newPassword })
+        if (error) throw new Error(error.message)
+        toast.success('Password updated successfully')
+      } else {
+        toast.info(
+          'Password change requires authentication. Configure Supabase to enable.'
+        )
+      }
     },
     []
   )
@@ -340,7 +354,7 @@ export default function UserProfile() {
           />
         </div>
         <div className="animate-fade-in-up [animation-delay:0.3s] [animation-fill-mode:both]">
-          <BillingSummaryCTA planName="Pro" planAmount="$29/month" />
+          <BillingSummaryCTA planName={billingSummary.planName} planAmount={billingSummary.planAmount} />
         </div>
       </div>
 

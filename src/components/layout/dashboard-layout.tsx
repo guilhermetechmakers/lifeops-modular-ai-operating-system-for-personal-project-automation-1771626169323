@@ -63,7 +63,7 @@ export function DashboardLayout() {
                 <Bell className="h-5 w-5" />
               </Button>
               <Button variant="ghost" size="icon" aria-label="User menu" asChild>
-                <Link to="/dashboard/profile">
+                <Link to="/dashboard/user-profile">
                   <User className="h-5 w-5" />
                 </Link>
               </Button>

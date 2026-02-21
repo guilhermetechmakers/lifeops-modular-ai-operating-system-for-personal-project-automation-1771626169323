@@ -14,6 +14,7 @@ import { SettingsPage } from '@/pages/dashboard/settings'
 import { BillingPage } from '@/pages/dashboard/billing'
 import { AdminDashboard } from '@/pages/dashboard/admin'
 import { ProfilePage } from '@/pages/dashboard/profile'
+import { AuditLogPage } from '@/pages/dashboard/audit'
 import UserProfile from '@/pages/UserProfile'
 import { ModulePlaceholder } from '@/pages/dashboard/module-placeholder'
 import HealthModule from '@/pages/HealthModule'
@@ -97,6 +98,7 @@ function App() {
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="user-profile" element={<UserProfile />} />
+          <Route path="audit" element={<AuditLogPage />} />
         </Route>
 
         <Route path="/user-profile" element={<Navigate to="/dashboard/user-profile" replace />} />
