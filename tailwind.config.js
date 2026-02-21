@@ -104,6 +104,11 @@ export default {
           "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-4px)" },
           "20%, 40%, 60%, 80%": { transform: "translateX(4px)" },
         },
+        "checkmark-scale": {
+          "0%": { opacity: "0", transform: "scale(0.5)" },
+          "50%": { opacity: "1", transform: "scale(1.1)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.3s ease-out forwards",
@@ -115,6 +120,7 @@ export default {
         shimmer: "shimmer 1.5s ease-in-out infinite",
         "gradient-shift": "gradient-shift 8s ease infinite",
         shake: "shake 0.5s ease-in-out",
+        "checkmark-scale": "checkmark-scale 0.4s ease-out forwards",
       },
       transitionDuration: {
         "200": "200ms",

@@ -10,6 +10,8 @@ export interface EmptyStateProps {
   actionLabel?: string
   actionHref?: string
   onAction?: () => void
+  /** Optional icon for the CTA button (e.g. Plus for "Create") */
+  actionIcon?: LucideIcon
   /** Optional secondary content (e.g. examples, suggestions) */
   children?: React.ReactNode
   className?: string
@@ -28,6 +30,7 @@ export function EmptyState({
   actionLabel,
   actionHref,
   onAction,
+  actionIcon: ActionIcon,
   children,
   className,
   iconClassName,
@@ -70,6 +73,7 @@ export function EmptyState({
               onClick={onAction}
               className="transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
             >
+              {ActionIcon && <ActionIcon className="mr-2 h-4 w-4" aria-hidden />}
               {actionLabel}
             </Button>
           )}

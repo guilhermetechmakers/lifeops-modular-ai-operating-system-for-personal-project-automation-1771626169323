@@ -1,10 +1,9 @@
 import { useState, useMemo } from 'react'
-import { Search, ArrowUpDown, ArrowUp, ArrowDown, Clock, Plus, AlertCircle } from 'lucide-react'
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, Clock, Plus } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   Select,
   SelectContent,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { EmptyState, ErrorState, SkeletonTable } from '@/components/ui/loading-states'
 import type { Cronjob } from '@/types/cronjobs'
 import { cn } from '@/lib/utils'
 
@@ -132,20 +132,12 @@ export function CronjobList({
 
   if (isLoading) {
     return (
-      <Card className="overflow-hidden transition-shadow duration-300 hover:shadow-card-hover">
-        <CardHeader>
-          <Skeleton className="h-6 w-48 animate-pulse" />
-          <Skeleton className="mt-2 h-4 w-64 animate-pulse" />
-          <Skeleton className="mt-4 h-10 w-64 animate-pulse" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="h-14 w-full animate-pulse" style={{ animationDelay: `${i * 50}ms` }} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <SkeletonTable
+        columns={6}
+        rows={5}
+        showHeader
+        className="overflow-hidden transition-shadow duration-300"
+      />
     )
   }
 
@@ -176,47 +168,28 @@ export function CronjobList({
       </CardHeader>
       <CardContent>
         {filteredAndSorted.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center py-16 text-center"
-            role={isError ? 'alert' : undefined}
-          >
-            <div className="rounded-full bg-secondary/50 p-4 mb-4">
-              {isError ? (
-                <AlertCircle className="h-12 w-12 text-destructive" aria-hidden />
-              ) : (
-                <Clock className="h-12 w-12 text-muted-foreground" aria-hidden />
-              )}
-            </div>
-            <h3 className="text-lg font-semibold text-foreground">
-              {isError ? 'Failed to load cronjobs' : 'No cronjobs found'}
-            </h3>
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-              {isError
-                ? 'Unable to fetch cronjobs. Please check your connection and try again.'
-                : search
-                  ? 'Try adjusting your search to find what you\'re looking for.'
-                  : 'Create your first cronjob to schedule automated workflows and tasks.'}
-            </p>
-            {isError && onRetry ? (
-              <Button
-                onClick={onRetry}
-                variant="outline"
-                className="mt-6"
-                aria-label="Retry loading cronjobs"
-              >
-                Retry
-              </Button>
-            ) : !search && onCreateClick ? (
-              <Button
-                onClick={onCreateClick}
-                className="mt-6 bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
-                aria-label="Create your first cronjob"
-              >
-                <Plus className="mr-2 h-4 w-4" aria-hidden />
-                Create Cronjob
-              </Button>
-            ) : null}
-          </div>
+          isError ? (
+            <ErrorState
+              title="Failed to load cronjobs"
+              message="Unable to fetch cronjobs. Please check your connection and try again."
+              onRetry={onRetry}
+              retryLabel="Retry"
+              retryAriaLabel="Retry loading cronjobs"
+            />
+          ) : (
+            <EmptyState
+              icon={Clock}
+              heading={search ? 'No matches found' : 'No cronjobs found'}
+              description={
+                search
+                  ? "Try adjusting your search to find what you're looking for."
+                  : 'Create your first cronjob to schedule automated workflows and tasks.'
+              }
+              actionLabel={search ? undefined : 'Create Cronjob'}
+              actionIcon={search ? undefined : Plus}
+              onAction={search ? undefined : onCreateClick}
+            />
+          )
         ) : (
           <>
             {/* Mobile: card layout */}

@@ -1,4 +1,5 @@
 import { CheckCircle2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export interface SuccessStateProps {
@@ -16,6 +17,7 @@ export interface SuccessStateProps {
  * Reusable success confirmation state.
  * Use for inline success feedback (e.g., after form submission, approval).
  * For toast notifications, use Sonner.
+ * Per Design Reference: success state with checkmark animation.
  */
 export function SuccessState({
   title = 'Success',
@@ -32,9 +34,11 @@ export function SuccessState({
         'transition-all duration-300',
         className
       )}
+      role="status"
+      aria-live="polite"
     >
       <div
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-green/20"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-green/20 animate-checkmark-scale"
         aria-hidden
       >
         <CheckCircle2 className="h-6 w-6 text-accent-green" />
@@ -43,13 +47,15 @@ export function SuccessState({
       <p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">{message}</p>
       {children && <div className="mt-4 w-full max-w-sm">{children}</div>}
       {actionLabel && onAction && (
-        <button
+        <Button
           type="button"
+          variant="secondary"
           onClick={onAction}
-          className="mt-4 rounded-lg bg-accent-green/20 px-4 py-2 text-sm font-medium text-accent-green transition-all duration-200 hover:scale-[1.02] hover:bg-accent-green/30 active:scale-[0.98]"
+          className="mt-4 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] bg-accent-green/20 text-accent-green hover:bg-accent-green/30 border-0"
+          aria-label={actionLabel}
         >
           {actionLabel}
-        </button>
+        </Button>
       )}
     </div>
   )
