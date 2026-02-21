@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Zap, Mail, Lock, Github } from 'lucide-react'
+import { Zap, Mail, Lock, Github, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -38,8 +38,9 @@ export function LoginPage() {
       await new Promise((r) => setTimeout(r, 800))
       toast.success('Signed in successfully')
       navigate('/dashboard')
-    } catch {
-      toast.error('Invalid email or password')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Invalid email or password'
+      toast.error(message, { duration: 5000 })
     } finally {
       setIsLoading(false)
     }
@@ -76,12 +77,17 @@ export function LoginPage() {
                     id="email"
                     type="email"
                     placeholder="you@example.com"
-                    className={cn('pl-10', errors.email && 'border-red-500/50')}
+                    aria-label="Email address"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
+                    className={cn('pl-10', errors.email && 'border-destructive/50 focus-visible:ring-destructive')}
                     {...register('email')}
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-sm text-red-400">{errors.email.message}</p>
+                  <p id="email-error" className="text-sm text-destructive" role="alert">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -101,17 +107,29 @@ export function LoginPage() {
                     id="password"
                     type="password"
                     placeholder="••••••••"
-                    className={cn('pl-10', errors.password && 'border-red-500/50')}
+                    aria-label="Password"
+                    aria-invalid={!!errors.password}
+                    aria-describedby={errors.password ? 'password-error' : undefined}
+                    className={cn('pl-10', errors.password && 'border-destructive/50 focus-visible:ring-destructive')}
                     {...register('password')}
                   />
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-400">{errors.password.message}</p>
+                  <p id="password-error" className="text-sm text-destructive" role="alert">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign in'}
+              <Button type="submit" className="w-full" disabled={isLoading} aria-busy={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign in'
+                )}
               </Button>
             </form>
 
