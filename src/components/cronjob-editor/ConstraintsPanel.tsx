@@ -10,8 +10,8 @@ interface ConstraintsPanelProps {
   maxActions?: number
   spendLimit?: number
   allowedTools: string[]
-  onMaxActionsChange: (value: number) => void
-  onSpendLimitChange: (value: number) => void
+  onMaxActionsChange: (value: number | undefined) => void
+  onSpendLimitChange: (value: number | undefined) => void
   onAllowedToolsChange: (value: string[]) => void
   disabled?: boolean
 }
@@ -60,9 +60,10 @@ export function ConstraintsPanel({
               type="number"
               min={0}
               value={maxActions ?? ''}
-              onChange={(e) =>
-                onMaxActionsChange(Math.max(0, parseInt(e.target.value, 10) || 0))
-              }
+              onChange={(e) => {
+                const v = e.target.value.trim()
+                onMaxActionsChange(v === '' ? undefined : Math.max(0, parseInt(v, 10) || 0))
+              }}
               placeholder="Unlimited"
               className="transition-all duration-200"
               disabled={disabled}
@@ -76,9 +77,10 @@ export function ConstraintsPanel({
               min={0}
               step={0.01}
               value={spendLimit ?? ''}
-              onChange={(e) =>
-                onSpendLimitChange(Math.max(0, parseFloat(e.target.value) || 0))
-              }
+              onChange={(e) => {
+                const v = e.target.value.trim()
+                onSpendLimitChange(v === '' ? undefined : Math.max(0, parseFloat(v) || 0))
+              }}
               placeholder="No limit"
               className="transition-all duration-200"
               disabled={disabled}

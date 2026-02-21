@@ -10,6 +10,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+interface DeadLetterPolicy {
+  enabled?: boolean
+  max_retries_before_dlq?: number
+  dlq_target?: string
+}
+
 interface CronjobPayload {
   name: string
   title?: string
@@ -17,13 +23,21 @@ interface CronjobPayload {
   schedule: string
   timezone: string
   target: string
-  automation_level?: 'full' | 'assisted' | 'manual'
+  automation_level?:
+    | 'full'
+    | 'assisted'
+    | 'manual'
+    | 'suggest_only'
+    | 'approval_required'
+    | 'conditional_auto_execute'
+    | 'bounded_autopilot'
   status?: 'active' | 'paused' | 'draft'
-  trigger_type?: 'cron' | 'manual' | 'webhook'
+  trigger_type?: 'cron' | 'manual' | 'webhook' | 'time' | 'event' | 'conditional'
   payload?: Record<string, unknown>
   constraints?: string[]
   safety_rails?: string[]
   retry_policy?: { max_retries: number; backoff_ms: number }
+  dead_letter_policy?: DeadLetterPolicy
 }
 
 interface ListPayload {
@@ -150,13 +164,14 @@ serve(async (req) => {
           schedule: c.schedule ?? '0 9 * * *',
           timezone: c.timezone ?? 'UTC',
           target: c.target,
-          automation_level: c.automation_level ?? 'assisted',
+          automation_level: c.automation_level ?? 'approval_required',
           status: c.status ?? 'active',
-          trigger_type: c.trigger_type ?? 'cron',
+          trigger_type: c.trigger_type ?? 'time',
           payload: c.payload ?? {},
           constraints: c.constraints ?? [],
           safety_rails: c.safety_rails ?? [],
           retry_policy: c.retry_policy ?? { max_retries: 3, backoff_ms: 1000 },
+          dead_letter_policy: c.dead_letter_policy ?? {},
         })
         .select()
         .single()

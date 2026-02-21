@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, Link, useParams } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { LandingPage } from '@/pages/landing'
@@ -102,6 +102,8 @@ function App() {
         <Route path="/user-profile" element={<Navigate to="/dashboard/user-profile" replace />} />
         <Route path="/master-dashboard" element={<Navigate to="/dashboard/master-dashboard" replace />} />
         <Route path="/cronjobs-dashboard" element={<Navigate to="/dashboard/cronjobs-dashboard" replace />} />
+        <Route path="/cronjob-editor-(create-/-edit)" element={<Navigate to="/dashboard/cronjob-editor" replace />} />
+        <Route path="/cronjob-editor-(create-/-edit)/:id" element={<CronjobEditorRedirect />} />
         <Route path="/health-(health-module)" element={<Navigate to="/dashboard/health" replace />} />
         <Route path="/help" element={<HelpPlaceholder />} />
         <Route path="/privacy" element={<LegalPlaceholder title="Privacy Policy" />} />
@@ -124,6 +126,11 @@ function App() {
       />
     </BrowserRouter>
   )
+}
+
+function CronjobEditorRedirect() {
+  const { id } = useParams<{ id: string }>()
+  return <Navigate to={id ? `/dashboard/cronjob-editor/${id}` : '/dashboard/cronjob-editor'} replace />
 }
 
 function HelpPlaceholder() {

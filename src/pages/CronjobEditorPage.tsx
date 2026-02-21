@@ -343,73 +343,90 @@ export default function CronjobEditorPage() {
       <form onSubmit={onSave} className="space-y-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="space-y-8 lg:col-span-2">
-            <NameDescriptionFields
-              register={register as unknown as UseFormRegister<NameDescriptionFormValues>}
-              errors={errors}
-            />
-            <ScheduleBuilder
-              schedule={values.schedule}
-              timezone={values.timezone}
-              onScheduleChange={(v) => setValue('schedule', v)}
-              onTimezoneChange={(v) => setValue('timezone', v)}
-              error={errors.schedule?.message}
-            />
-            <TriggerTypeSelector
-              value={values.trigger_type as TriggerType}
-              onChange={(v) => setValue('trigger_type', v)}
-            />
-            <TargetSelector
-              value={values.target}
-              onChange={(v) => setValue('target', v)}
-              error={errors.target?.message}
-            />
-            <InputPayloadEditor
-              promptTemplate={promptTemplate}
-              onPromptTemplateChange={setPromptTemplate}
-              variableSchema={variableSchema}
-              onVariableSchemaChange={setVariableSchema}
-              sampleValues={sampleValues}
-              onSampleValuesChange={setSampleValues}
-            />
-            <AutomationLevel
-              value={values.automation_level as AutomationLevelType}
-              onChange={(v) => setValue('automation_level', v)}
-            />
-            <ConstraintsPanel
-              maxActions={constraintsObj.max_actions}
-              spendLimit={constraintsObj.spend_limit}
-              allowedTools={allowedTools}
-              onMaxActionsChange={(v) =>
-                setConstraintsPanel((p) => ({ ...p, max_actions: v }))
-              }
-              onSpendLimitChange={(v) =>
-                setConstraintsPanel((p) => ({ ...p, spend_limit: v }))
-              }
-              onAllowedToolsChange={(v) =>
-                setConstraintsPanel((p) => ({ ...p, allowed_tools: v }))
-              }
-            />
-            <SafetyRails
-              confirmationsRequired={safetyRailsConfig.confirmations_required ?? false}
-              onConfirmationsRequiredChange={(v) =>
-                setSafetyRailsConfig((p) => ({ ...p, confirmations_required: v }))
-              }
-              blockedOperations={safetyRailsConfig.blocked_operations ?? []}
-              onBlockedOperationsChange={(v) =>
-                setSafetyRailsConfig((p) => ({ ...p, blocked_operations: v }))
-              }
-            />
-            <RetryDeadLetterPolicy
-              retryPolicy={retryPolicy}
-              onRetryPolicyChange={setRetryPolicy}
-              deadLetterPolicy={deadLetterPolicy}
-              onDeadLetterPolicyChange={setDeadLetterPolicy}
-            />
+            <div className="animate-fade-in-up">
+              <NameDescriptionFields
+                register={register as unknown as UseFormRegister<NameDescriptionFormValues>}
+                errors={errors}
+              />
+            </div>
+            <div className="animate-fade-in-up-delay-1">
+              <ScheduleBuilder
+                schedule={values.schedule}
+                timezone={values.timezone}
+                onScheduleChange={(v) => setValue('schedule', v)}
+                onTimezoneChange={(v) => setValue('timezone', v)}
+                error={errors.schedule?.message}
+              />
+            </div>
+            <div className="animate-fade-in-up-delay-2">
+              <TriggerTypeSelector
+                value={values.trigger_type as TriggerType}
+                onChange={(v) => setValue('trigger_type', v)}
+              />
+            </div>
+            <div className="animate-fade-in-up-delay-3">
+              <TargetSelector
+                value={values.target}
+                onChange={(v) => setValue('target', v)}
+                error={errors.target?.message}
+              />
+            </div>
+            <div className="animate-fade-in-up-delay-4">
+              <InputPayloadEditor
+                promptTemplate={promptTemplate}
+                onPromptTemplateChange={setPromptTemplate}
+                variableSchema={variableSchema}
+                onVariableSchemaChange={setVariableSchema}
+                sampleValues={sampleValues}
+                onSampleValuesChange={setSampleValues}
+              />
+            </div>
+            <div className="animate-fade-in-up">
+              <AutomationLevel
+                value={values.automation_level as AutomationLevelType}
+                onChange={(v) => setValue('automation_level', v)}
+              />
+            </div>
+            <div className="animate-fade-in-up">
+              <ConstraintsPanel
+                maxActions={constraintsObj.max_actions}
+                spendLimit={constraintsObj.spend_limit}
+                allowedTools={allowedTools}
+                onMaxActionsChange={(v) =>
+                  setConstraintsPanel((p) => ({ ...p, max_actions: v }))
+                }
+                onSpendLimitChange={(v) =>
+                  setConstraintsPanel((p) => ({ ...p, spend_limit: v }))
+                }
+                onAllowedToolsChange={(v) =>
+                  setConstraintsPanel((p) => ({ ...p, allowed_tools: v }))
+                }
+              />
+            </div>
+            <div className="animate-fade-in-up">
+              <SafetyRails
+                confirmationsRequired={safetyRailsConfig.confirmations_required ?? false}
+                onConfirmationsRequiredChange={(v) =>
+                  setSafetyRailsConfig((p) => ({ ...p, confirmations_required: v }))
+                }
+                blockedOperations={safetyRailsConfig.blocked_operations ?? []}
+                onBlockedOperationsChange={(v) =>
+                  setSafetyRailsConfig((p) => ({ ...p, blocked_operations: v }))
+                }
+              />
+            </div>
+            <div className="animate-fade-in-up">
+              <RetryDeadLetterPolicy
+                retryPolicy={retryPolicy}
+                onRetryPolicyChange={setRetryPolicy}
+                deadLetterPolicy={deadLetterPolicy}
+                onDeadLetterPolicyChange={setDeadLetterPolicy}
+              />
+            </div>
           </div>
           <div className="lg:col-span-1">
             <div className="sticky top-4 space-y-4">
               <SaveEnableRunNowButtons
-                onSave={onSave}
                 onEnable={onEnable}
                 onRunNow={onRunNow}
                 isSubmitting={isSubmitting}
