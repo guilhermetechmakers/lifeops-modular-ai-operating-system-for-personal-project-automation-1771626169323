@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { CalendarClock } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +12,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, ErrorState } from '@/components/ui/loading-states'
 import type { Cronjob, CronjobConstraints } from '@/types/cronjobs'
 import { cn } from '@/lib/utils'
 
@@ -23,7 +25,9 @@ function getConstraintsArray(constraints: string[] | CronjobConstraints | undefi
 interface CronjobDetailsPanelProps {
   cronjob: Cronjob | null
   isLoading?: boolean
+  error?: string | null
   onUpdate?: (updates: Partial<Cronjob>) => void
+  onRetry?: () => void
   readOnly?: boolean
 }
 
@@ -63,9 +67,10 @@ function PayloadEditor({
 
   return (
     <textarea
+      aria-label="JSON payload for the cronjob"
       className={cn(
         'flex min-h-[120px] w-full rounded-lg border border-border bg-input px-3 py-2 text-sm font-mono text-foreground',
-        'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+        'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
         'disabled:cursor-not-allowed disabled:opacity-50'
       )}
       value={local}
@@ -80,14 +85,35 @@ function PayloadEditor({
 export function CronjobDetailsPanel({
   cronjob,
   isLoading,
+  error,
   onUpdate,
+  onRetry,
   readOnly,
 }: CronjobDetailsPanelProps) {
+  if (error) {
+    return (
+      <Card className="overflow-hidden">
+        <CardContent className="p-6">
+          <ErrorState
+            title="Failed to load cronjob details"
+            message={error}
+            onRetry={onRetry}
+            retryLabel="Try again"
+          />
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (!cronjob && !isLoading) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-16">
-          <p className="text-muted-foreground text-center">Select a cronjob to view details</p>
+      <Card className="overflow-hidden">
+        <CardContent className="p-6">
+          <EmptyState
+            icon={CalendarClock}
+            heading="No cronjob selected"
+            description="Select a cronjob from the list to view and edit its schedule, triggers, payload, constraints, and retry policy."
+          />
         </CardContent>
       </Card>
     )
@@ -113,7 +139,7 @@ export function CronjobDetailsPanel({
   const constraintsArray = getConstraintsArray(c.constraints)
   return (
     <div className="space-y-6">
-      <Card className="transition-shadow duration-300 hover:shadow-card">
+      <Card className="transition-shadow duration-300 hover:shadow-card-hover">
         <CardHeader>
           <CardTitle>Schedule Builder</CardTitle>
           <CardDescription>Cron expression and timezone</CardDescription>
@@ -126,7 +152,7 @@ export function CronjobDetailsPanel({
               onValueChange={(v) => onUpdate?.({ schedule: v })}
               disabled={readOnly}
             >
-              <SelectTrigger id="schedule">
+              <SelectTrigger id="schedule" aria-label="Schedule preset">
                 <SelectValue placeholder="Select schedule" />
               </SelectTrigger>
               <SelectContent>
@@ -138,6 +164,8 @@ export function CronjobDetailsPanel({
               </SelectContent>
             </Select>
             <Input
+              id="schedule-custom"
+              aria-label="Custom cron expression"
               className="mt-2 font-mono text-xs"
               value={c.schedule}
               onChange={(e) => onUpdate?.({ schedule: e.target.value })}
@@ -152,7 +180,7 @@ export function CronjobDetailsPanel({
               onValueChange={(v) => onUpdate?.({ timezone: v })}
               disabled={readOnly}
             >
-              <SelectTrigger id="timezone">
+              <SelectTrigger id="timezone" aria-label="Timezone">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -167,7 +195,7 @@ export function CronjobDetailsPanel({
         </CardContent>
       </Card>
 
-      <Card className="transition-shadow duration-300 hover:shadow-card">
+      <Card className="transition-shadow duration-300 hover:shadow-card-hover">
         <CardHeader>
           <CardTitle>Trigger & Target</CardTitle>
           <CardDescription>Trigger type and target agent/workflow</CardDescription>
@@ -180,7 +208,7 @@ export function CronjobDetailsPanel({
               onValueChange={(v) => onUpdate?.({ trigger_type: v as Cronjob['trigger_type'] })}
               disabled={readOnly}
             >
-              <SelectTrigger id="trigger">
+              <SelectTrigger id="trigger" aria-label="Trigger type">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -194,6 +222,7 @@ export function CronjobDetailsPanel({
             <Label htmlFor="target">Target</Label>
             <Input
               id="target"
+              aria-label="Target agent or workflow ID"
               value={c.target}
               onChange={(e) => onUpdate?.({ target: e.target.value })}
               placeholder="agent-id or workflow-id"
@@ -203,7 +232,7 @@ export function CronjobDetailsPanel({
         </CardContent>
       </Card>
 
-      <Card className="transition-shadow duration-300 hover:shadow-card">
+      <Card className="transition-shadow duration-300 hover:shadow-card-hover">
         <CardHeader>
           <CardTitle>Payload Editor</CardTitle>
           <CardDescription>JSON payload for the cronjob</CardDescription>
@@ -217,7 +246,7 @@ export function CronjobDetailsPanel({
         </CardContent>
       </Card>
 
-      <Card className="transition-shadow duration-300 hover:shadow-card">
+      <Card className="transition-shadow duration-300 hover:shadow-card-hover">
         <CardHeader>
           <CardTitle>Constraints & Safety Rails</CardTitle>
           <CardDescription>Constraints and safety rails for execution</CardDescription>
@@ -250,6 +279,8 @@ export function CronjobDetailsPanel({
               )}
               {!readOnly && (
                 <Input
+                  id="add-constraint"
+                  aria-label="Add constraint"
                   placeholder="Add constraint..."
                   className="h-8 w-36 text-sm"
                   onKeyDown={(e) => {
@@ -295,6 +326,8 @@ export function CronjobDetailsPanel({
               )}
               {!readOnly && (
                 <Input
+                  id="add-safety-rail"
+                  aria-label="Add safety rail"
                   placeholder="Add safety rail..."
                   className="h-8 w-36 text-sm"
                   onKeyDown={(e) => {
@@ -316,16 +349,18 @@ export function CronjobDetailsPanel({
         </CardContent>
       </Card>
 
-      <Card className="transition-shadow duration-300 hover:shadow-card">
+      <Card className="transition-shadow duration-300 hover:shadow-card-hover">
         <CardHeader>
           <CardTitle>Retry Policy</CardTitle>
           <CardDescription>Max retries and backoff</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <Label>Max Retries</Label>
+              <Label htmlFor="max-retries">Max Retries</Label>
               <Input
+                id="max-retries"
+                aria-label="Maximum number of retries"
                 type="number"
                 min={0}
                 value={c.retry_policy?.max_retries ?? 3}
@@ -342,8 +377,10 @@ export function CronjobDetailsPanel({
               />
             </div>
             <div>
-              <Label>Backoff (ms)</Label>
+              <Label htmlFor="backoff-ms">Backoff (ms)</Label>
               <Input
+                id="backoff-ms"
+                aria-label="Backoff delay in milliseconds"
                 type="number"
                 min={0}
                 value={c.retry_policy?.backoff_ms ?? 1000}
