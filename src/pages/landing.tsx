@@ -113,23 +113,28 @@ export function LandingPage() {
       {/* Sticky Navigation */}
       <nav
         className={cn(
-          'sticky top-0 z-30 flex h-16 items-center justify-between px-6 transition-all duration-300 lg:px-12',
+          'sticky top-0 z-30 flex h-16 items-center justify-between px-4 transition-all duration-300 sm:px-6 lg:px-12',
           scrollY > 20 && 'bg-background/80 backdrop-blur-md border-b border-border/50'
         )}
+        aria-label="Main navigation"
       >
-        <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-90">
+        <Link
+          to="/"
+          className="flex items-center gap-2 transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg"
+          aria-label="LifeOps home"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent shadow-accent-glow">
-            <Zap className="h-5 w-5 text-accent-foreground" />
+            <Zap className="icon-md text-accent-foreground" aria-hidden />
           </div>
           <span className="text-xl font-bold text-foreground">LifeOps</span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link to="/login-/-signup">
+          <Link to="/login-/-signup" aria-label="Sign in to your account">
             <Button variant="ghost" className="transition-all duration-200 hover:scale-[1.02]">
               Sign in
             </Button>
           </Link>
-          <Link to="/login-/-signup">
+          <Link to="/login-/-signup" aria-label="Get started with LifeOps">
             <Button className="transition-all duration-200 hover:scale-[1.02] hover:shadow-accent-glow">
               Get Started
             </Button>
@@ -138,38 +143,41 @@ export function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="px-6 py-24 lg:px-12 lg:py-32">
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-12 lg:py-section-y-lg" aria-labelledby="hero-heading">
         <div className="mx-auto max-w-4xl text-center">
           <AnimatedSection>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            <h1
+              id="hero-heading"
+              className="text-heading-hero text-heading-hero-sm sm:text-heading-hero lg:text-heading-hero-lg"
+            >
               Your AI Operating System for
               <span className="gradient-text block mt-2">Life & Projects</span>
             </h1>
           </AnimatedSection>
           <AnimatedSection delay={1}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+            <p className="mx-auto mt-6 max-w-2xl text-body-lg">
               Coordinated GPT-5 agents automate projects, content, finances, and health.
               Every action is explainable, permissioned, and reversible with full audit trails.
             </p>
           </AnimatedSection>
           <AnimatedSection delay={2}>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/login-/-signup">
+              <Link to="/login-/-signup" aria-label="Get started free">
                 <Button
                   size="xl"
                   className="group transition-all duration-200 hover:scale-[1.05] hover:shadow-accent-glow"
                 >
                   Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 icon-md transition-transform group-hover:translate-x-1" aria-hidden />
                 </Button>
               </Link>
-              <Link to="/login-/-signup">
+              <Link to="/login-/-signup" aria-label="Explore demo">
                 <Button
                   variant="outline"
                   size="xl"
                   className="group transition-all duration-200 hover:scale-[1.02] hover:border-accent/50"
                 >
-                  <Sparkles className="mr-2 h-5 w-5" />
+                  <Sparkles className="mr-2 icon-md" aria-hidden />
                   Demo / Explore
                 </Button>
               </Link>
@@ -179,19 +187,19 @@ export function LandingPage() {
       </section>
 
       {/* Features - Bento grid */}
-      <section className="px-6 py-24 lg:px-12">
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-12" aria-labelledby="features-heading">
         <div className="mx-auto max-w-6xl">
           <AnimatedSection>
-            <h2 className="text-center text-3xl font-bold text-foreground">
+            <h2 id="features-heading" className="text-center text-heading-section">
               Trustworthy automation, built in
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-2xl text-center text-body-lg">
               Multi-agent orchestration with explainability, fine-grained permissions, and
               enterprise-grade auditability.
             </p>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-section-gap grid gap-card sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 icon: Bot,
@@ -225,17 +233,17 @@ export function LandingPage() {
               <AnimatedSection key={feature.title} delay={(i % 4) as 0 | 1 | 2 | 3}>
                 <div
                   className={cn(
-                    'group rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30',
+                    'group rounded-xl border border-border bg-card p-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30',
                     feature.className
                   )}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
-                    <feature.icon className="h-6 w-6" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent" aria-hidden>
+                    <feature.icon className="icon-lg" />
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold text-foreground">
+                  <h3 className="mt-4 text-heading-card">
                     {feature.title}
                   </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-2 text-body-sm">
                     {feature.description}
                   </p>
                 </div>
@@ -246,19 +254,19 @@ export function LandingPage() {
       </section>
 
       {/* Use Cases */}
-      <section className="px-6 py-24 lg:px-12">
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-12" aria-labelledby="usecases-heading">
         <div className="mx-auto max-w-6xl">
           <AnimatedSection>
-            <h2 className="text-center text-3xl font-bold text-foreground">
+            <h2 id="usecases-heading" className="text-center text-heading-section">
               Built for how you work
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-2xl text-center text-body-lg">
               Whether you&apos;re a solo creator, team lead, or enterprise, LifeOps adapts to
               your workflow.
             </p>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-section-gap grid gap-card sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 icon: User,
@@ -280,12 +288,12 @@ export function LandingPage() {
               },
             ].map((uc, i) => (
               <AnimatedSection key={uc.title} delay={(i % 3) as 0 | 1 | 2}>
-                <div className="rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent-purple/20 text-accent-purple">
-                    <uc.icon className="h-6 w-6" />
+                <div className="rounded-xl border border-border bg-card p-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent-purple/20 text-accent-purple" aria-hidden>
+                    <uc.icon className="icon-lg" />
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold text-foreground">{uc.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{uc.description}</p>
+                  <h3 className="mt-4 text-heading-card">{uc.title}</h3>
+                  <p className="mt-2 text-body-sm">{uc.description}</p>
                 </div>
               </AnimatedSection>
             ))}
@@ -294,19 +302,19 @@ export function LandingPage() {
       </section>
 
       {/* Templates */}
-      <section className="px-6 py-24 lg:px-12">
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-12" aria-labelledby="templates-heading">
         <div className="mx-auto max-w-6xl">
           <AnimatedSection>
-            <h2 className="text-center text-3xl font-bold text-foreground">
+            <h2 id="templates-heading" className="text-center text-heading-section">
               Start with templates
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-2xl text-center text-body-lg">
               Pre-built workflows to get you running in minutes. Customize or create from
               scratch.
             </p>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-section-gap grid gap-card sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: FolderKanban, label: 'Project Sprint', desc: 'Tickets, PRs, releases', slug: 'project-sprint' },
               { icon: FileText, label: 'Content Pipeline', desc: 'Ideas → drafts → publish', slug: 'content-pipeline' },
@@ -316,13 +324,14 @@ export function LandingPage() {
               <AnimatedSection key={t.label} delay={(i % 4) as 0 | 1 | 2 | 3}>
                 <Link
                   to={`/login-/-signup?template=${t.slug}`}
-                  className="block rounded-xl border border-border bg-card p-6 text-center transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="block rounded-xl border border-border bg-card p-card text-center transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 hover:border-accent/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  aria-label={`Start with ${t.label} template - ${t.desc}`}
                 >
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent-blue/20 text-accent-blue">
-                    <t.icon className="h-6 w-6" />
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent-blue/20 text-accent-blue" aria-hidden>
+                    <t.icon className="icon-lg" />
                   </div>
-                  <h3 className="mt-4 font-semibold text-foreground">{t.label}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{t.desc}</p>
+                  <h3 className="mt-4 text-heading-card">{t.label}</h3>
+                  <p className="mt-1 text-body-sm">{t.desc}</p>
                 </Link>
               </AnimatedSection>
             ))}
@@ -331,18 +340,18 @@ export function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section className="px-6 py-24 lg:px-12">
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-12" aria-labelledby="pricing-heading">
         <div className="mx-auto max-w-6xl">
           <AnimatedSection>
-            <h2 className="text-center text-3xl font-bold text-foreground">
+            <h2 id="pricing-heading" className="text-center text-heading-section">
               Simple, transparent pricing
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-2xl text-center text-body-lg">
               Start free. Scale as you grow. No hidden fees.
             </p>
           </AnimatedSection>
 
-          <div className="mt-16 grid gap-6 lg:grid-cols-3">
+          <div className="mt-section-gap grid gap-card lg:grid-cols-3">
             {[
               {
                 name: 'Free',
@@ -384,27 +393,27 @@ export function LandingPage() {
               <AnimatedSection key={plan.name} delay={(i % 3) as 0 | 1 | 2}>
                 <div
                   className={cn(
-                    'rounded-xl border p-6 transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1',
+                    'rounded-xl border p-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1',
                     plan.highlighted
                       ? 'border-accent bg-accent/5 shadow-accent-glow'
                       : 'border-border bg-card hover:border-accent/30'
                   )}
                 >
-                  <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
+                  <h3 className="text-heading-card">{plan.name}</h3>
                   <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
+                    <span className="text-price font-bold text-foreground">{plan.price}</span>
+                    <span className="text-body-sm">{plan.period}</span>
                   </div>
-                  <ul className="mt-6 space-y-3">
+                  <ul className="mt-6 space-y-3" aria-label={`${plan.name} plan features`}>
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Check className="h-4 w-4 shrink-0 text-accent-green" />
+                      <li key={f} className="flex items-center gap-2 text-body-sm">
+                        <Check className="icon-sm shrink-0 text-accent-green" aria-hidden />
                         {f}
                       </li>
                     ))}
                   </ul>
                   {plan.name === 'Enterprise' ? (
-                    <a href="mailto:sales@lifeops.example" className="block mt-8">
+                    <a href="mailto:sales@lifeops.example" className="block mt-8" aria-label="Contact sales for Enterprise plan">
                       <Button
                         variant={plan.highlighted ? 'default' : 'outline'}
                         className="w-full transition-all duration-200 hover:scale-[1.02]"
@@ -413,7 +422,7 @@ export function LandingPage() {
                       </Button>
                     </a>
                   ) : (
-                    <Link to="/login-/-signup" className="block mt-8">
+                    <Link to="/login-/-signup" className="block mt-8" aria-label={`${plan.cta} - ${plan.name} plan`}>
                       <Button
                         variant={plan.highlighted ? 'default' : 'outline'}
                         className="w-full transition-all duration-200 hover:scale-[1.02]"
@@ -430,18 +439,18 @@ export function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 py-24 lg:px-12">
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-12" aria-labelledby="cta-heading">
         <AnimatedSection>
-          <div className="gradient-border mx-auto max-w-4xl rounded-2xl p-12 text-center transition-all duration-300 hover:shadow-card-hover hover:shadow-accent-glow/50">
-            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
+          <div className="gradient-border mx-auto max-w-4xl rounded-2xl p-8 sm:p-12 text-center transition-all duration-300 hover:shadow-card-hover hover:shadow-accent-glow/50">
+            <h2 id="cta-heading" className="text-heading-cta sm:text-heading-cta-lg font-bold text-foreground">
               Ready to automate with confidence?
             </h2>
-            <p className="mt-4 text-muted-foreground">
+            <p className="mt-4 text-body-lg">
               Join individuals, teams, and enterprises who trust LifeOps for their
               automation.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/login-/-signup">
+              <Link to="/login-/-signup" aria-label="Sign up for free">
                 <Button
                   size="xl"
                   className="transition-all duration-200 hover:scale-[1.05] hover:shadow-accent-glow"
@@ -449,7 +458,7 @@ export function LandingPage() {
                   Sign up free
                 </Button>
               </Link>
-              <Link to="/login-/-signup">
+              <Link to="/login-/-signup" aria-label="Sign in to your account">
                 <Button
                   variant="outline"
                   size="xl"
@@ -464,41 +473,44 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border px-6 py-12 lg:px-12">
+      <footer className="border-t border-border px-4 py-8 sm:px-6 sm:py-12 lg:px-12" role="contentinfo">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-accent" />
+            <Zap className="icon-md text-accent" aria-hidden />
             <span className="font-medium text-foreground">LifeOps</span>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+          <nav className="flex flex-wrap items-center justify-center gap-6 text-body-sm" aria-label="Footer navigation">
             <Link
               to="/help"
-              className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              aria-label="Get help"
             >
-              <HelpCircle className="h-4 w-4" />
+              <HelpCircle className="icon-sm" aria-hidden />
               Help
             </Link>
             <a
               href="mailto:sales@lifeops.example"
-              className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              aria-label="Contact sales"
             >
-              <Mail className="h-4 w-4" />
+              <Mail className="icon-sm" aria-hidden />
               Contact Sales
             </a>
-            <Link to="/privacy" className="hover:text-foreground transition-colors">
+            <Link to="/privacy" className="hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded" aria-label="Privacy policy">
               Privacy
             </Link>
-            <Link to="/terms" className="hover:text-foreground transition-colors">
+            <Link to="/terms" className="hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded" aria-label="Terms of service">
               Terms
             </Link>
             <Link
               to="/cookies"
-              className="inline-flex items-center gap-2 hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 hover:text-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              aria-label="Cookie policy"
             >
-              <Cookie className="h-4 w-4" />
+              <Cookie className="icon-sm" aria-hidden />
               Cookies
             </Link>
-          </div>
+          </nav>
         </div>
       </footer>
 

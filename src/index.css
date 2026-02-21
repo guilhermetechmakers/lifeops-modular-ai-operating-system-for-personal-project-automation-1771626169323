@@ -86,6 +86,40 @@
     border-radius: 0.75rem;
   }
 
+  /* Design system typography utilities */
+  .text-heading-hero {
+    @apply font-bold tracking-tight text-foreground;
+  }
+
+  .text-heading-section {
+    @apply font-bold text-foreground;
+  }
+
+  .text-heading-card {
+    @apply font-semibold text-foreground;
+  }
+
+  .text-body-lg {
+    @apply text-muted-foreground;
+  }
+
+  .text-body-sm {
+    @apply text-muted-foreground;
+  }
+
+  /* Design system icon sizes */
+  .icon-sm {
+    @apply h-4 w-4;
+  }
+
+  .icon-md {
+    @apply h-5 w-5;
+  }
+
+  .icon-lg {
+    @apply h-6 w-6;
+  }
+
   .gradient-border::before {
     content: "";
     position: absolute;

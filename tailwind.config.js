@@ -48,6 +48,26 @@ export default {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
       },
+      fontSize: {
+        "heading-hero": ["3rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "heading-hero-sm": ["2.25rem", { lineHeight: "1.2", letterSpacing: "-0.02em" }],
+        "heading-hero-lg": ["3.75rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "heading-section": ["1.875rem", { lineHeight: "1.2", letterSpacing: "-0.01em" }],
+        "heading-card": ["1.125rem", { lineHeight: "1.3" }],
+        "heading-cta": ["1.5rem", { lineHeight: "1.2" }],
+        "heading-cta-lg": ["1.875rem", { lineHeight: "1.2" }],
+        "price": ["1.875rem", { lineHeight: "1.2" }],
+        "body-lg": ["1.125rem", { lineHeight: "1.6" }],
+        "body": ["1rem", { lineHeight: "1.5" }],
+        "body-sm": ["0.875rem", { lineHeight: "1.5" }],
+      },
+      spacing: {
+        "section-y": "6rem",
+        "section-y-lg": "8rem",
+        "section-gap": "4rem",
+        "card": "1.5rem",
+        "card-gap": "1.5rem",
+      },
       borderRadius: {
         lg: "0.75rem",
         xl: "1rem",
